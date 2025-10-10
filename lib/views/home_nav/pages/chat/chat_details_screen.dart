@@ -12,6 +12,7 @@ import '../../../../features/login/bloc.dart' show User, UserResponseModel;
 import 'chat_utils.dart';
 import 'models/message_model.dart';
 import 'models/rooms_model.dart';
+
 class ChatDetailsScreen extends StatefulWidget {
   final UserResponseModel user;
 
