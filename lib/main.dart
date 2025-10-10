@@ -70,7 +70,6 @@ class _MyAppState extends State<MyApp> {
       designSize: const Size(402, 874),
       minTextAdapt: true,
       splitScreenMode: true,
-
       builder: (context, child) {
         return BlocConsumer(
           bloc: langBloc,
