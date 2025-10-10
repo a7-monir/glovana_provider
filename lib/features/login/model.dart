@@ -1,3 +1,4 @@
+
 part of 'bloc.dart';
 
 class UserData {
@@ -62,4 +63,72 @@ class User {
     updatedAt = json['updated_at'] ?? '';
     photoUrl = json['photoUrl'] ?? '';
   }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "country_code": countryCode,
+    "phone": phone,
+    "email": email,
+    "password": password,
+    "photo": photo,
+    "fcm_token": fcmToken,
+    "balance": balance,
+    "referral_code": referralCode,
+    "activate": activate,
+    "user_id": userId,
+    "created_at": createdAt?.toString(),
+    "updated_at": updatedAt?.toString(),
+    "photo_url": photoUrl,
+  };
+}
+
+UserResponseModel userResponseModelFromJson(String str) =>
+    UserResponseModel.fromJson(json.decode(str));
+
+String userResponseModelToJson(UserResponseModel data) =>
+    json.encode(data.toJson());
+
+class UserResponseModel {
+  bool? status;
+  String? message;
+  Data? data;
+
+  UserResponseModel({
+    this.status,
+    this.message,
+    this.data,
+  });
+
+  factory UserResponseModel.fromJson(Map<String, dynamic> json) =>
+      UserResponseModel(
+        status: json["status"],
+        message: json["message"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+    "status": status,
+    "message": message,
+    "data": data?.toJson(),
+  };
+}
+
+class Data {
+  String? token;
+  User? user;
+
+  Data({
+    this.token,
+    this.user,
+  });
+
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    token: json["token"],
+    user: json["user"] == null ? null : User.fromJson(json["user"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "token": token,
+    "user": user?.toJson(),
+  };
 }

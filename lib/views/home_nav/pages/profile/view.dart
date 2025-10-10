@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/views/Appointment_history/view.dart';
+import 'package:glovana_provider/views/home_nav/pages/chat/chat_screen.dart';
 import 'package:glovana_provider/views/payment_report/view.dart';
 import 'package:glovana_provider/views/ratings/view.dart';
 
@@ -84,7 +85,7 @@ class ProfileView extends StatelessWidget {
                 image: 'user_fill.png',
                 title: LocaleKeys.providerType.tr(),
                 onTap: () {
-                 // navigateTo(ChatScreen());
+                 navigateTo(ChatScreen());
                 },
               ),
               _ItemProfile(
