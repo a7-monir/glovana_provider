@@ -222,5 +222,8 @@ abstract class  LocaleKeys {
   static const commercialRegistration = 'commercialRegistration';
   static const takePhotos = 'takePhotos';
   static const yourApplicationIsBeingProcessed = 'yourApplicationIsBeingProcessed';
+  static const basicInformation = 'basicInformation';
+  static const details = 'details';
+  static const photos = 'photos';
 
 }

@@ -11,7 +11,7 @@ class GetServicesFailedState extends GetServicesStates {
 }
 
 class GetServicesSuccessState extends GetServicesStates {
-  final List<Service>list;
+  final List<Service2>list;
 
   GetServicesSuccessState({required this.list});
 }
