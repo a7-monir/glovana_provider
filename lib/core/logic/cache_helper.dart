@@ -135,6 +135,9 @@ class CacheHelper {
   static Future<void> setValue(String key, String value) async {
     await _ref.setString(key, value);
   }
+  static getData({required String key}) {
+    return _ref.get(key);
+  }
 
   static Future<void> saveData(User model) async {
     print("************** Save the data *****************");
