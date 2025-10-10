@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "189542346816",
+    "project_id": "glovana-4f28a",
+    "storage_bucket": "glovana-4f28a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189542346816:android:ae7662f748b477df6dafa5",
+        "android_client_info": {
+          "package_name": "com.alianCode.glovana"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO60Gvjn1CSb4d6mpbti_N_fIPLc7KhV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189542346816:android:a3911f3d08bad58e6dafa5",
+        "android_client_info": {
+          "package_name": "com.alianCode.glovana_provider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBO60Gvjn1CSb4d6mpbti_N_fIPLc7KhV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
