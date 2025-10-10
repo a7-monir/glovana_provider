@@ -2,14 +2,10 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:kiwi/kiwi.dart';
-
 import '../../core/design/app_button.dart';
 import '../../core/logic/helper_methods.dart';
 import '../../generated/locale_keys.g.dart';
@@ -64,7 +60,7 @@ class _LocationViewState extends State<LocationView> {
       print("******");
       print(event);
       if (event == ServiceStatus.enabled) {
-        goToMyLocation(location: widget.initialLocation);
+        goToMyLocation();
       }
     });
 
@@ -110,7 +106,7 @@ class _LocationViewState extends State<LocationView> {
         markers: markers,
         myLocationButtonEnabled: true,
         myLocationEnabled: true,
-        onTap: widget.initialLocation != null ? (v) {} : addMarkers,
+        onTap:  addMarkers,
         onCameraMove: (position) {
           zoom = position.zoom;
         },

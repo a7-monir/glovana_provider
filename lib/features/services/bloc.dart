@@ -20,7 +20,7 @@ class GetServicesBloc extends Bloc<GetServicesEvents, GetServicesStates> {
   void _getData(GetServicesEvent event,
       Emitter<GetServicesStates> emit,) async {
     emit(GetServicesLoadingState());
-    final response = await _dio.get("user/deliveries");
+    final response = await _dio.get("user/getServices");
     if (response.isSuccess) {
        list =List.from(response.data['data'] ?? []).map((e) => Service.fromJson(e)).toList();
       emit(GetServicesSuccessState(list: list));

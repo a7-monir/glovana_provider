@@ -11,6 +11,7 @@ import '../../../../core/design/app_image.dart';
 import '../../../../core/logic/cache_helper.dart';
 import '../../../../core/logic/helper_methods.dart';
 import '../../../../generated/locale_keys.g.dart';
+import '../../../../sheets/logout.dart';
 import '../../../edit_profile/view.dart';
 import '../../../wallet/view.dart';
 import 'components/photo.dart';
@@ -126,11 +127,11 @@ class ProfileView extends StatelessWidget {
               _ItemProfile(
                 image: 'logout.png',
                 title: LocaleKeys.logout.tr(),
-                // onTap:
-                //     () => showModalBottomSheet(
-                //       context: context,
-                //       builder: (context) => LogoutSheet(),
-                //     ),
+                onTap:
+                    () => showModalBottomSheet(
+                      context: context,
+                      builder: (context) => LogoutSheet(),
+                    ),
                 isLogout: true,
               ),
             ],

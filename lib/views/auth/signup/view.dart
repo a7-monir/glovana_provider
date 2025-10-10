@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/features/types/bloc.dart';
+import 'package:glovana_provider/views/static_page/view.dart';
 
 import 'package:kiwi/kiwi.dart';
 
@@ -20,6 +22,7 @@ import '../components/choose_lang_item.dart';
 import '../components/have_account.dart';
 import '../components/social_buttons.dart';
 import '../components/with_section.dart';
+import 'first_step.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -31,7 +34,10 @@ class SignupView extends StatefulWidget {
 class _SignupViewState extends State<SignupView> {
   final bloc = KiwiContainer().resolve<SignupBloc>();
   final socialLoginBloc = KiwiContainer().resolve<SocialLoginBloc>();
-  final servicesBloc=KiwiContainer().resolve<GetServicesBloc>()..add(GetServicesEvent());
+  final typesBloc = KiwiContainer().resolve<TypesBloc>()..add(GetTypesEvent());
+
+  TypeModel? selectedModel;
+  bool isAccept = false;
 
   @override
   void initState() {
@@ -130,8 +136,8 @@ class _SignupViewState extends State<SignupView> {
                               isCenterTitle: true,
                               controller: bloc.firstNameController,
                               isValid: bloc.firstNameValid,
-                              validator:
-                                  (v) => InputValidator.requiredValidator(
+                              validator: (v) =>
+                                  InputValidator.requiredValidator(
                                     value: v!,
                                     itemName: LocaleKeys.firstName.tr(),
                                   ),
@@ -144,8 +150,8 @@ class _SignupViewState extends State<SignupView> {
                               isCenterTitle: true,
                               controller: bloc.lastNameController,
                               isValid: bloc.lastNameValid,
-                              validator:
-                                  (v) => InputValidator.requiredValidator(
+                              validator: (v) =>
+                                  InputValidator.requiredValidator(
                                     value: v!,
                                     itemName: LocaleKeys.lastName.tr(),
                                   ),
@@ -183,46 +189,92 @@ class _SignupViewState extends State<SignupView> {
                         marginBottom: 32.h,
                         controller: bloc.passwordController,
                         isValid: bloc.passwordValid,
-                        validator:
-                            (v) => InputValidator.passwordValidator(
-                              v!,
-                              lengthRequired: true,
-                            ),
+                        validator: (v) => InputValidator.passwordValidator(
+                          v!,
+                          lengthRequired: true,
+                        ),
                       ),
                     ),
-                    BlocBuilder(
-                      bloc: servicesBloc,
-                      builder: (context, state) {
-                        if (state is GetServicesFailedState) {
-                          return AppFailed(
-                            isSmallShape: true,
-                            response: state.response,
-                            onPress: () {
-                              servicesBloc.add(GetServicesEvent());
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 14.w),
+                      child: BlocBuilder(
+                        bloc: typesBloc,
+                        builder: (context, state) {
+                          if (state is GetServicesFailedState) {
+                            return AppFailed(
+                              isSmallShape: true,
+                              response: state.response,
+                              onPress: () {
+                                typesBloc.add(GetTypesEvent());
+                              },
+                            );
+                          }
+                          return AppDropDown(
+                            title: LocaleKeys.workType.tr(),
+                            list: typesBloc.list.map((e) => e.name).toList(),
+                            isLoading: state is GetTypesLoadingState,
+                            validator: (v) => InputValidator.requiredValidator(
+                              value: v!,
+                              itemName: LocaleKeys.workType.tr(),
+                            ),
+                            hint: '',
+                            onChoose: (value) {
+                              selectedModel = TypeModel(
+                                id: typesBloc.list[value].id,
+                                name: typesBloc.list[value].name,
+                                bookingType: typesBloc.list[value].bookingType,
+                              );
+                              //bloc.deliveryId = deliveryBloc.list[value].id;
                             },
                           );
-                        }
-                        return AppDropDown(
-                          title: LocaleKeys.deliveryArea.tr(),
-                          list: servicesBloc.list.map((e) => e.name).toList(),
-                          isLoading: state is GetServicesLoadingState,
-                          validator:
-                              (v) => InputValidator.requiredValidator(
-                            value: v!,
-                            itemName: LocaleKeys.deliveryArea.tr(),
-                          ),
-                          hint: '',
-                          onChoose: (value) {
-                            //bloc.deliveryId = deliveryBloc.list[value].id;
-                          },
-                        );
-                      },
+                        },
+                      ),
                     ),
+                    Padding(
+                      padding:  EdgeInsets.symmetric(horizontal: 14.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                              onTap: () => navigateTo(StaticPageView(id: 3, title: LocaleKeys.privacyPolicy.tr())),
+                              child: Text(LocaleKeys.privacyPolicy.tr())),
+                          Checkbox(
+                            activeColor: Theme.of(
+                              context,
+                            ).primaryColor.withValues(alpha: .08),
+                              fillColor: WidgetStateProperty. resolveWith<Color>((Set<WidgetState> states) {
+                                if (states. contains(WidgetState. disabled)) {
+                                  return Colors. transparent;
+                                }
+                                return Colors. transparent;
+                              }),
+                            checkColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                            side: WidgetStateBorderSide.resolveWith(
+                              (states) => BorderSide(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+
+                            value: isAccept,
+                            onChanged: (value) {
+                              isAccept = !isAccept;
+                              setState(() {});
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
                     BlocConsumer(
                       bloc: bloc,
                       listener: (context, state) {
                         if (state is SignupSuccessState) {
-                         // navigateTo(CompleteProfileView());
+                          navigateTo(
+                            FirstStepSignUpView(typeModel: selectedModel!),
+                          );
                         }
                       },
                       builder: (context, state) {
@@ -232,7 +284,19 @@ class _SignupViewState extends State<SignupView> {
                           isLoading: state is SignupLoadingState,
                           onPress: () {
                             if (bloc.formKey.currentState!.validate()) {
-                              bloc.add(SignupEvent());
+                              if (isAccept) {
+                                bloc.add(SignupEvent());
+                              } else {
+                                showMessage(
+                                  LocaleKeys.mustAcceptWithName.tr(
+                                    namedArgs: {
+                                      'name': LocaleKeys.privacyPolicy,
+                                    },
+
+                                  ),
+                                  type: MessageType.warning
+                                );
+                              }
                             } else {
                               bloc.validateMode =
                                   AutovalidateMode.onUserInteraction;

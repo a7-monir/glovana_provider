@@ -6,6 +6,7 @@ import 'package:glovana_provider/features/services/bloc.dart';
 import 'package:glovana_provider/features/signup/bloc.dart';
 import 'package:glovana_provider/features/static_page/bloc.dart';
 import 'package:glovana_provider/features/toggle_lang/bloc.dart';
+import 'package:glovana_provider/features/types/bloc.dart';
 import 'package:glovana_provider/features/update_status/bloc.dart';
 import 'package:glovana_provider/features/wallet/bloc.dart';
 import 'package:kiwi/kiwi.dart';
@@ -16,6 +17,7 @@ import 'address/bloc.dart';
 import 'appointment_details/bloc.dart';
 import 'appointments/bloc.dart';
 
+import 'complete_data/bloc.dart';
 import 'delivery/bloc.dart';
 import 'edit_profile/bloc.dart';
 
@@ -47,4 +49,6 @@ void initKiwi() {
   con.registerFactory((c) => UpdateStatusBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetPaymentReportBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetRatingsBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => TypesBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => CompleteDataBloc(c.resolve<DioHelper>()));
 }

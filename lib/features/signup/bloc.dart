@@ -42,7 +42,7 @@ class SignupBloc extends Bloc<SignupEvents, SignupStates> {
       final response = await _dio.send(
         "user/register",
         data: {
-          "name":"${firstNameController.text} ${lastNameController.text}",
+          "name_of_manager":"${firstNameController.text} ${lastNameController.text}",
           "phone": phoneController.text,
           'password':passwordController.text,
           "email":emailController.text,

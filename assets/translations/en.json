@@ -188,6 +188,39 @@
   "appointmentList": "appointment list",
   "completed": "completed",
   "canceled": "canceled",
-  "reason": "reason"
+  "reason": "reason",
+  "workType": "work type",
+  "hi": "hi",
+  "mustAcceptWithName": "must accept {name}",
+  "yourWorkName": "your work name",
+  "addYorJobDescription": "Add yor Job Description",
+  "address": "Address",
+  "youMustChooseAddress": "you must choose address",
+  "workNumber": "work number",
+  "workingHours": "working hours",
+  "WhatYourService": "What’s your Service?",
+  "setTheMaximumNumberOfBookingsPerHour": "Set the maximum number of bookings per hour",
+  "howMuchDoYouChargePerHour": "How much do you charge per hour?",
+  "availableServices": "available services",
+  "selectedServices": "selectedServices",
+  "selectServicesWithPrices": "select services with prices",
+  "addPrice": "add price",
+  "enterPriceFor": "enter price for",
+  "enterPrice": "enter price",
+  "pleaseEnterPrice": "please enter price",
+  "pleaseEnterValidPrice": "please enter valid price",
+  "addProfilePicture": "add profile picture",
+  "youCanChooseOnlyPhoto": "you can choose only 1 photo",
+  "uploadFile": "Upload file",
+  "galleryPhotos": "gallery photos",
+  "photosAreSaved": "photos are saved",
+  "youCanUploadYourWorkingPlace": "You can upload your working place photos so other cn see these photos",
+  "nationalID": "National ID",
+  "commercialRegistration": "Commercial Registration",
+  "takePhotos": "Take photos",
+  "yourApplicationIsBeingProcessed": "Your application is being processed and your information is under review. You will receive the result within 48 hours."
+
+
+
 
 }

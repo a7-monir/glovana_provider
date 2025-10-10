@@ -192,5 +192,35 @@ abstract class  LocaleKeys {
   static const completed = 'completed';
   static const canceled = 'canceled';
   static const reason = 'reason';
+  static const workType = 'workType';
+  static const hi = 'hi';
+  static const mustAcceptWithName = 'mustAcceptWithName';
+  static const yourWorkName = 'yourWorkName';
+  static const addYorJobDescription = 'addYorJobDescription';
+  static const address = 'address';
+  static const youMustChooseAddress = 'youMustChooseAddress';
+  static const workNumber = 'workNumber';
+  static const workingHours = 'workingHours';
+  static const WhatYourService = 'WhatYourService';
+  static const setTheMaximumNumberOfBookingsPerHour = 'setTheMaximumNumberOfBookingsPerHour';
+  static const howMuchDoYouChargePerHour = 'howMuchDoYouChargePerHour';
+  static const availableServices = 'availableServices';
+  static const selectedServices = 'selectedServices';
+  static const selectServicesWithPrices = 'selectServicesWithPrices';
+  static const addPrice = 'addPrice';
+  static const enterPriceFor = 'enterPriceFor';
+  static const enterPrice = 'enterPrice';
+  static const pleaseEnterPrice = 'pleaseEnterPrice';
+  static const pleaseEnterValidPrice = 'pleaseEnterValidPrice';
+  static const addProfilePicture = 'addProfilePicture';
+  static const youCanChooseOnlyPhoto = 'youCanChooseOnlyPhoto';
+  static const uploadFile = 'uploadFile';
+  static const galleryPhotos = 'galleryPhotos';
+  static const photosAreSaved = 'photosAreSaved';
+  static const youCanUploadYourWorkingPlace = 'youCanUploadYourWorkingPlace';
+  static const nationalID = 'nationalID';
+  static const commercialRegistration = 'commercialRegistration';
+  static const takePhotos = 'takePhotos';
+  static const yourApplicationIsBeingProcessed = 'yourApplicationIsBeingProcessed';
 
 }

@@ -12,7 +12,7 @@ import 'app_image.dart';
 
 class AppFailed extends StatelessWidget {
   final VoidCallback onPress;
-  final CustomResponse response;
+  final CustomResponse? response;
   final String msg;
   final bool isScrollable;
   final bool isSmallShape, withPaddingHorizontal;
@@ -20,7 +20,7 @@ class AppFailed extends StatelessWidget {
 
   const AppFailed({
     super.key,
-    required this.response,
+     this.response,
     required this.onPress,
     this.description,
     this.isScrollable = false,
