@@ -33,8 +33,9 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
   final nickNameController = TextEditingController();
    bool isNickNameValid= true;
    bool isDescriptionValid= true;
-   bool isCityValid= true;
   final descriptionController = TextEditingController();
+   bool isCityValid= true;
+
   final cityController = TextEditingController();
   double? latitude;
   double? longitude;

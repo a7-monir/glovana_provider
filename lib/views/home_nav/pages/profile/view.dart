@@ -4,8 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/views/Appointment_history/view.dart';
-import 'package:glovana_provider/views/home_nav/pages/chat/chat_screen.dart';
 import 'package:glovana_provider/views/payment_report/view.dart';
+import 'package:glovana_provider/views/provider_type/view.dart';
 import 'package:glovana_provider/views/ratings/view.dart';
 
 import '../../../../core/design/app_image.dart';
@@ -14,6 +14,7 @@ import '../../../../core/logic/helper_methods.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../sheets/logout.dart';
 import '../../../edit_profile/view.dart';
+import '../../../static_page/view.dart';
 import '../../../wallet/view.dart';
 import 'components/photo.dart';
 
@@ -85,7 +86,7 @@ class ProfileView extends StatelessWidget {
                 image: 'user_fill.png',
                 title: LocaleKeys.providerType.tr(),
                 onTap: () {
-                 navigateTo(ChatScreen());
+                  navigateTo(ProviderTypeView());
                 },
               ),
               _ItemProfile(
@@ -96,18 +97,26 @@ class ProfileView extends StatelessWidget {
               _ItemProfile(
                 image: 'about_us.png',
                 title: LocaleKeys.aboutUs.tr(),
-                //onTap:
-                    // () => navigateTo(
-                    //   StaticPageView(id: 1, title: LocaleKeys.aboutUs.tr()),
-                    // ),
+                onTap:
+                    () => navigateTo(
+                      StaticPageView(id: 1, title: LocaleKeys.aboutUs.tr()),
+                    ),
               ),
               _ItemProfile(
                 image: 'terms.png',
                 title: LocaleKeys.termsCondition.tr(),
+                onTap:
+                    () => navigateTo(
+                  StaticPageView(id: 2, title: LocaleKeys.termsCondition.tr()),
+                ),
               ),
               _ItemProfile(
                 image: 'privacy.png',
                 title: LocaleKeys.privacyPolicy.tr(),
+                onTap:
+                    () => navigateTo(
+                  StaticPageView(id: 3, title: LocaleKeys.privacyPolicy.tr()),
+                ),
               ),
               _ItemProfile(
                 image: 'support.png',

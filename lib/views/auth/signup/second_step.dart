@@ -16,6 +16,7 @@ import 'package:glovana_provider/features/services/bloc.dart';
 import 'package:kiwi/kiwi.dart';
 
 import '../../../core/logic/cache_helper.dart';
+import '../../../features/provider_profile/bloc.dart';
 import '../../../generated/locale_keys.g.dart';
 import 'first_step.dart';
 import 'last_step.dart';
@@ -212,8 +213,8 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
   }
 
   List<ServiceWithPrice> _selectedServicesWithPrices = [];
-  List<Service> _selectedServices = []; // For service booking type
-  List<Service> allServices = [];
+  List<Service2> _selectedServices = []; // For service booking type
+  List<Service2> allServices = [];
 
   // void _showMultiSelect(BuildContext context) {
   //   showDialog(
@@ -397,7 +398,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
 
   void _showPriceInputDialog(
     BuildContext context,
-    Service service,
+      Service2 service,
     Function setDialogState,
   ) {
     final priceController = TextEditingController();
@@ -443,7 +444,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                           ServiceWithPrice(
                             service: service,
                             price: price,
-                            isActive: true,
+                            isActive: 1,
                           ),
                         );
                       });
@@ -851,21 +852,21 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
 }
 
 class ServiceWithPrice {
-  final Service service;
+  final Service2 service;
   final double price;
-  final bool isActive;
+  final int isActive;
 
   ServiceWithPrice({
     required this.service,
     required this.price,
-    this.isActive = true,
+    this.isActive = 1,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'service_id': service.id,
       'price': price,
-      'is_active': isActive ? 1 : 0,
+      'is_active': isActive,
     };
   }
 }

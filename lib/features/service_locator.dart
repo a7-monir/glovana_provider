@@ -1,6 +1,6 @@
 
 import 'package:glovana_provider/features/payment_report/bloc.dart';
-import 'package:glovana_provider/features/points/get/bloc.dart';
+import 'package:glovana_provider/features/provider_profile/bloc.dart';
 import 'package:glovana_provider/features/ratings/bloc.dart';
 import 'package:glovana_provider/features/services/bloc.dart';
 import 'package:glovana_provider/features/signup/bloc.dart';
@@ -32,7 +32,7 @@ void initKiwi() {
   con.registerFactory((c) => LoginBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => SignupBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => EditProfileBloc(c.resolve<DioHelper>()));
-
+  con.registerFactory((c) => GetProviderProfileBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetAppointmentsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetAddressBloc(c.resolve<DioHelper>()));
 
@@ -41,7 +41,6 @@ void initKiwi() {
 
   con.registerFactory((c) => SocialLoginBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetWalletBloc(c.resolve<DioHelper>()));
-  con.registerFactory((c) => GetPointsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetStaticPageBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => SignOutBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetServicesBloc(c.resolve<DioHelper>()));

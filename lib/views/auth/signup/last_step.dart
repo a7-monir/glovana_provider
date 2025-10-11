@@ -35,7 +35,6 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
 
   final List<File> _gallery = [];
 
-  // New document fields
   File? _identityPhoto;
   File? _practicePhoto;
 

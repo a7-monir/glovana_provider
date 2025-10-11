@@ -218,7 +218,10 @@
   "nationalID": "National ID",
   "commercialRegistration": "Commercial Registration",
   "takePhotos": "Take photos",
-  "yourApplicationIsBeingProcessed": "Your application is being processed and your information is under review. You will receive the result within 48 hours."
+  "yourApplicationIsBeingProcessed": "Your application is being processed and your information is under review. You will receive the result within 48 hours.",
+  "basicInformation": "basic information",
+  "details": "details",
+  "photos": "photos"
 
 
 
