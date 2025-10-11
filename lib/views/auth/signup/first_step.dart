@@ -18,23 +18,27 @@ import '../../../core/design/app_failed.dart';
 import '../../../core/design/app_image.dart';
 import '../../../core/logic/helper_methods.dart';
 import '../../../features/delivery/bloc.dart';
+import '../../../features/services/bloc.dart';
 import '../../location/view.dart';
 
 class FirstStepSignUpView extends StatefulWidget {
-  final TypeModel typeModel;
+  TypeModel? typeModel;
+  final bool fromRegister;
 
-  const FirstStepSignUpView({super.key, required this.typeModel});
+  FirstStepSignUpView({super.key,  this.typeModel,  this.fromRegister=true});
 
   @override
   State<FirstStepSignUpView> createState() => _FirstStepSignUpViewState();
 }
 
 class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
+  final typesBloc = KiwiContainer().resolve<TypesBloc>();
+
   final nickNameController = TextEditingController();
-   bool isNickNameValid= true;
-   bool isDescriptionValid= true;
+  bool isNickNameValid = true;
+  bool isDescriptionValid = true;
   final descriptionController = TextEditingController();
-   bool isCityValid= true;
+  bool isCityValid = true;
 
   final cityController = TextEditingController();
   double? latitude;
@@ -45,9 +49,14 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
   final formKey = GlobalKey<FormState>();
   final deliveryBloc = KiwiContainer().resolve<GetDeliveryBloc>()
     ..add(GetDeliveryEvent());
+
   @override
   void initState() {
     super.initState();
+
+    if(!widget.fromRegister){
+    typesBloc.add(GetTypesEvent());
+    }
     nickNameController.addListener(() {
       final name = nickNameController.text.trim();
       final isValid = name.isNotEmpty;
@@ -75,7 +84,6 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
         });
       }
     });
-
   }
 
   @override
@@ -108,8 +116,7 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                     width: 65.sp,
                     height: 8.sp,
                     decoration: BoxDecoration(
-                      color:
-                      AppTheme.primary.withValues(alpha: 0.33),
+                      color: AppTheme.primary.withValues(alpha: 0.33),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
@@ -118,15 +125,46 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                     width: 65.sp,
                     height: 8.sp,
                     decoration: BoxDecoration(
-                      color:
-                      AppTheme.primary.withValues(alpha: 0.33),
+                      color: AppTheme.primary.withValues(alpha: 0.33),
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 30.h),
-
+              BlocBuilder(
+                bloc: typesBloc,
+                builder: (context, state) {
+                  if (state is GetServicesFailedState) {
+                    return AppFailed(
+                      isSmallShape: true,
+                      response: state.response,
+                      onPress: () {
+                        typesBloc.add(GetTypesEvent());
+                      },
+                    );
+                  }
+                  return AppDropDown(
+                    title: LocaleKeys.workType.tr(),
+                    list: typesBloc.list.map((e) => e.name).toList(),
+                    isLoading: state is GetTypesLoadingState,
+                    validator: (v) => InputValidator.requiredValidator(
+                      value: v!,
+                      itemName: LocaleKeys.workType.tr(),
+                    ),
+                    hint: '',
+                    onChoose: (value) {
+                      widget.typeModel = TypeModel(
+                        id: typesBloc.list[value].id,
+                        name: typesBloc.list[value].name,
+                        bookingType: typesBloc.list[value].bookingType,
+                      );
+                      //bloc.deliveryId = deliveryBloc.list[value].id;
+                    },
+                  );
+                },
+              ),
+              SizedBox(height: 10.h),
               AppInput(
                 fixedPositionedLabel: LocaleKeys.yourWorkName.tr(),
                 controller: nickNameController,
@@ -152,7 +190,7 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
               ),
               GestureDetector(
                 onTap: () {
-                  navigateTo(LocationView(withButton: true,)).then((value) {
+                  navigateTo(LocationView(withButton: true)).then((value) {
                     latitude = value.location.latitude;
                     longitude = value.location.longitude;
                     addressFromPicker = value.description;
@@ -268,15 +306,16 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                     if (formKey.currentState!.validate()) {
                       if (longitude != null &&
                           latitude != null &&
-                          addressFromPicker != null) {
+                          addressFromPicker != null &&
+                          widget.typeModel != null) {
                         final model = FirstStepModel(
                           nickName: nickNameController.text,
-                          bookingType: widget.typeModel.bookingType,
+                          bookingType: widget.typeModel!.bookingType,
                           description: descriptionController.text,
                           address: cityController.text,
                           city: cityController.text,
                           addressFromPicker: addressFromPicker!,
-                          typeId: widget.typeModel.id,
+                          typeId: widget.typeModel!.id,
                           lat: latitude!,
                           lng: longitude!,
                         );
@@ -302,7 +341,12 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
 }
 
 class FirstStepModel {
-  final String nickName, bookingType, address, city, addressFromPicker,description;
+  final String nickName,
+      bookingType,
+      address,
+      city,
+      addressFromPicker,
+      description;
   final int typeId;
   final double lat, lng;
 

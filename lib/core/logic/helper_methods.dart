@@ -29,6 +29,9 @@ Future openUrl(url) async {
     showMessage("LocaleKeys.someThingWrongWithUrl.tr()");
   }
 }
+void pop() {
+  Navigator.pop(navigatorKey.currentContext!);
+}
 
 Future<SignInResultGoogle?> signInWithGoogle() async {
   try {

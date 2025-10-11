@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/design/app_image.dart';
 import '../../../../../core/design/image_picker.dart';
 import '../../../../../core/logic/cache_helper.dart';
+import '../../../../../core/logic/helper_methods.dart';
+import '../../../../edit_profile/view.dart';
 
 class ItemPhoto extends StatefulWidget {
   final bool canEdit;
@@ -35,7 +37,7 @@ class _ItemPhotoState extends State<ItemPhoto> {
 
           },);
         }else{
-          //navigateTo(EditProfileView());
+          navigateTo(EditProfileView());
         }
 
       },

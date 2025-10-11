@@ -61,7 +61,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     setState(() => _showShapes = true);
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
-      CacheHelper.isAuthed ? navigateTo(HomeNavView()) : navigateTo(LoginView());
+      CacheHelper.isAuthed ?
+
+      navigateTo(HomeNavView(),keepHistory: false)
+          : navigateTo(LoginView(),keepHistory: false);
     }
   }
 

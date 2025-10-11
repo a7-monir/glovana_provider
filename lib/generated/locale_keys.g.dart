@@ -225,5 +225,13 @@ abstract class  LocaleKeys {
   static const basicInformation = 'basicInformation';
   static const details = 'details';
   static const photos = 'photos';
+  static const stopReceivingAllOrders = 'stopReceivingAllOrders';
+  static const off = 'off';
+  static const on = 'on';
+  static const submitDeactivationRequest = 'submitDeactivationRequest';
+  static const deleteAccount = 'deleteAccount';
+  static const areYouSureYouWantDeleteAccount = 'areYouSureYouWantDeleteAccount';
+  static const yesDelete = 'yesDelete';
+  static const completeData = 'completeData';
 
 }

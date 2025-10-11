@@ -61,6 +61,8 @@ class CacheHelper {
 
   static int get id {
     return _ref.getInt("id") ?? 0;
+  } static int get activate {
+    return _ref.getInt("activate") ?? 0;
   }
 
   static int get balance {
@@ -151,6 +153,8 @@ class CacheHelper {
     await _ref.setString("referralCode", model.referralCode);
     await _ref.setString("photo", model.photo);
     await _ref.setInt("balance", model.balance.toInt());
+    await _ref.setInt("balance", model.balance.toInt());
+    await _ref.setInt("activate", model.activate.toInt());
   }
 
   static Future<void> logOut() async {

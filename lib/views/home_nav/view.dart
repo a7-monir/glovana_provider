@@ -74,19 +74,22 @@ class _HomeNavViewState extends State<HomeNavView> {
           ],
         ),
         child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(
-              title.length,
-                  (index) => InkWell(
-                onTap: () {
-                  _selectedIndex = index;
-                  setState(() {});
-                },
-                child: NavBarItem(
-                  title: title[index].tr(),
-                  icon: icons[index],
-                  isActive: _selectedIndex == index,
+          child: Padding(
+            padding:  EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(
+                title.length,
+                    (index) => InkWell(
+                  onTap: () {
+                    _selectedIndex = index;
+                    setState(() {});
+                  },
+                  child: NavBarItem(
+                    title: title[index].tr(),
+                    icon: icons[index],
+                    isActive: _selectedIndex == index,
+                  ),
                 ),
               ),
             ),

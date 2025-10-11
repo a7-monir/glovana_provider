@@ -11,6 +11,7 @@ import 'package:glovana_provider/core/design/app_loading.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
 import 'package:glovana_provider/features/provider_profile/bloc.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
+import 'package:glovana_provider/views/auth/signup/first_step.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kiwi/kiwi.dart';
 
@@ -651,7 +652,56 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
     return Scaffold(
       extendBody: true,
       appBar: MainAppBar(title: LocaleKeys.providerType.tr()),
-      body: DefaultTabController(
+      body: BlocConsumer(
+      bloc: bloc,
+      buildWhen: (previous, current) =>
+      current is GetProviderProfileSuccessState ||
+          current is GetProviderProfileFailedState ||
+          current is GetProviderProfileLoadingState,
+      listener: (context, state) {
+        if (state is GetProviderProfileSuccessState) {
+          if (state.model.providerTypes.isNotEmpty) {
+            final model = state.model.providerTypes.first;
+            nickNameController.text = model.name;
+            descriptionController.text = model.description;
+            latitude = model.lat;
+            longitude = model.lng;
+            addressFromPicker = model.address;
+            if (model.images.isNotEmpty) {
+              _imageFromApi = model.images.first.photoUrl;
+            }
+            if (model.galleries.isNotEmpty) {
+              for (var item in model.galleries) {
+                final url = item.photoUrl;
+                if (url.isNotEmpty) {
+                  _galleryFromApi.add(url);
+                }
+              }
+            }
+            if (model.identityPhoto.isNotEmpty) {
+              _identityPhotoApi = model.identityPhoto;
+            }
+            if (model.practiceLicense.isNotEmpty) {
+              _practicePhotoApi = model.practiceLicense;
+            }
+            loadAvailabilities(model.availabilities);
+            loadSelectedServicesFromResponse(model.providerServices);
+            servicesBloc.add(GetServicesEvent());
+            _pricePerHourController.text = model.pricePerHour
+                .toString();
+          }
+        }
+      },
+  builder: (context, state) {
+        if(state is GetProviderProfileSuccessState&&state.model.providerTypes.isEmpty){
+          return Center(
+            child: AppButton(text: LocaleKeys.completeData.tr(),
+            isSecondary: false,
+              onPress: () => navigateTo(FirstStepSignUpView()),
+            ),
+          );
+        }
+    return DefaultTabController(
         length: 3,
         initialIndex: selectedIndex,
         child: Padding(
@@ -696,46 +746,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                 ],
               ),
 
-              BlocConsumer(
-                bloc: bloc,
-                buildWhen: (previous, current) =>
-                    current is GetProviderProfileSuccessState ||
-                    current is GetProviderProfileFailedState ||
-                    current is GetProviderProfileLoadingState,
-                listener: (context, state) {
-                  if (state is GetProviderProfileSuccessState) {
-                    if (state.model.providerTypes.isNotEmpty) {
-                      final model = state.model.providerTypes.first;
-                      nickNameController.text = model.name;
-                      descriptionController.text = model.description;
-                      latitude = model.lat;
-                      longitude = model.lng;
-                      addressFromPicker = model.address;
-                      if (model.images.isNotEmpty) {
-                        _imageFromApi = model.images.first.photoUrl;
-                      }
-                      if (model.galleries.isNotEmpty) {
-                        for (var item in model.galleries) {
-                          final url = item.photoUrl;
-                          if (url.isNotEmpty) {
-                            _galleryFromApi.add(url);
-                          }
-                        }
-                      }
-                      if (model.identityPhoto.isNotEmpty) {
-                        _identityPhotoApi = model.identityPhoto;
-                      }
-                      if (model.practiceLicense.isNotEmpty) {
-                        _practicePhotoApi = model.practiceLicense;
-                      }
-                      loadAvailabilities(model.availabilities);
-                      loadSelectedServicesFromResponse(model.providerServices);
-                      servicesBloc.add(GetServicesEvent());
-                      _pricePerHourController.text=model.pricePerHour.toString();
-                    }
-                  }
-                },
-                builder: (context, state) {
+              Builder(
+
+                builder: (context) {
                   if (state is GetProviderProfileFailedState) {
                     return Expanded(
                       child: AppFailed(
@@ -1014,7 +1027,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                       bloc: servicesBloc,
                                       listener: (context, serviceState) {
                                         print('+++++++++++++++');
-                                        if (serviceState is GetServicesSuccessState) {
+                                        if (serviceState
+                                            is GetServicesSuccessState) {
                                           allServices = servicesBloc.list;
                                           print('+++++++++++++++');
                                           print(allServices.length);
@@ -1022,7 +1036,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                         }
                                       },
                                       builder: (context, serviceState) {
-                                        if (serviceState is GetServicesFailedState) {
+                                        if (serviceState
+                                            is GetServicesFailedState) {
                                           return AppFailed(
                                             response: serviceState.response,
                                             isSmallShape: true,
@@ -1153,14 +1168,21 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                     SizedBox(height: 32.h),
                                     Text(
                                       state
-                                          .model
-                                          .providerTypes
-                                          .first
-                                          .type
-                                          .bookingType != "hourly"
-                                          ? LocaleKeys.setTheMaximumNumberOfBookingsPerHour.tr()
-                                          : LocaleKeys.howMuchDoYouChargePerHour.tr(),
-                                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
+                                                  .model
+                                                  .providerTypes
+                                                  .first
+                                                  .type
+                                                  .bookingType !=
+                                              "hourly"
+                                          ? LocaleKeys
+                                                .setTheMaximumNumberOfBookingsPerHour
+                                                .tr()
+                                          : LocaleKeys.howMuchDoYouChargePerHour
+                                                .tr(),
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                     SizedBox(height: 16.h),
                                     Center(
@@ -1172,20 +1194,24 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             child: AppInput(
                                               withShadow: false,
                                               marginBottom: 0,
-                                              controller: _pricePerHourController,
-                                              keyboardType: TextInputType.number,
-                                              validator: (v) => InputValidator.requiredValidator(
-                                                value: v!,
-                                                itemName: 'price',
-                                              ),
+                                              controller:
+                                                  _pricePerHourController,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              validator: (v) =>
+                                                  InputValidator.requiredValidator(
+                                                    value: v!,
+                                                    itemName: 'price',
+                                                  ),
                                             ),
                                           ),
-                                          if(state
-                                              .model
-                                              .providerTypes
-                                              .first
-                                              .type
-                                              .bookingType == "hourly")...[
+                                          if (state
+                                                  .model
+                                                  .providerTypes
+                                                  .first
+                                                  .type
+                                                  .bookingType ==
+                                              "hourly") ...[
                                             SizedBox(width: 8.w),
 
                                             Text(
@@ -1193,12 +1219,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 10,
-                                                fontFamily: getFontFamily(FontFamilyType.inter),
+                                                fontFamily: getFontFamily(
+                                                  FontFamilyType.inter,
+                                                ),
                                                 color: Colors.black,
                                               ),
                                             ),
-                                          ]
-
+                                          ],
                                         ],
                                       ),
                                     ),
@@ -1534,7 +1561,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
             ],
           ),
         ),
-      ),
+      );
+  },
+),
     );
   }
 }

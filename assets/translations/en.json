@@ -221,9 +221,13 @@
   "yourApplicationIsBeingProcessed": "Your application is being processed and your information is under review. You will receive the result within 48 hours.",
   "basicInformation": "basic information",
   "details": "details",
-  "photos": "photos"
-
-
-
-
+  "photos": "photos",
+  "stopReceivingAllOrders": "Stop receiving all orders during holidays or special occasions. You can reactivate later",
+  "off": "off",
+  "on": "on",
+  "submitDeactivationRequest":"Submit Deactivation Request",
+  "deleteAccount": "Delete Account",
+  "areYouSureYouWantDeleteAccount": "Are you sure you want delete account?",
+  "yesDelete": "Yes! Delete",
+  "completeData":"Complete Data"
 }

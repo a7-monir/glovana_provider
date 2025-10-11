@@ -7,6 +7,7 @@ import 'package:glovana_provider/views/Appointment_history/view.dart';
 import 'package:glovana_provider/views/payment_report/view.dart';
 import 'package:glovana_provider/views/provider_type/view.dart';
 import 'package:glovana_provider/views/ratings/view.dart';
+import 'package:glovana_provider/views/setting/view.dart';
 
 import '../../../../core/design/app_image.dart';
 import '../../../../core/logic/cache_helper.dart';
@@ -125,14 +126,8 @@ class ProfileView extends StatelessWidget {
               _ItemProfile(
                 image: 'settings.png',
                 title: LocaleKeys.settings.tr(),
-                // onTap:
-                //     () => showModalBottomSheet(
-                //       context: context,
-                //       builder:
-                //           (context) => ChooseLanguageSheet(
-                //             selectedLang: CacheHelper.lang,
-                //           ),
-                //     ),
+                onTap:
+                    () => navigateTo(SettingsView()),
               ),
               _ItemProfile(
                 image: 'logout.png',
