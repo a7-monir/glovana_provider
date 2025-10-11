@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_colors.dart';
+import 'package:glovana_provider/core/design/app_input.dart';
 import 'package:glovana_provider/core/design/constants.dart';
 import 'package:glovana_provider/core/design/custom_text_field.dart';
 import 'package:glovana_provider/core/design/space_widget.dart';
@@ -97,10 +99,19 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
   }
 
   // ---------- auth + storage ----------
+  // Future<void> _ensureSignedIn() async {
+  //   final auth = FirebaseAuth.instance;
+  //   if (auth.currentUser == null) {
+  //     await auth.signInAnonymously();
+  //   }
+  // }
   Future<void> _ensureSignedIn() async {
-    final auth = FirebaseAuth.instance;
-    if (auth.currentUser == null) {
-      await auth.signInAnonymously();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print("🔴 User NOT signed in. Signing in anonymously...");
+      await FirebaseAuth.instance.signInAnonymously();
+    } else {
+      print("✅ Already signed in: ${user.uid}");
     }
   }
 
@@ -110,15 +121,35 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
   }
 
   Future<String> _uploadFile(
-    File file,
-    String path, {
-    String? contentType,
-  }) async {
-    await _ensureSignedIn();
-    final ref = FirebaseStorage.instance.ref().child(path);
-    final meta = SettableMetadata(contentType: contentType);
-    final snap = await ref.putFile(file, meta);
-    return await snap.ref.getDownloadURL();
+      File file,
+      String path, {
+        String? contentType,
+      }) async {
+    try {
+      await _ensureSignedIn();
+
+      print("File exists? ${await file.exists()}");
+      print("File size: ${await file.length()} bytes");
+      print("Uploading to path: $path");
+
+      final ref = FirebaseStorage.instance.ref(path);
+
+      final meta = SettableMetadata(
+        contentType: contentType ?? 'application/octet-stream',
+      );
+
+      final uploadTask = await ref.putFile(file, meta);
+
+      print("✅ Upload success, getting URL...");
+      final url = await ref.getDownloadURL();
+      print("✅ Download URL: $url");
+
+      return url;
+    } catch (e, s) {
+      print("❌ Upload failed: $e");
+      print(s);
+      rethrow;
+    }
   }
 
   // ---------- sending ----------
@@ -148,6 +179,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
     final fileName = DateTime.now().millisecondsSinceEpoch.toString();
     final path =
         'chats/${widget.providerId}_${widget.userId}/images/$fileName$ext';
+    print("Uploading to path: $path"); // ✅ سطر التتبع هنا قبل الرفع
     final ct = (ext == '.png') ? 'image/png' : 'image/jpeg';
 
     final url = await _uploadFile(image, path, contentType: ct);
@@ -174,6 +206,8 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
     final fileName = DateTime.now().millisecondsSinceEpoch.toString();
     final path =
         'chats/${widget.providerId}_${widget.userId}/audio/$fileName$ext';
+
+
 
     final ct = switch (ext) {
       '.aac' => 'audio/aac',
@@ -305,7 +339,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                   ),
                   const HeightSpace(8),
                   AudioPlayerWidget(
-                    backgroundColor: AppColors.primaryColor,
+                    backgroundColor: AppTheme.primary,
                     progressBarColor: Colors.white,
                     audioType: AudioType.directFile,
                     audioPath: _audioFile!.path,
@@ -316,17 +350,12 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
           ),
 
         Container(
-          padding: EdgeInsets.only(
-            top: 16.sp,
-            right: 16.sp,
-            left: 16.sp,
-            bottom: 28.sp,
-          ),
+        padding: EdgeInsets.symmetric(horizontal: 12.w,vertical: 12.h),
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.06),
+                color: Colors.black.withValues(alpha: 0.06),
                 spreadRadius: 5,
                 blurRadius: 10,
                 offset: const Offset(0, 3),
@@ -334,14 +363,17 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
             ],
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: CustomTextField(
-                  hintText:
+                child: AppInput(
+                  marginBottom: 0,
+                  hint:
                       'Message ..', // plain text avoids missing-key warning
                   controller: _messageController,
                   onChanged: (_) => setState(() {}),
-                  onSubmit: (_) async {
+                  onFieldSubmitted: (_) async {
                     if (_sending) return;
                     if (_imageFile != null || _audioFile != null)
                       return; // text-only if no attachments
@@ -350,13 +382,13 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                       await _sendText();
                       _clearAll();
                     } catch (e) {
-                      _toast('Send failed: $e');
+                      _toast('1111Send failed: $e');
                     } finally {
                       setState(() => _sending = false);
                     }
                   },
-                  borderRadius: 15,
-                  suffixIcon: SizedBox(
+
+                  suffix: SizedBox(
                     width: w * 0.22,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -366,9 +398,9 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                             if (_sending) return;
                             await _pickImage();
                           },
-                          child: const Icon(
+                          child:  Icon(
                             Icons.image,
-                            color: AppColors.primaryColor,
+                            color: AppTheme.primary,
                             size: 26,
                           ),
                         ),
@@ -377,7 +409,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+               SizedBox(width: 16.w),
 
               if (!_hasAnythingToSend)
                 VoiceRecorderWidget(
@@ -392,7 +424,9 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                     setState(() => _audioFile = audio);
                   },
                   onError: (err) => _toast(err),
-                  backgroundColor: AppColors.primaryColor,
+
+                  backgroundColor: AppTheme.primary,
+
                 )
               else
                 InkWell(
@@ -409,32 +443,25 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                       }
                       _clearAll();
                     } catch (e) {
-                      _toast('Send failed: $e');
+                      _toast('2222Send failed: $e');
+                      print("2222Send failed:$e");
                     } finally {
                       setState(() => _sending = false);
                     }
                   },
-                  child: Container(
-                    height: 46,
-                    width: 46,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primaryColor,
-                    ),
-                    child: _sending
-                        ? const Padding(
-                            padding: EdgeInsets.all(10),
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(
-                            Icons.send_sharp,
-                            color: Colors.white,
-                            size: 24,
+                  child: _sending
+                      ?  Padding(
+                          padding: EdgeInsets.all(10),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.primary,
                           ),
-                  ),
+                        )
+                      :  Icon(
+                          Icons.send_sharp,
+                          color: AppTheme.primary,
+                          size: 24,
+                        ),
                 ),
             ],
           ),

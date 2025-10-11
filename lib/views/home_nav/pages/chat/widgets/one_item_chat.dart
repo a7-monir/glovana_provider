@@ -68,33 +68,14 @@ class OnePersonChatItem extends StatelessWidget {
                 ),
               ],
             ),
-            Column(
-              children: [
-                room.lastMessageDate == null
-                    ? SizedBox.shrink()
-                    : Text(
-                        DateFormat('yyyy-MM-dd – hh:mm a')
-                            .format(room.lastMessageDate!.toDate()),
-                        style: TextStyle(
-                            fontSize: 12.sp, fontWeight: FontWeight.normal),
-                      ),
-                 SizedBox(width: 2.w),
-                // Container(
-                //   height: 20.sp,
-                //   width: 20.sp,
-                //   alignment: Alignment.center,
-                //   padding: EdgeInsets.all(3.sp),
-                //   decoration: const BoxDecoration(
-                //     shape: BoxShape.circle,
-                //     color: AppColors.primaryColor,
-                //   ),
-                //   child: Text(
-                //     "3",
-                //     style: TextStyle(fontSize: 16.sp, color: Colors.white),
-                //   ),
-                // )
-              ],
-            )
+            room.lastMessageDate == null
+                ? SizedBox.shrink()
+                : Text(
+                    DateFormat('yyyy-MM-dd – hh:mm a')
+                        .format(room.lastMessageDate!.toDate()),
+                    style: TextStyle(
+                        fontSize: 12.sp, fontWeight: FontWeight.normal),
+                  )
           ],
         ),
       ),

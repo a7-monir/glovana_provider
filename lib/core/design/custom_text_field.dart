@@ -43,7 +43,7 @@ class CustomTextField extends StatelessWidget {
         autofocus: false,
         readOnly: isReadOnly ?? false,
         obscureText: isPassword ?? false,
-        cursorColor: AppColors.primaryColor,
+
         onChanged: onChanged,
         onFieldSubmitted: onSubmit,
         onTap: onTap,
@@ -62,14 +62,14 @@ class CustomTextField extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? 30.r),
             borderSide: const BorderSide(
-              color: AppColors.primaryColor,
+
               width: 1.3,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? 30.r),
             borderSide: const BorderSide(
-              color: AppColors.primaryColor,
+
               width: 1,
             ),
           ),

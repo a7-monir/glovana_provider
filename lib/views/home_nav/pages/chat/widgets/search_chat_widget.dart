@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/design/app_input.dart';
 import 'package:glovana_provider/core/design/constants.dart';
 import 'package:glovana_provider/core/design/custom_text_field.dart';
 
@@ -23,20 +24,15 @@ class _SearchChatWidgetState extends State<SearchChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CustomTextField(
-          controller: _searchController,
-          width: Constants.getwidth(context) * 0.9,
-          prefixIcon: const Icon(Icons.search, color: Colors.grey),
-          borderRadius: 8.r,
-          hintText: "search of what you want",
-          onChanged: (value) {
-            widget.onSearchChanged(value);
-          },
-        ),
-      ],
+    return AppInput(
+      controller: _searchController,
+
+      prefix: const Icon(Icons.search, color: Colors.grey),
+
+      hint: "search of what you want",
+      onChanged: (value) {
+        widget.onSearchChanged(value);
+      },
     );
   }
 }

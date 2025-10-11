@@ -23,16 +23,18 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.debug, // use AndroidProvider.playIntegrity for release
-    appleProvider: AppleProvider.debug,     // use AppleProvider.deviceCheck/appAttest for release
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+
+  // await FirebaseAppCheck.instance.activate(
+  //   androidProvider: AndroidProvider.debug,
+  //   appleProvider: AppleProvider.debug,
+  // );
+
+  //FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
   await GlobalNotification.instance.setUpFirebase();
 
   await EasyLocalization.ensureInitialized();

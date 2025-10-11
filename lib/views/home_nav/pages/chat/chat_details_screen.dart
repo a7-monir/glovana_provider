@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/design/app_styles.dart';
 import 'package:glovana_provider/core/design/space_widget.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/widgets/reciever_message_item.dart';
@@ -76,60 +77,112 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     final currentProviderId = CacheHelper.id.toString();
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        toolbarHeight: 90.h,
-        elevation: 1,
-        leadingWidth: 300.w,
-        leading: Padding(
-          padding: EdgeInsetsDirectional.only(start: 8.sp),
-          child: Row(
-            children: [
-              InkWell(
-                onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.arrow_back_ios, color: Colors.black),
-              ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(50.r),
-                child: (widget.userImage != null &&
-                    widget.userImage!.isNotEmpty &&
-                    widget.userImage != 'null')
-                    ? CachedNetworkImage(
-                  imageUrl: widget.userImage!,
-                  height: 50.sp,
-                  width: 50.sp,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => const CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                  errorWidget: (context, url, error) => const CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                )
-                    : const CircleAvatar(
-                  radius: 25,
+
+      appBar: MainAppBar(
+        backgroundColor: Color(0xffFFE9D8),
+        titleWidget: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(50.r),
+              child: (widget.userImage != null &&
+                  widget.userImage!.isNotEmpty &&
+                  widget.userImage != 'null')
+                  ? CachedNetworkImage(
+                imageUrl: widget.userImage!,
+                height: 50.sp,
+                width: 50.sp,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const CircleAvatar(
                   backgroundColor: Colors.grey,
                   child: Icon(Icons.person, color: Colors.white),
                 ),
-              ),
-              const WidthSpace(8),
-              Flexible(
-                child: Text(
-                  widget.userName ?? '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppStyles.black18BoldStyle.copyWith(fontSize: 16.sp),
+                errorWidget: (context, url, error) => const CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  child: Icon(Icons.person, color: Colors.white),
                 ),
+              )
+                  : const CircleAvatar(
+                radius: 25,
+                backgroundColor: Colors.grey,
+                child: Icon(Icons.person, color: Colors.white),
               ),
-            ],
-          ),
+            ),
+            const WidthSpace(8),
+            Flexible(
+              child: Text(
+                widget.userName ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppStyles.black18BoldStyle.copyWith(fontSize: 16.sp),
+              ),
+            ),
+          ],
         ),
       ),
+
+      // AppBar(
+      //   backgroundColor: Colors.white,
+      //   toolbarHeight: 90.h,
+      //   elevation: 1,
+      //   leadingWidth: 300.w,
+      //   leading: Padding(
+      //     padding: EdgeInsetsDirectional.only(start: 8.sp),
+      //     child: Row(
+      //       children: [
+      //         InkWell(
+      //           onTap: () => Navigator.pop(context),
+      //           child: const Icon(Icons.arrow_back_ios, color: Colors.black),
+      //         ),
+      //         ClipRRect(
+      //           borderRadius: BorderRadius.circular(50.r),
+      //           child: (widget.userImage != null &&
+      //               widget.userImage!.isNotEmpty &&
+      //               widget.userImage != 'null')
+      //               ? CachedNetworkImage(
+      //             imageUrl: widget.userImage!,
+      //             height: 50.sp,
+      //             width: 50.sp,
+      //             fit: BoxFit.cover,
+      //             placeholder: (context, url) => const CircleAvatar(
+      //               backgroundColor: Colors.grey,
+      //               child: Icon(Icons.person, color: Colors.white),
+      //             ),
+      //             errorWidget: (context, url, error) => const CircleAvatar(
+      //               backgroundColor: Colors.grey,
+      //               child: Icon(Icons.person, color: Colors.white),
+      //             ),
+      //           )
+      //               : const CircleAvatar(
+      //             radius: 25,
+      //             backgroundColor: Colors.grey,
+      //             child: Icon(Icons.person, color: Colors.white),
+      //           ),
+      //         ),
+      //         const WidthSpace(8),
+      //         Flexible(
+      //           child: Text(
+      //             widget.userName ?? '',
+      //             maxLines: 1,
+      //             overflow: TextOverflow.ellipsis,
+      //             style: AppStyles.black18BoldStyle.copyWith(fontSize: 16.sp),
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
       body: Column(
         children: [
+          Container(
+            height: 20.h,
+            decoration: BoxDecoration(
+              color: Color(0xffFFE9D8),
+              borderRadius: BorderRadiusDirectional.only(
+                bottomStart: Radius.circular(30.r),
+                bottomEnd: Radius.circular(30.r),
+              ),
+            ),
+          ),
           StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
             stream: ChatUtils.getRoomMessages(widget.userId, widget.providerId),
             builder: (context, snapshot) {

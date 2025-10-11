@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_colors.dart';
 import 'package:glovana_provider/core/design/constants.dart';
-import 'package:glovana_provider/core/logic/endpoints.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/models/message_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:voice_note_kit/player/audio_player_widget.dart';
@@ -33,8 +33,8 @@ class SenderMsgItemWidget extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 8.sp),
                 width: Constants.getwidth(context),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryColor,
+                decoration:  BoxDecoration(
+                  color: AppTheme.primary,
                   borderRadius: BorderRadius.only(
                     bottomRight: Radius.circular(8),
                     bottomLeft: Radius.circular(8),
@@ -65,7 +65,7 @@ class SenderMsgItemWidget extends StatelessWidget {
                 )
                     : message.type == "VOICE"
                     ? AudioPlayerWidget(
-                  backgroundColor: AppColors.primaryColor,
+                  backgroundColor: AppTheme.primary,
                   progressBarColor: Colors.white,
                   audioType: AudioType.url,
                   playerStyle: PlayerStyle.style1,
@@ -114,5 +114,5 @@ String resolveMediaUrl(String content) {
   if (content.startsWith('http://') || content.startsWith('https://')) {
     return content;
   }
-  return ApiEndPoints.imagesUrl + content;
+  return AppTheme.imageUrl + content;
 }
