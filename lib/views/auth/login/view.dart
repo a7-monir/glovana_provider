@@ -70,9 +70,9 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer(
-      bloc: socialLoginBloc,
-      listener: (context, socialState) {
-        if (socialState is SocialLoginSuccessState) {
+      bloc: bloc,
+      listener: (context, state) async {
+        if (state is LoginSuccessState) {
           navigateTo(HomeNavView(), keepHistory: false);
         }
       },

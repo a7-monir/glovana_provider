@@ -53,9 +53,9 @@ class OnePersonChatItem extends StatelessWidget {
                             width: 150.w,
                             child: Text(
                               room.lastMessageType == "IMAGE"
-                                  ? "photo".tr()
+                                  ? "photo"
                                   : room.lastMessageType == "VOICE"
-                                      ? "voice".tr()
+                                      ? "voice"
                                       : room.lastMessage ?? "",
                               style: TextStyle(
                                   fontSize: 12.sp,

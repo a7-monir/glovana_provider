@@ -55,60 +55,39 @@ class ReceiverMsgItemWidget extends StatelessWidget {
                 ),
                 child: message.type == "IMAGE"
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8.r),
-                        child: CachedNetworkImage(
-                          imageUrl:
-                              ApiEndPoints.imagesUrl +
-                              message.content.toString(),
-                          height: Constants.getHeight(context) * 0.2,
-                          width: 30,
-                          fit: BoxFit.fill,
-                        ),
-                      )
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: CachedNetworkImage(
+                    imageUrl: resolveMediaUrl(message.content.toString()),
+                    height: Constants.getHeight(context) * 0.2,
+                    width: 30,
+                    fit: BoxFit.cover,
+                  ),
+                )
                     : message.type == "FILE"
                     ? InkWell(
-                        onTap: () {
-                          launchUrl(Uri.parse(message.content.toString()));
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.file_copy_outlined,
-                              size: 30,
-                              color: Colors.black,
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "open_file".tr(),
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
+                  onTap: () => launchUrl(Uri.parse(resolveMediaUrl(message.content.toString()))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.file_copy_outlined, size: 30, color: Colors.black),
+                      const SizedBox(width: 10),
+                      Text("open_file", style: TextStyle(fontSize: 16.sp, color: Colors.black)),
+                    ],
+                  ),
+                )
                     : message.type == "VOICE"
                     ? AudioPlayerWidget(
-                        backgroundColor: AppColors.primaryColor,
-                        progressBarColor: Colors.white,
-                        audioType: AudioType.url,
-                        playerStyle: PlayerStyle.style1,
-                        textDirection: Constants.lang == "en"
-                            ? ui.TextDirection.ltr
-                            : ui.TextDirection.rtl,
-                        audioPath:
-                            ApiEndPoints.imagesUrl + message.content.toString(),
-                      )
+                  backgroundColor: AppColors.primaryColor,
+                  progressBarColor: Colors.white,
+                  audioType: AudioType.url,
+                  playerStyle: PlayerStyle.style1,
+                  textDirection: Constants.lang == "en" ? ui.TextDirection.ltr : ui.TextDirection.rtl,
+                  audioPath: resolveMediaUrl(message.content.toString()),
+                )
                     : Text(
-                        message.content.toString(),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
+                  message.content.toString(),
+                  style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400),
+                ),
               ),
               const SizedBox(height: 6),
               Text(
@@ -128,4 +107,10 @@ class ReceiverMsgItemWidget extends StatelessWidget {
       ],
     );
   }
+}
+String resolveMediaUrl(String content) {
+  if (content.startsWith('http://') || content.startsWith('https://')) {
+    return content;
+  }
+  return ApiEndPoints.imagesUrl + content;
 }

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,16 +8,14 @@ import '../../../core/logic/dio_helper.dart';
 import '../../../core/logic/helper_methods.dart';
 import '../../core/logic/cache_helper.dart';
 import '../../core/logic/firebase_notifications.dart';
-import '../../generated/locale_keys.g.dart';
 
 part 'events.dart';
-
 part 'model.dart';
-
 part 'states.dart';
 
 class LoginBloc extends Bloc<LoginEvents, LoginStates> {
   final DioHelper _dio;
+
   AutovalidateMode validateMode = AutovalidateMode.disabled;
   final formKey = GlobalKey<FormState>();
 
@@ -26,33 +23,50 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
     on<LoginEvent>(_sendData);
   }
 
-  final phoneController = TextEditingController(text: kDebugMode ? "0799966613" : null);
-  final passwordController = TextEditingController(text: kDebugMode ? "123456789" : null);
+  final phoneController = TextEditingController(text: kDebugMode ? '0799966613' : null);
+  final passwordController = TextEditingController(text: kDebugMode ? '123456789' : null);
+
   User? model;
   String? token;
+
   bool passwordValid = true;
   bool phoneValid = true;
 
-  void _sendData(LoginEvent event, Emitter<LoginStates> emit) async {
+  Future<void> _sendData(LoginEvent event, Emitter<LoginStates> emit) async {
     emit(LoginLoadingState());
-    final response = await _dio.send(
-      "user/login",
-      data: {
-        "phone": phoneController.text,
-        'password': passwordController.text,
-        "user_type": "provider",
+    try {
+      final fcm = await GlobalNotification.getFcmToken();
 
-        "fcm_token": await GlobalNotification.getFcmToken(),
-      },
-    );
-    if (response.isSuccess) {
-      model = UserData.fromJson(response.data).userModel.user;
-      token = UserData.fromJson(response.data).userModel.token;
-      CacheHelper.setToken(token!);
-      CacheHelper.saveData(model!);
+      final response = await _dio.send(
+        'user/login',
+        data: {
+          'phone': phoneController.text.trim(),
+          'password': passwordController.text,
+          'user_type': 'provider',
+          'fcm_token': fcm,
+        },
+      );
+
+      if (!response.isSuccess) {
+        emit(LoginFailedState(msg: response.msg, statusCode: response.statusCode));
+        return;
+      }
+
+      final userData = UserData.fromJson(response.data);
+      final userModel = userData.userModel;
+
+      model = userModel.user;
+      token = userModel.token;
+
+      await CacheHelper.setToken(token ?? '');
+      await CacheHelper.saveData(model!);
+
+      phoneController.clear();
+      passwordController.clear();
+
       emit(LoginSuccessState(msg: response.msg));
-    } else {
-      emit(LoginFailedState(msg: response.msg, statusCode: response.statusCode));
+    } catch (e) {
+      emit(LoginFailedState(msg: e.toString(), statusCode: 0));
     }
   }
 }

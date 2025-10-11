@@ -17,9 +17,34 @@ import 'features/service_locator.dart';
 import 'features/toggle_lang/bloc.dart';
 import 'firebase_options.dart';
 
-void main() async {
+import 'package:firebase_app_check/firebase_app_check.dart';
+
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await init();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.debug, // use AndroidProvider.playIntegrity for release
+    appleProvider: AppleProvider.debug,     // use AppleProvider.deviceCheck/appAttest for release
+  );
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  await GlobalNotification.instance.setUpFirebase();
+
+  await EasyLocalization.ensureInitialized();
+  await CacheHelper.init();
+  Bloc.observer = MyBlocObserver();
+  initKiwi();
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+  ));
 
   runApp(
     EasyLocalization(
@@ -32,31 +57,8 @@ void main() async {
   );
 }
 
-Future<void> init() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ),
-  );
-  await EasyLocalization.ensureInitialized();
-  await CacheHelper.init();
-  Bloc.observer = MyBlocObserver();
-  initKiwi();
-}
-
-Future<void> initFirebase() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await GlobalNotification().setUpFirebase();
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-}
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -71,7 +73,7 @@ class _MyAppState extends State<MyApp> {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return BlocConsumer(
+        return BlocConsumer<ToggleLangBloc, ToggleLangStates>(
           bloc: langBloc,
           listener: (context, state) {
             if (state is ToggleLangState) {
