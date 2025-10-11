@@ -10,7 +10,6 @@ import 'package:glovana_provider/views/home_nav/pages/profile/view.dart';
 import '../../core/app_theme.dart';
 import '../../core/design/app_image.dart';
 import '../../generated/locale_keys.g.dart';
-import '../../main.dart';
 
 
 class HomeNavView extends StatefulWidget {
@@ -33,7 +32,6 @@ class _HomeNavViewState extends State<HomeNavView> {
       const ChatsView(),
       const ProfileView(),
     ];
-    initFirebase();
     if (widget.pageIndex != null && widget.pageIndex != _selectedIndex) {
       setState(() {
         _selectedIndex = widget.pageIndex!;
