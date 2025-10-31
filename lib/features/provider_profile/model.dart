@@ -45,7 +45,7 @@ class Provider {
     nameOfManager = json['name_of_manager']??'';
     countryCode = json['country_code']??'';
     phone = json['phone']??0;
-    email = json['email']??0;
+    email = json['email']??'';
     photoOfManager = json['photo_of_manager']??'';
     fcmToken = json['fcm_token']??'';
     balance = json['balance']??0;
@@ -66,8 +66,8 @@ class ProviderTypes {
   late final int activate;
   late final String name;
   late final String description;
-  late final double lat;
-  late final double lng;
+  late final num lat;
+  late final num lng;
   late final String practiceLicense;
   late final String identityPhoto;
   late final String address;

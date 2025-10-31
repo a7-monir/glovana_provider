@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/views/auth/done_complete_profile.dart';
 
 import '../core/app_theme.dart';
 import '../core/design/app_image.dart';
@@ -8,7 +9,6 @@ import '../core/logic/helper_methods.dart';
 import 'auth/login/view.dart';
 import 'home_nav/view.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -16,7 +16,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late AnimationController _bgController;
   late Animation<Color?> _bgColor;
 
@@ -30,7 +31,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.initState();
 
     // Background color animation
-    _bgController = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _bgController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
     _bgColor = ColorTween(
       begin: AppTheme.primary, // dark red
       end: AppTheme.bgLightColor, // splash background
@@ -61,10 +65,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     setState(() => _showShapes = true);
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
-      CacheHelper.isAuthed ?
-
-      navigateTo(HomeNavView(),keepHistory: false)
-          : navigateTo(LoginView(),keepHistory: false);
+      if (CacheHelper.isAuthed) {
+        if (CacheHelper.activate == 3) {
+          navigateTo(DoneCompleteProfileView(), keepHistory: false);
+        } else {
+          navigateTo(HomeNavView(), keepHistory: false);
+        }
+      } else {
+        navigateTo(LoginView(), keepHistory: false);
+      }
     }
   }
 
@@ -89,7 +98,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               AnimatedOpacity(
                 opacity: _showShapes ? 1 : 0,
                 duration: const Duration(seconds: 1),
-                child: Image.asset("assets/images/splash_bg.png", fit: BoxFit.cover),
+                child: Image.asset(
+                  "assets/images/splash_bg.png",
+                  fit: BoxFit.cover,
+                ),
               ),
               // Background shapes
               // Positioned.fill(
@@ -126,16 +138,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     AnimatedPositioned(
                       duration: const Duration(milliseconds: 1500),
                       curve: Curves.easeInOut,
-                      left:
-                          !_moveToRight
-                              ? screenWidth / 2 -
-                                  35
-                                      .w // center
-                              : !_moveBack
-                              ? screenWidth -
-                                  80
-                                      .w // full right
-                              : screenWidth / 2 - 170.w, // beside text
+                      left: !_moveToRight
+                          ? screenWidth / 2 -
+                                35
+                                    .w // center
+                          : !_moveBack
+                          ? screenWidth -
+                                80
+                                    .w // full right
+                          : screenWidth / 2 - 170.w, // beside text
                       child: Image.asset(
                         "assets/images/logo.png", // exported logo only
                         width: 67.h,

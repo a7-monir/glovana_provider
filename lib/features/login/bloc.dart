@@ -32,6 +32,7 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
   bool passwordValid = true;
   bool phoneValid = true;
 
+
   Future<void> _sendData(LoginEvent event, Emitter<LoginStates> emit) async {
     emit(LoginLoadingState());
     try {
@@ -57,6 +58,7 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
 
       model = userModel.user;
       token = userModel.token;
+
 
       await CacheHelper.setToken(token ?? '');
       await CacheHelper.saveData(model!);

@@ -664,8 +664,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
             final model = state.model.providerTypes.first;
             nickNameController.text = model.name;
             descriptionController.text = model.description;
-            latitude = model.lat;
-            longitude = model.lng;
+            latitude = model.lat.toDouble();
+            longitude = model.lng.toDouble();
             addressFromPicker = model.address;
             if (model.images.isNotEmpty) {
               _imageFromApi = model.images.first.photoUrl;
@@ -697,7 +697,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
           return Center(
             child: AppButton(text: LocaleKeys.completeData.tr(),
             isSecondary: false,
-              onPress: () => navigateTo(FirstStepSignUpView()),
+              onPress: () => navigateTo(FirstStepSignUpView(
+                fromRegister: false,
+              )),
             ),
           );
         }

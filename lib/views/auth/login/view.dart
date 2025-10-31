@@ -19,9 +19,11 @@ import '../components/choose_lang_item.dart';
 import '../components/have_account.dart';
 import '../components/social_buttons.dart';
 import '../components/with_section.dart';
+import '../done_complete_profile.dart';
 import '../signup/view.dart';
 
 part '../components/social_section.dart';
+
 part '../components/switch_button_section.dart';
 
 class LoginView extends StatefulWidget {
@@ -73,7 +75,11 @@ class _LoginViewState extends State<LoginView> {
       bloc: bloc,
       listener: (context, state) async {
         if (state is LoginSuccessState) {
-          navigateTo(HomeNavView(), keepHistory: false);
+          if (bloc.model!.activate == 3) {
+            navigateTo(DoneCompleteProfileView());
+          } else {
+            navigateTo(HomeNavView(), keepHistory: false);
+          }
         }
       },
       builder: (context, socialState) {
@@ -111,11 +117,10 @@ class _LoginViewState extends State<LoginView> {
                         inputType: InputType.password,
                         controller: bloc.passwordController,
                         isValid: bloc.passwordValid,
-                        validator:
-                            (v) => InputValidator.passwordValidator(
-                              v!,
-                              lengthRequired: true,
-                            ),
+                        validator: (v) => InputValidator.passwordValidator(
+                          v!,
+                          lengthRequired: true,
+                        ),
                       ),
                     ),
                     Padding(

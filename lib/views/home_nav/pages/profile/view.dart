@@ -43,9 +43,12 @@ class ProfileView extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 20.h),
+
+
+              if(CacheHelper.email.isNotEmpty)
               Container(
                 padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                margin: EdgeInsets.only(top: 20.h),
                 decoration: BoxDecoration(
                   color: Theme.of(context).canvasColor,
                   borderRadius: BorderRadius.circular(10.r),

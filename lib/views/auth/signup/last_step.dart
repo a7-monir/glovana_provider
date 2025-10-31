@@ -21,8 +21,9 @@ import '../done_complete_profile.dart';
 
 class LastStepSingUpView extends StatefulWidget {
   final SecondStepModel secondStepModel;
+  final bool isSalon;
 
-  const LastStepSingUpView({super.key, required this.secondStepModel});
+  const LastStepSingUpView({super.key, required this.secondStepModel, required this.isSalon});
 
   @override
   State<LastStepSingUpView> createState() => _LastStepSingUpViewState();
@@ -42,6 +43,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
     try {
       final pickedFile = await _picker.pickImage(
         source: ImageSource.gallery,
+        requestFullMetadata: false,
         maxWidth: 1000,
         maxHeight: 1000,
         imageQuality: 85,
@@ -60,6 +62,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   Future<void> _takePhoto() async {
     try {
       final pickedFile = await _picker.pickMultiImage(
+        requestFullMetadata:  false,
         maxWidth: 1000,
         maxHeight: 1000,
         imageQuality: 85,
@@ -81,6 +84,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   Future<void> _pickIdentityPhoto() async {
     try {
       final pickedFile = await _picker.pickImage(
+        requestFullMetadata: false,
         source: ImageSource.gallery,
         maxWidth: 1000,
         maxHeight: 1000,
@@ -102,6 +106,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   Future<void> _takeIdentityPhoto() async {
     try {
       final pickedFile = await _picker.pickImage(
+        requestFullMetadata: false,
         source: ImageSource.camera,
         maxWidth: 1000,
         maxHeight: 1000,
@@ -124,6 +129,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   Future<void> _pickPracticePhoto() async {
     try {
       final pickedFile = await _picker.pickImage(
+        requestFullMetadata:  false,
         source: ImageSource.gallery,
         maxWidth: 1000,
         maxHeight: 1000,
@@ -145,6 +151,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   Future<void> _takePracticePhoto() async {
     try {
       final pickedFile = await _picker.pickImage(
+        requestFullMetadata: false,
         source: ImageSource.camera,
         maxWidth: 1000,
         maxHeight: 1000,
@@ -389,30 +396,33 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
               ),
 
             SizedBox(height: 20.h),
-            Text(
-              LocaleKeys.commercialRegistration.tr(),
-              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
-            ),
-            SizedBox(height: 10.h),
-            if (_practicePhoto != null)
-              ItemImage(
-                image: _practicePhoto!.path,
-                onRemove: () {
-                  _practicePhoto = null;
-                  setState(() {});
-                },
+            if(widget.isSalon)...[
+              Text(
+                LocaleKeys.commercialRegistration.tr(),
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
               ),
-            if (_practicePhoto == null)
-              Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ItemPick(onTap: _pickPracticePhoto),
-                    SizedBox(width: 20.w),
-                    ItemTake(onTap: _takePracticePhoto),
-                  ],
+              SizedBox(height: 10.h),
+              if (_practicePhoto != null)
+                ItemImage(
+                  image: _practicePhoto!.path,
+                  onRemove: () {
+                    _practicePhoto = null;
+                    setState(() {});
+                  },
                 ),
-              ),
+              if (_practicePhoto == null)
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ItemPick(onTap: _pickPracticePhoto),
+                      SizedBox(width: 20.w),
+                      ItemTake(onTap: _takePracticePhoto),
+                    ],
+                  ),
+                ),
+            ],
+
 
             BlocConsumer(
               bloc: bloc,

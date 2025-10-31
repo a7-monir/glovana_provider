@@ -22,9 +22,9 @@ import '../../generated/locale_keys.g.dart';
 import '../location/view.dart';
 
 class AppointmentDetailsView extends StatefulWidget {
-  final Appointment model;
+   Appointment model;
 
-  const AppointmentDetailsView({super.key, required this.model});
+   AppointmentDetailsView({super.key, required this.model});
 
   @override
   State<AppointmentDetailsView> createState() => _AppointmentDetailsViewState();
@@ -160,12 +160,23 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder(
+    return BlocConsumer(
       // buildWhen: (previous, current) =>
       //     current is GetAppointmentDetailsSuccessState ||
       //     current is GetAppointmentDetailsFailedState ||
       //     current is GetAppointmentDetailsLoadingState,
       bloc: bloc,
+      listener: (context, state) {
+        if (state is GetAppointmentDetailsSuccessState){
+          print('++++++++++++++++++++++++++++++++');
+          print( widget.model.appointmentStatus.toString());
+          print(state.model.appointmentStatus.toString());
+          print( widget.model.appointmentStatus.toString());
+
+          widget.model=state.model;
+          print('++++++++++++++++++++++++++++++++');
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           appBar: MainAppBar(title: LocaleKeys.appointmentDetails.tr()),
@@ -474,18 +485,26 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
     if (currentStatus == 1) {
       // Pending
       actions = [
-        StatusAction(text: "reject".tr(), status: 5),
-        StatusAction(text: "accept".tr(), status: 2),
+        StatusAction(text: LocaleKeys.accept.tr(), status: 2),
+        StatusAction(text: LocaleKeys.reject.tr(), status: 5),
       ];
     } else if (currentStatus == 2) {
       // Accepted
       actions = [
-        StatusAction(text: "on_the_way_tr".tr(), status: 3),
-        StatusAction(text: "cancel".tr(), status: 5, ),
+        StatusAction(text: LocaleKeys.onTheWay.tr(), status: 3),
+        StatusAction(text: LocaleKeys.cancel.tr(), status: 5, ),
       ];
-    } else if (currentStatus == 6) {
+    }
+    else if (currentStatus == 3) {
+      // Accepted
+      actions = [
+        StatusAction(text: LocaleKeys.completed.tr(), status: 4),
+
+      ];
+    }
+    else if (currentStatus == 6) {
       // Work Started - Provider can only cancel, completion is handled by user
-      actions = [StatusAction(text: "cancel".tr(), status: 5)];
+      actions = [StatusAction(text: LocaleKeys.cancel.tr(), status: 5)];
     } else {
       // No actions for completed or cancelled appointments
       return const SizedBox.shrink();

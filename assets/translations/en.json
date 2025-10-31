@@ -229,5 +229,8 @@
   "deleteAccount": "Delete Account",
   "areYouSureYouWantDeleteAccount": "Are you sure you want delete account?",
   "yesDelete": "Yes! Delete",
-  "completeData":"Complete Data"
+  "completeData":"Complete Data",
+  "accept": "accept",
+  "reject": "reject",
+  "onTheWay": "on the way"
 }

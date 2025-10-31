@@ -1,10 +1,10 @@
 import 'dart:async';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:glovana_provider/core/app_theme.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../core/design/app_button.dart';
 import '../../core/logic/helper_methods.dart';
@@ -26,44 +26,33 @@ class LocationView extends StatefulWidget {
 
 class _LocationViewState extends State<LocationView> {
   late GoogleMapController googleMapController;
-  LatLng initialAddress = LatLng(31.963158, 35.930359);
-  String? currentAddressText;
-  Set<Marker> markers = {};
   final _controller = Completer<GoogleMapController>();
 
-  double zoom = 10;
-
-  Future<void> goToMyLocation({LatLng? location}) async {
-    googleMapController = await _controller.future;
-    if (location == null) {
-      final pos = await getCurrentLocation();
-
-      location = pos.latLang;
-      if (location != null) {
-        goTo(location);
-        await addMarkers(location);
-      }
-    } else {
-      goTo(location);
-      await addMarkers(location);
-    }
-  }
+  LatLng initialAddress = LatLng(31.963158, 35.930359);
+  LatLng? currentCenter;
+  String? currentAddressText;
+  double zoom = 14;
 
   @override
   void initState() {
     super.initState();
-    print(widget.initialLocation);
     if (widget.initialLocation != null) {
-      goToMyLocation(location: widget.initialLocation);
+      initialAddress = widget.initialLocation!;
     }
     Geolocator.getServiceStatusStream().listen((event) {
-      print("******");
-      print(event);
       if (event == ServiceStatus.enabled) {
         goToMyLocation();
       }
     });
+  }
 
+  Future<void> goToMyLocation() async {
+    googleMapController = await _controller.future;
+    final pos = await getCurrentLocation();
+    final location = pos.latLang;
+    if (location != null) {
+      goTo(location);
+    }
   }
 
   Future<void> goTo(LatLng location) async {
@@ -75,74 +64,97 @@ class _LocationViewState extends State<LocationView> {
     );
   }
 
-  Future<void> addMarkers(LatLng location) async {
-    print(zoom);
-    if (zoom < 14) {
-      await goTo(location);
-      setState(() {});
-    }
-    markers.add(Marker(markerId: const MarkerId("1"), position: location));
-
+  Future<void> updateAddress(LatLng location) async {
     final placeMarks = await placemarkFromCoordinates(
       location.latitude,
       location.longitude,
     );
     currentAddressText =
-        "${placeMarks.first.locality}${placeMarks.first.locality.toString().isNotEmpty ? " - " : ""}${placeMarks.first.subAdministrativeArea}";
+    "${placeMarks.first.locality ?? ''}${placeMarks.first.locality?.isNotEmpty == true ? " - " : ""}${placeMarks.first.subAdministrativeArea ?? ''}";
     setState(() {});
   }
-
-  List<MyAddressModel> locations = [];
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
-      body: GoogleMap(
-        markers: markers,
-        myLocationButtonEnabled: true,
-        myLocationEnabled: true,
-        onTap:  addMarkers,
-        onCameraMove: (position) {
-          zoom = position.zoom;
-        },
-        initialCameraPosition: CameraPosition(
-          target: initialAddress,
-          zoom: zoom,
-        ),
-        onMapCreated: _controller.complete,
-      ),
-      floatingActionButton:
-      widget.withButton
-          ? SizedBox(
-        width: double.infinity,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: AppButton(
-            onPress:
-            markers.isEmpty
-                ? null
-                : () {
-              Navigator.pop(
-                context,
-                MyAddressModel(
-                  location: markers.first.position,
-                  description: currentAddressText!,
-                ),
-              );
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          GoogleMap(
+            myLocationButtonEnabled: true,
+            myLocationEnabled: true,
+            initialCameraPosition: CameraPosition(
+              target: initialAddress,
+              zoom: zoom,
+            ),
+            onCameraMove: (position) {
+              currentCenter = position.target;
             },
-            text: LocaleKeys.confirm.tr(),
+            onCameraIdle: () {
+              if (currentCenter != null) {
+                updateAddress(currentCenter!);
+              }
+            },
+            onMapCreated: (controller) {
+              _controller.complete(controller);
+              googleMapController = controller;
+            },
           ),
-        ),
-      ):SizedBox.shrink(),
+
+           Icon(
+            Icons.location_pin,
+            size: 40,
+            color: AppTheme.primary,
+          ),
+
+
+          Positioned(
+            top: 50,
+            left: 20,
+            right: 20,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black26, blurRadius: 4)
+                ],
+              ),
+              child: Text(
+                currentAddressText ??" LocaleKeys.loading.tr()",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14.sp),
+              ),
+            ),
+          ),
+
+
+          if (widget.withButton)
+            Positioned(
+              bottom: 30,
+              left: 24.w,
+              right: 24.w,
+              child: AppButton(
+                onPress: currentCenter == null
+                    ? null
+                    : () {
+                  Navigator.pop(
+                    context,
+                    MyAddressModel(
+                      location: currentCenter!,
+                      description: currentAddressText ?? '',
+                    ),
+                  );
+                },
+                text: LocaleKeys.confirm.tr(),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
-
 
 class MyAddressModel {
   final LatLng location;

@@ -25,7 +25,7 @@ class FirstStepSignUpView extends StatefulWidget {
   TypeModel? typeModel;
   final bool fromRegister;
 
-  FirstStepSignUpView({super.key,  this.typeModel,  this.fromRegister=true});
+  FirstStepSignUpView({super.key, this.typeModel, this.fromRegister = true});
 
   @override
   State<FirstStepSignUpView> createState() => _FirstStepSignUpViewState();
@@ -54,8 +54,8 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
   void initState() {
     super.initState();
 
-    if(!widget.fromRegister){
-    typesBloc.add(GetTypesEvent());
+    if (!widget.fromRegister) {
+      typesBloc.add(GetTypesEvent());
     }
     nickNameController.addListener(() {
       final name = nickNameController.text.trim();
@@ -319,7 +319,14 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                           lat: latitude!,
                           lng: longitude!,
                         );
-                        navigateTo(SecondStepSignUpView(firstStepModel: model));
+                        navigateTo(
+                          SecondStepSignUpView(
+                            firstStepModel: model,
+                            isSalon:
+                                widget.typeModel!.name.toLowerCase() ==
+                                'saloon',
+                          ),
+                        );
                       } else {
                         showMessage(
                           LocaleKeys.youMustChooseAddress.tr(),

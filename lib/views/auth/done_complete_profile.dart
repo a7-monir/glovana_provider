@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/design/app_button.dart';
 
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/views/auth/login/view.dart';
@@ -19,18 +20,7 @@ class DoneCompleteProfileView extends StatefulWidget {
 }
 
 class _DoneCompleteProfileViewState extends State<DoneCompleteProfileView> {
-  @override
-  void initState() {
-    super.initState();
-    CacheHelper.logOut();
-    Timer(
-      Duration(seconds: 2),
-          () {
 
-            navigateTo(const LoginView(), keepHistory: false);
-      },
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,15 +36,35 @@ class _DoneCompleteProfileViewState extends State<DoneCompleteProfileView> {
           Padding(
             padding:  EdgeInsets.symmetric(horizontal: 24.w),
             child: Text(LocaleKeys.yourApplicationIsBeingProcessed.tr(),
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 25.sp,
-              fontWeight: FontWeight.w400
+              fontWeight: FontWeight.w400,
+
 
             ),
+            ),
+          ),
+          Align(
+            alignment: AlignmentGeometry.bottomCenter,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: AppButton(
+                    text: LocaleKeys.confirm.tr(),
+                    type: ButtonType.bottomNav,
+                    onPress: () {
+                      navigateTo(const LoginView(), keepHistory: false);
+                    },
+                  ),
+                ),
+              ],
             ),
           )
         ],
       ),
+
     );
   }
 }

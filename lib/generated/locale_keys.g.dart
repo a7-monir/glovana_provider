@@ -233,5 +233,8 @@ abstract class  LocaleKeys {
   static const areYouSureYouWantDeleteAccount = 'areYouSureYouWantDeleteAccount';
   static const yesDelete = 'yesDelete';
   static const completeData = 'completeData';
+  static const accept = 'accept';
+  static const reject = 'reject';
+  static const onTheWay = 'onTheWay';
 
 }

@@ -23,8 +23,9 @@ import 'last_step.dart';
 
 class SecondStepSignUpView extends StatefulWidget {
   final FirstStepModel firstStepModel;
+  final bool isSalon;
 
-  const SecondStepSignUpView({super.key, required this.firstStepModel});
+  const SecondStepSignUpView({super.key, required this.firstStepModel, required this.isSalon});
 
   @override
   State<SecondStepSignUpView> createState() => _SecondStepSignUpViewState();
@@ -835,7 +836,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                             .toList(),
                         availability: availability,
                       );
-                      navigateTo(LastStepSingUpView(secondStepModel: model,));
+                      navigateTo(LastStepSingUpView(secondStepModel: model,isSalon: widget.isSalon,));
                     } else {
                       validateMode = AutovalidateMode.onUserInteraction;
                       setState(() {});

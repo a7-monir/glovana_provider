@@ -54,6 +54,7 @@ class AppAlert {
                   ),
                   onPressed: () async {
                     XFile? pickedFile = await pick.pickImage(
+                      requestFullMetadata: false,
                         source: ImageSource.camera, maxWidth: 400);
 
                     late File rotatedImage;
@@ -101,6 +102,7 @@ class AppAlert {
                     ),
                     onPressed: () async {
                       XFile? pickedFile = await pick.pickImage(
+                        requestFullMetadata: false,
                           source: ImageSource.gallery, maxWidth: 400);
 
                       late File rotatedImage;
