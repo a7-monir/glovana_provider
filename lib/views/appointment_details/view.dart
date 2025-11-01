@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_button.dart';
 import 'package:glovana_provider/core/design/app_failed.dart';
+import 'package:glovana_provider/core/design/app_input.dart';
 import 'package:glovana_provider/core/design/app_loading.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 
@@ -22,9 +23,9 @@ import '../../generated/locale_keys.g.dart';
 import '../location/view.dart';
 
 class AppointmentDetailsView extends StatefulWidget {
-   Appointment model;
+  Appointment model;
 
-   AppointmentDetailsView({super.key, required this.model});
+  AppointmentDetailsView({super.key, required this.model});
 
   @override
   State<AppointmentDetailsView> createState() => _AppointmentDetailsViewState();
@@ -167,13 +168,13 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
       //     current is GetAppointmentDetailsLoadingState,
       bloc: bloc,
       listener: (context, state) {
-        if (state is GetAppointmentDetailsSuccessState){
+        if (state is GetAppointmentDetailsSuccessState) {
           print('++++++++++++++++++++++++++++++++');
-          print( widget.model.appointmentStatus.toString());
+          print(widget.model.appointmentStatus.toString());
           print(state.model.appointmentStatus.toString());
-          print( widget.model.appointmentStatus.toString());
+          print(widget.model.appointmentStatus.toString());
 
-          widget.model=state.model;
+          widget.model = state.model;
           print('++++++++++++++++++++++++++++++++');
         }
       },
@@ -208,22 +209,25 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 18.w),
                         child: Text(
-                          DateFormat("d / MMMM / y h:mm a").format(DateTime.parse(state.model.createdAt)),
+                          DateFormat(
+                            "d / MMMM / y h:mm a",
+                          ).format(DateTime.parse(state.model.createdAt)),
                           style: TextStyle(
                             fontSize: 8.sp,
                             fontWeight: FontWeight.w400,
-                            color: Colors.black
+                            color: Colors.black,
                           ),
                         ),
                       ),
                       SizedBox(height: 4.h),
                       Padding(
-                        padding:  EdgeInsets.symmetric(horizontal: 18.w),
-                        child: Divider(height: 2.h,),
+                        padding: EdgeInsets.symmetric(horizontal: 18.w),
+                        child: Divider(height: 2.h),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 18.w,vertical: 16.h
+                          horizontal: 18.w,
+                          vertical: 16.h,
                         ),
                         child: Text(
                           '${LocaleKeys.appointmentNo.tr()} #${state.model.id}',
@@ -368,7 +372,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
 
                         Container(
                           padding: EdgeInsets.all(8.r),
-                          margin:  EdgeInsets.symmetric(horizontal: 18.w),
+                          margin: EdgeInsets.symmetric(horizontal: 18.w),
                           decoration: BoxDecoration(
                             boxShadow: [AppTheme.mainShadow],
                             color: AppTheme.hoverColor,
@@ -468,11 +472,10 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
           ),
           bottomNavigationBar:
               //widget.model.appointmentStatus == 3 ||
-                  widget.model.appointmentStatus == 7 ||
+              widget.model.appointmentStatus == 7 ||
                   state is! GetAppointmentDetailsSuccessState
               ? SizedBox.shrink()
-              :
-          _buildStatusButtons(context),
+              : _buildStatusButtons(context),
         );
       },
     );
@@ -492,17 +495,12 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
       // Accepted
       actions = [
         StatusAction(text: LocaleKeys.onTheWay.tr(), status: 3),
-        StatusAction(text: LocaleKeys.cancel.tr(), status: 5, ),
+        StatusAction(text: LocaleKeys.cancel.tr(), status: 5),
       ];
-    }
-    else if (currentStatus == 3) {
+    } else if (currentStatus == 3) {
       // Accepted
-      actions = [
-        StatusAction(text: LocaleKeys.completed.tr(), status: 4),
-
-      ];
-    }
-    else if (currentStatus == 6) {
+      actions = [StatusAction(text: LocaleKeys.completed.tr(), status: 4)];
+    } else if (currentStatus == 6) {
       // Work Started - Provider can only cancel, completion is handled by user
       actions = [StatusAction(text: LocaleKeys.cancel.tr(), status: 5)];
     } else {
@@ -543,7 +541,6 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
     // Get the appropriate title and content based on status
     String dialogTitle;
     String dialogContent;
-
     switch (status) {
       case 2: // Accept
         dialogTitle = LocaleKeys.confirmAcceptTitle
@@ -563,7 +560,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
         dialogContent = LocaleKeys.confirmCompleteMessage
             .tr(); //"confirm_complete_message".tr();
         break;
-      case 5: // Cancel/Reject
+      case 5:
         dialogTitle = LocaleKeys.confirmCancelTitle
             .tr(); // "confirm_cancel_title".tr();
         dialogContent = LocaleKeys.confirmCancelMessage
@@ -592,6 +589,14 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
           fontFamily: getFontFamily(FontFamilyType.aboreto),
         ),
         actions: [
+          if (status == 5)
+            AppInput(
+              fixedPositionedLabel: LocaleKeys.reason.tr(),
+              maxLines: 3,
+              controller: updateStatusBloc.reason,
+              marginBottom: 20.h,
+            ),
+
           Row(
             children: [
               Expanded(

@@ -22,7 +22,7 @@ class UpdateStatusBloc extends Bloc<UpdateStatusEvents, UpdateStatusStates> {
   UpdateStatusBloc(this._dio) : super(UpdateStatusStates()) {
     on<UpdateStatusEvent>(_sendData);
   }
-
+final reason=TextEditingController();
 
   void _sendData(UpdateStatusEvent event, Emitter<UpdateStatusStates> emit) async {
     emit(UpdateStatusLoadingState());
@@ -30,6 +30,7 @@ class UpdateStatusBloc extends Bloc<UpdateStatusEvents, UpdateStatusStates> {
       "provider/appointments/${event.id}/status",
       data: {
         "status": event.newStatus.toString(),
+        'reason':reason.text
 
       },
     );
