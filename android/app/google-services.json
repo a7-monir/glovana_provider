@@ -12,7 +12,20 @@
           "package_name": "com.alianCode.glovana"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "189542346816-ts7daic4tkol27pbfev4cf2e94be8ujd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alianCode.glovana",
+            "certificate_hash": "41ea5e6793dff14626e2c97c1457d4f2ffaa904f"
+          }
+        },
+        {
+          "client_id": "189542346816-dem4krok3l9geesrqmm34ibqnrm59dtj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBO60Gvjn1CSb4d6mpbti_N_fIPLc7KhV8"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "189542346816-dem4krok3l9geesrqmm34ibqnrm59dtj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "189542346816-8dnl7faia90hej0uvgvi7jogieh0cd8v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alianCode.glovana"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +56,20 @@
           "package_name": "com.alianCode.glovana_provider"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "189542346816-5u5ls3htjne0jltsopt74v6e03t05v1t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alianCode.glovana_provider",
+            "certificate_hash": "41ea5e6793dff14626e2c97c1457d4f2ffaa904f"
+          }
+        },
+        {
+          "client_id": "189542346816-dem4krok3l9geesrqmm34ibqnrm59dtj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBO60Gvjn1CSb4d6mpbti_N_fIPLc7KhV8"
@@ -39,7 +77,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "189542346816-dem4krok3l9geesrqmm34ibqnrm59dtj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "189542346816-8dnl7faia90hej0uvgvi7jogieh0cd8v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alianCode.glovana"
+              }
+            }
+          ]
         }
       }
     }

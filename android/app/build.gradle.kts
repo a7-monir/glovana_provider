@@ -35,8 +35,8 @@ android {
         applicationId = "com.alianCode.glovana_provider"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "3.0.0"
+        versionCode = 6
+        versionName = "6.0.0"
     }
 
     signingConfigs {
