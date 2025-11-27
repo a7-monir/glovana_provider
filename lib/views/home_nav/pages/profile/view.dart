@@ -146,6 +146,7 @@ class ProfileView extends StatelessWidget {
                 onTap:
                     () => showModalBottomSheet(
                       context: context,
+                      isScrollControlled: true,
                       builder: (context) => LogoutSheet(),
                     ),
                 isLogout: true,

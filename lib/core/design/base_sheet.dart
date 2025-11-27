@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/design/responsive.dart';
 
 import '../../core/app_theme.dart';
 import 'app_bar.dart';
@@ -46,7 +47,11 @@ class BaseSheet extends StatelessWidget {
           bottom: marginBottom ?? 16.h,
         ),
         constraints:
-        BoxConstraints(maxHeight: maxHeight ?? MediaQuery.of(context).size.height / 1.6.h),
+        BoxConstraints(
+    maxHeight:
+            Responsive.isTablet(context)
+            ? MediaQuery.of(context).size.height / 1.3
+            : (maxHeight ?? MediaQuery.of(context).size.height / 1.6),),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

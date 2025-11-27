@@ -306,8 +306,8 @@ class _SignupViewState extends State<SignupView> {
                         );
                       },
                     ),
-                    SizedBox(height: 32.h),
-                    WithSection(isLogin: false),
+                    // SizedBox(height: 32.h),
+                    // WithSection(isLogin: false),
                     // SizedBox(height: 32.h),
                     // SocialSignInButtons(
                     //   isGoogleLoading:

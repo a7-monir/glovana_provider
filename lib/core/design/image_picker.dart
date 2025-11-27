@@ -46,10 +46,7 @@ class AppAlert {
                           color: AppTheme.primary),
                       const SizedBox(width: 20),
                       Text(LocaleKeys.camera.tr(),
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w700
-                          )),
+                          ),
                     ],
                   ),
                   onPressed: () async {

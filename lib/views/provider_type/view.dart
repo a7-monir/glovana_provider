@@ -654,943 +654,947 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
     return Scaffold(
       extendBody: true,
       appBar: MainAppBar(title: LocaleKeys.providerType.tr()),
-      body: BlocConsumer(
-        bloc: bloc,
-        buildWhen: (previous, current) =>
-            current is GetProviderProfileSuccessState ||
-            current is GetProviderProfileFailedState ||
-            current is GetProviderProfileLoadingState,
-        listener: (context, state) {
-          if (state is GetProviderProfileSuccessState) {
-            if (state.model.providerTypes.isNotEmpty) {
-              canEdit = true;
-              final model = state.model.providerTypes.first;
-              providerId = model.id;
-              typeId = model.typeId;
-              bookingType = model.type.bookingType;
-              nickNameController.text = model.name;
-              descriptionController.text = model.description;
-              latitude = model.lat.toDouble();
-              longitude = model.lng.toDouble();
-              addressFromPicker = model.address;
-              if (model.images.isNotEmpty) {
-                _imageFromApi = model.images.first.photoUrl;
-              }
-              if (model.galleries.isNotEmpty) {
-                for (var item in model.galleries) {
-                  final url = item.photoUrl;
-                  if (url.isNotEmpty) {
-                    _galleryFromApi.add(url);
+      body: SafeArea(
+        child: BlocConsumer(
+          bloc: bloc,
+          buildWhen: (previous, current) =>
+              current is GetProviderProfileSuccessState ||
+              current is GetProviderProfileFailedState ||
+              current is GetProviderProfileLoadingState,
+          listener: (context, state) {
+            if (state is GetProviderProfileSuccessState) {
+              if (state.model.providerTypes.isNotEmpty) {
+                canEdit = true;
+                final model = state.model.providerTypes.first;
+                providerId = model.id;
+                typeId = model.typeId;
+                bookingType = model.type.bookingType;
+                nickNameController.text = model.name;
+                descriptionController.text = model.description;
+                latitude = model.lat.toDouble();
+                longitude = model.lng.toDouble();
+                addressFromPicker = model.address;
+                if (model.images.isNotEmpty) {
+                  _imageFromApi = model.images.first.photoUrl;
+                }
+                if (model.galleries.isNotEmpty) {
+                  for (var item in model.galleries) {
+                    final url = item.photoUrl;
+                    if (url.isNotEmpty) {
+                      _galleryFromApi.add(url);
+                    }
                   }
                 }
+                if (model.identityPhoto.isNotEmpty) {
+                  _identityPhotoApi = model.identityPhoto;
+                }
+                if (model.practiceLicense.isNotEmpty) {
+                  _practicePhotoApi = model.practiceLicense;
+                }
+                loadAvailabilities(model.availabilities);
+                loadSelectedServicesFromResponse(model.providerServices);
+                servicesBloc.add(GetServicesEvent());
+                _pricePerHourController.text = model.pricePerHour.toString();
+                setState(() {});
               }
-              if (model.identityPhoto.isNotEmpty) {
-                _identityPhotoApi = model.identityPhoto;
-              }
-              if (model.practiceLicense.isNotEmpty) {
-                _practicePhotoApi = model.practiceLicense;
-              }
-              loadAvailabilities(model.availabilities);
-              loadSelectedServicesFromResponse(model.providerServices);
-              servicesBloc.add(GetServicesEvent());
-              _pricePerHourController.text = model.pricePerHour.toString();
-              setState(() {});
             }
-          }
-        },
-        builder: (context, state) {
-          if (state is GetProviderProfileSuccessState &&
-              state.model.providerTypes.isEmpty) {
-            return Center(
-              child: AppButton(
-                text: LocaleKeys.completeData.tr(),
-                isSecondary: false,
-                onPress: () =>
-                    navigateTo(FirstStepSignUpView(fromRegister: false)),
-              ),
-            );
-          }
-          return DefaultTabController(
-            length: 3,
-            initialIndex: selectedIndex,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                children: [
-                  TabBar(
-                    tabAlignment: TabAlignment.center,
-                    isScrollable: true,
-                    onTap: (value) {
-                      if (selectedIndex != value) {
-                        selectedIndex = value;
-                        setState(() {});
-                      }
-                    },
-                    labelStyle: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppTheme.primary,
-                      fontFamily: getFontFamily(FontFamilyType.abhayaLibre),
+          },
+          builder: (context, state) {
+            if (state is GetProviderProfileSuccessState &&
+                state.model.providerTypes.isEmpty) {
+              return Center(
+                child: AppButton(
+                  text: LocaleKeys.completeData.tr(),
+                  isSecondary: false,
+                  onPress: () =>
+                      navigateTo(FirstStepSignUpView(fromRegister: false)),
+                ),
+              );
+            }
+            return DefaultTabController(
+              length: 3,
+              initialIndex: selectedIndex,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  children: [
+                    TabBar(
+                      tabAlignment: TabAlignment.center,
+                      isScrollable: true,
+                      onTap: (value) {
+                        if (selectedIndex != value) {
+                          selectedIndex = value;
+                          setState(() {});
+                        }
+                      },
+                      labelStyle: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppTheme.primary,
+                        fontFamily: getFontFamily(FontFamilyType.abhayaLibre),
+                      ),
+                      unselectedLabelStyle: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppTheme.primary,
+                        fontFamily: getFontFamily(FontFamilyType.abhayaLibre),
+                      ),
+                      tabs: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Tab(text: LocaleKeys.basicInformation.tr()),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Tab(text: LocaleKeys.details.tr()),
+                        ),
+        
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Tab(text: LocaleKeys.photos.tr()),
+                        ),
+                      ],
                     ),
-                    unselectedLabelStyle: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppTheme.primary,
-                      fontFamily: getFontFamily(FontFamilyType.abhayaLibre),
-                    ),
-                    tabs: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w),
-                        child: Tab(text: LocaleKeys.basicInformation.tr()),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w),
-                        child: Tab(text: LocaleKeys.details.tr()),
-                      ),
-
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w),
-                        child: Tab(text: LocaleKeys.photos.tr()),
-                      ),
-                    ],
-                  ),
-
-                  Builder(
-                    builder: (context) {
-                      if (state is GetProviderProfileFailedState) {
-                        return Expanded(
-                          child: AppFailed(
-                            response: state.response,
-                            onPress: () {
-                              bloc.add(GetProviderProfileEvent());
-                            },
-                          ),
-                        );
-                      } else if (state is GetProviderProfileSuccessState) {
-                        return Expanded(
-                          child: SingleChildScrollView(
-                            padding: EdgeInsets.symmetric(vertical: 16.h),
-                            child: selectedIndex == 0
-                                ? Column(
-                                    children: [
-                                      AppInput(
-                                        fixedPositionedLabel: LocaleKeys
-                                            .yourWorkName
-                                            .tr(),
-                                        controller: nickNameController,
-                                        validator: (v) =>
-                                            InputValidator.requiredValidator(
-                                              value: v!,
-                                              itemName: LocaleKeys.yourWorkName
-                                                  .tr(),
-                                            ),
-
-                                        marginBottom: 32.h,
-                                      ),
-                                      AppInput(
-                                        fixedPositionedLabel: LocaleKeys
-                                            .addYorJobDescription
-                                            .tr(),
-                                        controller: descriptionController,
-                                        maxLines: 4,
-                                        validator: (v) =>
-                                            InputValidator.requiredValidator(
-                                              value: v!,
-                                              itemName: LocaleKeys.description
-                                                  .tr(),
-                                            ),
-                                      ),
-                                      AppInput(
-                                        withShadow: false,
-                                        fixedPositionedLabel: LocaleKeys
-                                            .workNumber
-                                            .tr(),
-                                        controller: _workNumberController,
-                                        validator: (v) =>
-                                            InputValidator.requiredValidator(
-                                              value: v!,
-                                              itemName: LocaleKeys.workNumber
-                                                  .tr(),
-                                            ),
-                                        keyboardType: TextInputType.number,
-                                        marginBottom: 43.h,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          navigateTo(
-                                            LocationView(withButton: true),
-                                          ).then((value) {
-                                            latitude = value.location.latitude;
-                                            longitude =
-                                                value.location.longitude;
-                                            addressFromPicker =
-                                                value.description;
-                                            setState(() {});
-                                          });
-                                        },
-                                        child: Stack(
-                                          alignment:
-                                              AlignmentDirectional.bottomCenter,
-                                          children: [
-                                            AppImage(
-                                              'map.png',
-                                              height: 166.h,
-                                              width: MediaQuery.of(
-                                                context,
-                                              ).size.width,
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.all(16.r),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadiusDirectional.only(
-                                                      bottomStart:
-                                                          Radius.circular(15.r),
-                                                      bottomEnd:
-                                                          Radius.circular(15.r),
-                                                    ),
-                                                color: Theme.of(
-                                                  context,
-                                                ).scaffoldBackgroundColor,
-                                                boxShadow: [
-                                                  AppTheme.mainShadow,
-                                                ],
+        
+                    Builder(
+                      builder: (context) {
+                        if (state is GetProviderProfileFailedState) {
+                          return Expanded(
+                            child: AppFailed(
+                              response: state.response,
+                              onPress: () {
+                                bloc.add(GetProviderProfileEvent());
+                              },
+                            ),
+                          );
+                        } else if (state is GetProviderProfileSuccessState) {
+                          return Expanded(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.symmetric(vertical: 16.h),
+                              child: selectedIndex == 0
+                                  ? Column(
+                                      children: [
+                                        AppInput(
+                                          fixedPositionedLabel: LocaleKeys
+                                              .yourWorkName
+                                              .tr(),
+                                          controller: nickNameController,
+                                          validator: (v) =>
+                                              InputValidator.requiredValidator(
+                                                value: v!,
+                                                itemName: LocaleKeys.yourWorkName
+                                                    .tr(),
                                               ),
-                                              child: addressFromPicker != null
-                                                  ? Row(
-                                                      children: [
-                                                        AppImage(
-                                                          'marker_fill.png',
-                                                          height: 12.h,
-                                                          width: 12.h,
-                                                        ),
-                                                        SizedBox(width: 2.w),
-                                                        Expanded(
-                                                          child: Text(
-                                                            addressFromPicker!,
-                                                            style: TextStyle(
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
+        
+                                          marginBottom: 32.h,
+                                        ),
+                                        AppInput(
+                                          fixedPositionedLabel: LocaleKeys
+                                              .addYorJobDescription
+                                              .tr(),
+                                          controller: descriptionController,
+                                          maxLines: 4,
+                                          validator: (v) =>
+                                              InputValidator.requiredValidator(
+                                                value: v!,
+                                                itemName: LocaleKeys.description
+                                                    .tr(),
+                                              ),
+                                        ),
+                                        AppInput(
+                                          withShadow: false,
+                                          fixedPositionedLabel: LocaleKeys
+                                              .workNumber
+                                              .tr(),
+                                          controller: _workNumberController,
+                                          validator: (v) =>
+                                              InputValidator.requiredValidator(
+                                                value: v!,
+                                                itemName: LocaleKeys.workNumber
+                                                    .tr(),
+                                              ),
+                                          keyboardType: TextInputType.number,
+                                          marginBottom: 43.h,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            navigateTo(
+                                              LocationView(withButton: true),
+                                            ).then((value) {
+                                              latitude = value.location.latitude;
+                                              longitude =
+                                                  value.location.longitude;
+                                              addressFromPicker =
+                                                  value.description;
+                                              setState(() {});
+                                            });
+                                          },
+                                          child: Stack(
+                                            alignment:
+                                                AlignmentDirectional.bottomCenter,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius: BorderRadiusGeometry.circular(15.r),
+                                                child: AppImage(
+                                                  'map.png',
+                                                  height: 166.h,
+                                                  width: MediaQuery.of(context).size.width,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.all(16.r),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadiusDirectional.only(
+                                                        bottomStart:
+                                                            Radius.circular(15.r),
+                                                        bottomEnd:
+                                                            Radius.circular(15.r),
+                                                      ),
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).scaffoldBackgroundColor,
+                                                  boxShadow: [
+                                                    AppTheme.mainShadow,
+                                                  ],
+                                                ),
+                                                child: addressFromPicker != null
+                                                    ? Row(
+                                                        children: [
+                                                          AppImage(
+                                                            'marker_fill.png',
+                                                            height: 12.h,
+                                                            width: 12.h,
+                                                          ),
+                                                          SizedBox(width: 2.w),
+                                                          Expanded(
+                                                            child: Text(
+                                                              addressFromPicker!,
+                                                              style: TextStyle(
+                                                                fontSize: 14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                              ),
                                                             ),
                                                           ),
-                                                        ),
-                                                        Text(
-                                                          LocaleKeys.change
-                                                              .tr(),
-                                                          style: TextStyle(
-                                                            fontSize: 10.sp,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            decoration:
-                                                                TextDecoration
-                                                                    .underline,
+                                                          Text(
+                                                            LocaleKeys.change
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                              fontSize: 10.sp,
+                                                              fontWeight:
+                                                                  FontWeight.w400,
+                                                              decoration:
+                                                                  TextDecoration
+                                                                      .underline,
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  : Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                          LocaleKeys.addLocation
-                                                              .tr(),
-                                                          style: TextStyle(
-                                                            fontSize: 16.sp,
-                                                            fontWeight:
-                                                                FontWeight.w400,
+                                                        ],
+                                                      )
+                                                    : Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            LocaleKeys.addLocation
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                              fontSize: 16.sp,
+                                                              fontWeight:
+                                                                  FontWeight.w400,
+                                                            ),
                                                           ),
-                                                        ),
-                                                        AppImage(
-                                                          'add.png',
-                                                          height: 22.h,
-                                                          width: 22.h,
-                                                        ),
-                                                      ],
+                                                          AppImage(
+                                                            'add.png',
+                                                            height: 22.h,
+                                                            width: 22.h,
+                                                          ),
+                                                        ],
+                                                      ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : selectedIndex == 1
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          LocaleKeys.workingHours.tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+        
+                                        SingleChildScrollView(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 16.h,
+                                          ),
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            children: days.keys.map((day) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  _toggleDaySelection(day);
+                                                  setState(() {});
+                                                },
+                                                child: Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 8.w,
+                                                  ),
+                                                  child: Opacity(
+                                                    opacity: days[day]!["enabled"]
+                                                        ? 1
+                                                        : 0.4,
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 20.sp,
+                                                            vertical: 3.sp,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: AppTheme
+                                                            .secondaryHeaderColor,
+                                                        boxShadow: [
+                                                          AppTheme.mainShadow,
+                                                          AppTheme.whiteShadow,
+                                                        ],
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              30.r,
+                                                            ),
+                                                      ),
+                                                      child: Text(day),
                                                     ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : selectedIndex == 1
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        LocaleKeys.workingHours.tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-
-                                      SingleChildScrollView(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 16.h,
-                                        ),
-                                        scrollDirection: Axis.horizontal,
-                                        child: Row(
-                                          children: days.keys.map((day) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                _toggleDaySelection(day);
-                                                setState(() {});
-                                              },
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 8.w,
-                                                ),
-                                                child: Opacity(
-                                                  opacity: days[day]!["enabled"]
-                                                      ? 1
-                                                      : 0.4,
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                          horizontal: 20.sp,
-                                                          vertical: 3.sp,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color: AppTheme
-                                                          .secondaryHeaderColor,
-                                                      boxShadow: [
-                                                        AppTheme.mainShadow,
-                                                        AppTheme.whiteShadow,
-                                                      ],
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            30.r,
-                                                          ),
-                                                    ),
-                                                    child: Text(day),
                                                   ),
                                                 ),
-                                              ),
-                                            );
-                                          }).toList(),
+                                              );
+                                            }).toList(),
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: 18.h),
-                                      Column(
-                                        children: [
-                                          if (days["Always"]?["enabled"] ==
-                                              true) ...[
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: days["Always"]!["times"]
-                                                  .map<Widget>((timeSlot) {
-                                                    final index =
-                                                        days["Always"]!["times"]
-                                                            .indexOf(timeSlot);
-                                                    return _buildTimeRow(
-                                                      "Always",
-                                                      days["Always"]!,
-                                                      timeSlot,
-                                                      index,
-                                                    );
-                                                  })
-                                                  .toList(),
-                                            ),
-                                          ] else ...[
-                                            Column(
-                                              children: days.keys.map((day) {
-                                                final dayData = days[day]!;
-                                                if (!dayData["enabled"] ||
-                                                    day == "Always") {
-                                                  return const SizedBox.shrink();
-                                                }
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: dayData["times"]
-                                                      .map<Widget>((timeSlot) {
-                                                        final index =
-                                                            dayData["times"]
-                                                                .indexOf(
-                                                                  timeSlot,
-                                                                );
-                                                        return _buildTimeRow(
-                                                          day,
-                                                          dayData,
-                                                          timeSlot,
-                                                          index,
-                                                        );
-                                                      })
-                                                      .toList(),
-                                                );
-                                              }).toList(),
-                                            ),
+                                        SizedBox(height: 18.h),
+                                        Column(
+                                          children: [
+                                            if (days["Always"]?["enabled"] ==
+                                                true) ...[
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: days["Always"]!["times"]
+                                                    .map<Widget>((timeSlot) {
+                                                      final index =
+                                                          days["Always"]!["times"]
+                                                              .indexOf(timeSlot);
+                                                      return _buildTimeRow(
+                                                        "Always",
+                                                        days["Always"]!,
+                                                        timeSlot,
+                                                        index,
+                                                      );
+                                                    })
+                                                    .toList(),
+                                              ),
+                                            ] else ...[
+                                              Column(
+                                                children: days.keys.map((day) {
+                                                  final dayData = days[day]!;
+                                                  if (!dayData["enabled"] ||
+                                                      day == "Always") {
+                                                    return const SizedBox.shrink();
+                                                  }
+                                                  return Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: dayData["times"]
+                                                        .map<Widget>((timeSlot) {
+                                                          final index =
+                                                              dayData["times"]
+                                                                  .indexOf(
+                                                                    timeSlot,
+                                                                  );
+                                                          return _buildTimeRow(
+                                                            day,
+                                                            dayData,
+                                                            timeSlot,
+                                                            index,
+                                                          );
+                                                        })
+                                                        .toList(),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ],
                                           ],
+                                        ),
+                                        SizedBox(height: 20.h),
+                                        Divider(height: 2.h),
+                                        SizedBox(height: 20.h),
+                                        if (state
+                                                .model
+                                                .providerTypes
+                                                .first
+                                                .type
+                                                .bookingType !=
+                                            "hourly") ...[
+                                          Text(LocaleKeys.WhatYourService.tr()),
+                                          SizedBox(height: 10.h),
+                                          BlocConsumer(
+                                            bloc: servicesBloc,
+                                            listener: (context, serviceState) {
+                                              print('+++++++++++++++');
+                                              if (serviceState
+                                                  is GetServicesSuccessState) {
+                                                allServices = servicesBloc.list;
+                                                print('+++++++++++++++');
+                                                print(allServices.length);
+                                                print('+++++++++++++++');
+                                              }
+                                            },
+                                            builder: (context, serviceState) {
+                                              if (serviceState
+                                                  is GetServicesFailedState) {
+                                                return AppFailed(
+                                                  response: serviceState.response,
+                                                  isSmallShape: true,
+                                                  onPress: () => servicesBloc.add(
+                                                    GetServicesEvent(),
+                                                  ),
+                                                );
+                                              } else if (serviceState
+                                                  is GetServicesSuccessState) {
+                                                return InkWell(
+                                                  onTap: () =>
+                                                      _showServicePriceDialog(
+                                                        context,
+                                                      ),
+                                                  child: Row(
+                                                    children: [
+                                                      AppCircleIcon(
+                                                        img: 'plus.png',
+                                                        bgRadius: 18.r,
+                                                      ),
+                                                      SizedBox(width: 8.w),
+                                                      Expanded(
+                                                        child: SingleChildScrollView(
+                                                          scrollDirection:
+                                                              Axis.horizontal,
+                                                          child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: _selectedServicesWithPrices
+                                                                .map(
+                                                                  (
+                                                                    serviceWithPrice,
+                                                                  ) => Padding(
+                                                                    padding:
+                                                                        EdgeInsets.symmetric(
+                                                                          vertical:
+                                                                              4.h,
+                                                                        ),
+                                                                    child: Container(
+                                                                      padding: EdgeInsets.symmetric(
+                                                                        horizontal:
+                                                                            4.w,
+                                                                      ),
+                                                                      margin:
+                                                                          EdgeInsetsDirectional.only(
+                                                                            end: 8
+                                                                                .w,
+                                                                          ),
+                                                                      decoration: BoxDecoration(
+                                                                        color: AppTheme
+                                                                            .hoverColor,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              15.r,
+                                                                            ),
+                                                                        boxShadow: [
+                                                                          AppTheme
+                                                                              .mainShadow,
+                                                                        ],
+                                                                      ),
+                                                                      child: Row(
+                                                                        children: [
+                                                                          Text(
+                                                                            serviceWithPrice
+                                                                                .service
+                                                                                .name,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            width:
+                                                                                4.w,
+                                                                          ),
+                                                                          Container(
+                                                                            padding: EdgeInsets.symmetric(
+                                                                              horizontal:
+                                                                                  4.w,
+                                                                            ),
+                                                                            decoration: BoxDecoration(
+                                                                              borderRadius: BorderRadius.circular(
+                                                                                15.r,
+                                                                              ),
+                                                                              color:
+                                                                                  AppTheme.canvasColor,
+                                                                            ),
+                                                                            child: Text(
+                                                                              "${serviceWithPrice.price} ${LocaleKeys.jod.tr()}",
+                                                                            ),
+                                                                          ),
+                                                                          IconButton(
+                                                                            padding:
+                                                                                EdgeInsets.zero,
+                                                                            constraints:
+                                                                                const BoxConstraints(),
+                                                                            onPressed: () {
+                                                                              setState(() {
+                                                                                _selectedServicesWithPrices.remove(
+                                                                                  serviceWithPrice,
+                                                                                );
+                                                                              });
+                                                                            },
+                                                                            icon: Icon(
+                                                                              Icons.close,
+                                                                              size:
+                                                                                  20.sp,
+                                                                              color:
+                                                                                  Colors.red,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                                .toList(),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                              return SizedBox.shrink();
+                                            },
+                                          ),
+                                          SizedBox(height: 32.h),
+        
                                         ],
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Divider(height: 2.h),
-                                      SizedBox(height: 20.h),
-                                      if (state
+                                        Text(
+                                          state
                                               .model
                                               .providerTypes
                                               .first
                                               .type
                                               .bookingType !=
-                                          "hourly") ...[
-                                        Text(LocaleKeys.WhatYourService.tr()),
-                                        SizedBox(height: 10.h),
-                                        BlocConsumer(
-                                          bloc: servicesBloc,
-                                          listener: (context, serviceState) {
-                                            print('+++++++++++++++');
-                                            if (serviceState
-                                                is GetServicesSuccessState) {
-                                              allServices = servicesBloc.list;
-                                              print('+++++++++++++++');
-                                              print(allServices.length);
-                                              print('+++++++++++++++');
-                                            }
-                                          },
-                                          builder: (context, serviceState) {
-                                            if (serviceState
-                                                is GetServicesFailedState) {
-                                              return AppFailed(
-                                                response: serviceState.response,
-                                                isSmallShape: true,
-                                                onPress: () => servicesBloc.add(
-                                                  GetServicesEvent(),
+                                              "hourly"
+                                              ? LocaleKeys
+                                              .setTheMaximumNumberOfBookingsPerHour
+                                              .tr()
+                                              : LocaleKeys
+                                              .howMuchDoYouChargePerHour
+                                              .tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        Center(
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(
+                                                width: 100.w,
+                                                child: AppInput(
+                                                  withShadow: false,
+                                                  marginBottom: 0,
+                                                  controller:
+                                                  _pricePerHourController,
+                                                  keyboardType:
+                                                  TextInputType.number,
+                                                  validator: (v) =>
+                                                      InputValidator.requiredValidator(
+                                                        value: v!,
+                                                        itemName: 'price',
+                                                      ),
                                                 ),
-                                              );
-                                            } else if (serviceState
-                                                is GetServicesSuccessState) {
-                                              return InkWell(
-                                                onTap: () =>
-                                                    _showServicePriceDialog(
-                                                      context,
+                                              ),
+                                              if (state
+                                                  .model
+                                                  .providerTypes
+                                                  .first
+                                                  .type
+                                                  .bookingType ==
+                                                  "hourly") ...[
+                                                SizedBox(width: 8.w),
+        
+                                                Text(
+                                                  LocaleKeys.jodHour.tr(),
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 10,
+                                                    fontFamily: getFontFamily(
+                                                      FontFamilyType.inter,
                                                     ),
-                                                child: Row(
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          LocaleKeys.addProfilePicture.tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 150.w,
+                                          child: Divider(height: 2),
+                                        ),
+                                        SizedBox(height: 2.h),
+                                        Text(
+                                          LocaleKeys.youCanChooseOnlyPhoto.tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        SizedBox(height: 20.h),
+                                        InkWell(
+                                          onTap: _pickImages,
+                                          child:
+                                              _images == null &&
+                                                  _imageFromApi == null
+                                              ? Stack(
+                                                  alignment: AlignmentDirectional
+                                                      .bottomCenter,
                                                   children: [
-                                                    AppCircleIcon(
-                                                      img: 'plus.png',
-                                                      bgRadius: 18.r,
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        color: Color(0xffF2F2F2),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              15.r,
+                                                            ),
+                                                      ),
+                                                      child: AppImage(
+                                                        'image.png',
+                                                        height: 166.h,
+                                                        width: MediaQuery.of(
+                                                          context,
+                                                        ).size.width,
+                                                      ),
                                                     ),
-                                                    SizedBox(width: 8.w),
-                                                    Expanded(
-                                                      child: SingleChildScrollView(
-                                                        scrollDirection:
-                                                            Axis.horizontal,
-                                                        child: Row(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: _selectedServicesWithPrices
-                                                              .map(
-                                                                (
-                                                                  serviceWithPrice,
-                                                                ) => Padding(
-                                                                  padding:
-                                                                      EdgeInsets.symmetric(
-                                                                        vertical:
-                                                                            4.h,
-                                                                      ),
-                                                                  child: Container(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          4.w,
-                                                                    ),
-                                                                    margin:
-                                                                        EdgeInsetsDirectional.only(
-                                                                          end: 8
-                                                                              .w,
-                                                                        ),
-                                                                    decoration: BoxDecoration(
-                                                                      color: AppTheme
-                                                                          .hoverColor,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                            15.r,
-                                                                          ),
-                                                                      boxShadow: [
-                                                                        AppTheme
-                                                                            .mainShadow,
-                                                                      ],
-                                                                    ),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Text(
-                                                                          serviceWithPrice
-                                                                              .service
-                                                                              .name,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              4.w,
-                                                                        ),
-                                                                        Container(
-                                                                          padding: EdgeInsets.symmetric(
-                                                                            horizontal:
-                                                                                4.w,
-                                                                          ),
-                                                                          decoration: BoxDecoration(
-                                                                            borderRadius: BorderRadius.circular(
-                                                                              15.r,
-                                                                            ),
-                                                                            color:
-                                                                                AppTheme.canvasColor,
-                                                                          ),
-                                                                          child: Text(
-                                                                            "${serviceWithPrice.price} ${LocaleKeys.jod.tr()}",
-                                                                          ),
-                                                                        ),
-                                                                        IconButton(
-                                                                          padding:
-                                                                              EdgeInsets.zero,
-                                                                          constraints:
-                                                                              const BoxConstraints(),
-                                                                          onPressed: () {
-                                                                            setState(() {
-                                                                              _selectedServicesWithPrices.remove(
-                                                                                serviceWithPrice,
-                                                                              );
-                                                                            });
-                                                                          },
-                                                                          icon: Icon(
-                                                                            Icons.close,
-                                                                            size:
-                                                                                20.sp,
-                                                                            color:
-                                                                                Colors.red,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
+                                                    Container(
+                                                      padding: EdgeInsets.all(
+                                                        16.r,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadiusDirectional.only(
+                                                              bottomStart:
+                                                                  Radius.circular(
+                                                                    15.r,
                                                                   ),
-                                                                ),
-                                                              )
-                                                              .toList(),
-                                                        ),
+                                                              bottomEnd:
+                                                                  Radius.circular(
+                                                                    15.r,
+                                                                  ),
+                                                            ),
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).scaffoldBackgroundColor,
+                                                        boxShadow: [
+                                                          AppTheme.mainShadow,
+                                                        ],
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            LocaleKeys.uploadFile
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                              fontSize: 16.sp,
+                                                              fontWeight:
+                                                                  FontWeight.w400,
+                                                            ),
+                                                          ),
+                                                          AppImage(
+                                                            'add.png',
+                                                            height: 22.h,
+                                                            width: 22.h,
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ],
+                                                )
+                                              : _images != null
+                                              ? ItemImage(
+                                                  image: _images!.path,
+                                                  onRemove: () {
+                                                    _images = null;
+                                                    setState(() {});
+                                                  },
+                                                )
+                                              : ItemImage(
+                                                  image: _imageFromApi!,
+                                                  onRemove: () {
+                                                    _imageFromApi = null;
+                                                    setState(() {});
+                                                  },
                                                 ),
-                                              );
-                                            }
-                                            return SizedBox.shrink();
-                                          },
                                         ),
-                                        SizedBox(height: 32.h),
-
-                                      ],
-                                      Text(
-                                        state
-                                            .model
-                                            .providerTypes
-                                            .first
-                                            .type
-                                            .bookingType !=
-                                            "hourly"
-                                            ? LocaleKeys
-                                            .setTheMaximumNumberOfBookingsPerHour
-                                            .tr()
-                                            : LocaleKeys
-                                            .howMuchDoYouChargePerHour
-                                            .tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
+                                        SizedBox(height: 20.h),
+                                        Text(
+                                          LocaleKeys.galleryPhotos.tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: 16.h),
-                                      Center(
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            SizedBox(
-                                              width: 100.w,
-                                              child: AppInput(
-                                                withShadow: false,
-                                                marginBottom: 0,
-                                                controller:
-                                                _pricePerHourController,
-                                                keyboardType:
-                                                TextInputType.number,
-                                                validator: (v) =>
-                                                    InputValidator.requiredValidator(
-                                                      value: v!,
-                                                      itemName: 'price',
-                                                    ),
-                                              ),
-                                            ),
-                                            if (state
-                                                .model
-                                                .providerTypes
-                                                .first
-                                                .type
-                                                .bookingType ==
-                                                "hourly") ...[
-                                              SizedBox(width: 8.w),
-
-                                              Text(
-                                                LocaleKeys.jodHour.tr(),
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 10,
-                                                  fontFamily: getFontFamily(
-                                                    FontFamilyType.inter,
-                                                  ),
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                            ],
-                                          ],
+                                        SizedBox(
+                                          width: 60.w,
+                                          child: Divider(height: 2),
                                         ),
-                                      ),
-                                    ],
-                                  )
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        LocaleKeys.addProfilePicture.tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
+                                        SizedBox(height: 2.h),
+                                        Text(
+                                          LocaleKeys.youCanUploadYourWorkingPlace
+                                              .tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: 150.w,
-                                        child: Divider(height: 2),
-                                      ),
-                                      SizedBox(height: 2.h),
-                                      Text(
-                                        LocaleKeys.youCanChooseOnlyPhoto.tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      InkWell(
-                                        onTap: _pickImages,
-                                        child:
-                                            _images == null &&
-                                                _imageFromApi == null
-                                            ? Stack(
-                                                alignment: AlignmentDirectional
-                                                    .bottomCenter,
-                                                children: [
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Color(0xffF2F2F2),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            15.r,
-                                                          ),
-                                                    ),
-                                                    child: AppImage(
-                                                      'image.png',
-                                                      height: 166.h,
-                                                      width: MediaQuery.of(
-                                                        context,
-                                                      ).size.width,
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    padding: EdgeInsets.all(
-                                                      16.r,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadiusDirectional.only(
-                                                            bottomStart:
-                                                                Radius.circular(
-                                                                  15.r,
-                                                                ),
-                                                            bottomEnd:
-                                                                Radius.circular(
-                                                                  15.r,
-                                                                ),
-                                                          ),
-                                                      color: Theme.of(
-                                                        context,
-                                                      ).scaffoldBackgroundColor,
-                                                      boxShadow: [
-                                                        AppTheme.mainShadow,
-                                                      ],
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                          LocaleKeys.uploadFile
-                                                              .tr(),
-                                                          style: TextStyle(
-                                                            fontSize: 16.sp,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                          ),
-                                                        ),
-                                                        AppImage(
-                                                          'add.png',
-                                                          height: 22.h,
-                                                          width: 22.h,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : _images != null
-                                            ? ItemImage(
-                                                image: _images!.path,
-                                                onRemove: () {
-                                                  _images = null;
-                                                  setState(() {});
-                                                },
-                                              )
-                                            : ItemImage(
-                                                image: _imageFromApi!,
-                                                onRemove: () {
-                                                  _imageFromApi = null;
-                                                  setState(() {});
-                                                },
-                                              ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        LocaleKeys.galleryPhotos.tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 60.w,
-                                        child: Divider(height: 2),
-                                      ),
-                                      SizedBox(height: 2.h),
-                                      Text(
-                                        LocaleKeys.youCanUploadYourWorkingPlace
-                                            .tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20.h),
-                                      Center(
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            ItemPick(onTap: _takePhoto),
-                                            if (_gallery.isNotEmpty ||
-                                                _galleryFromApi.isNotEmpty)
-                                              Padding(
-                                                padding:
-                                                    EdgeInsetsDirectional.only(
-                                                      start: 20.w,
-                                                    ),
-                                                child: AllImagesItem(
-                                                  imageList: _gallery.isNotEmpty
-                                                      ? _gallery
-                                                            .map((e) => e.path)
-                                                            .toList()
-                                                      : _galleryFromApi,
-                                                  onTap: () {
-                                                    showModalBottomSheet(
-                                                      context: context,
-                                                      isScrollControlled: true,
-                                                      builder: (context) => StatefulBuilder(
-                                                        builder: (context, setState2) => BaseSheet(
-                                                          title: '',
-                                                          child: SingleChildScrollView(
-                                                            child: Column(
-                                                              children: List.generate(
-                                                                _gallery.isNotEmpty
-                                                                    ? _gallery
-                                                                          .length
-                                                                    : _galleryFromApi
-                                                                          .length,
-                                                                (
-                                                                  index,
-                                                                ) => Padding(
-                                                                  padding:
-                                                                      EdgeInsets.only(
-                                                                        bottom:
-                                                                            12.h,
-                                                                      ),
-                                                                  child: Stack(
-                                                                    children: [
-                                                                      ClipRRect(
-                                                                        borderRadius:
-                                                                            BorderRadiusGeometry.circular(
-                                                                              15.r,
-                                                                            ),
-                                                                        child: AppImage(
-                                                                          _gallery.isNotEmpty
-                                                                              ? _gallery[index].path
-                                                                              : _galleryFromApi[index],
-                                                                          height:
-                                                                              150.h,
-                                                                          width: MediaQuery.of(
-                                                                            context,
-                                                                          ).size.width,
-                                                                          fit: BoxFit
-                                                                              .cover,
+                                        SizedBox(height: 20.h),
+                                        Center(
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ItemPick(onTap: _takePhoto),
+                                              if (_gallery.isNotEmpty ||
+                                                  _galleryFromApi.isNotEmpty)
+                                                Padding(
+                                                  padding:
+                                                      EdgeInsetsDirectional.only(
+                                                        start: 20.w,
+                                                      ),
+                                                  child: AllImagesItem(
+                                                    imageList: _gallery.isNotEmpty
+                                                        ? _gallery
+                                                              .map((e) => e.path)
+                                                              .toList()
+                                                        : _galleryFromApi,
+                                                    onTap: () {
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        isScrollControlled: true,
+                                                        builder: (context) => StatefulBuilder(
+                                                          builder: (context, setState2) => BaseSheet(
+                                                            title: '',
+                                                            child: SingleChildScrollView(
+                                                              child: Column(
+                                                                children: List.generate(
+                                                                  _gallery.isNotEmpty
+                                                                      ? _gallery
+                                                                            .length
+                                                                      : _galleryFromApi
+                                                                            .length,
+                                                                  (
+                                                                    index,
+                                                                  ) => Padding(
+                                                                    padding:
+                                                                        EdgeInsets.only(
+                                                                          bottom:
+                                                                              12.h,
                                                                         ),
-                                                                      ),
-                                                                      Positioned(
-                                                                        top: 4,
-                                                                        right:
-                                                                            4,
-                                                                        child: GestureDetector(
-                                                                          onTap: () {
-                                                                            if (_gallery.isNotEmpty) {
-                                                                              _gallery.removeAt(
-                                                                                index,
+                                                                    child: Stack(
+                                                                      children: [
+                                                                        ClipRRect(
+                                                                          borderRadius:
+                                                                              BorderRadiusGeometry.circular(
+                                                                                15.r,
+                                                                              ),
+                                                                          child: AppImage(
+                                                                            _gallery.isNotEmpty
+                                                                                ? _gallery[index].path
+                                                                                : _galleryFromApi[index],
+                                                                            height:
+                                                                                150.h,
+                                                                            width: MediaQuery.of(
+                                                                              context,
+                                                                            ).size.width,
+                                                                            fit: BoxFit
+                                                                                .cover,
+                                                                          ),
+                                                                        ),
+                                                                        Positioned(
+                                                                          top: 4,
+                                                                          right:
+                                                                              4,
+                                                                          child: GestureDetector(
+                                                                            onTap: () {
+                                                                              if (_gallery.isNotEmpty) {
+                                                                                _gallery.removeAt(
+                                                                                  index,
+                                                                                );
+                                                                              } else {
+                                                                                _galleryFromApi.removeAt(
+                                                                                  index,
+                                                                                );
+                                                                              }
+        
+                                                                              if (_gallery.isEmpty &&
+                                                                                  _galleryFromApi.isEmpty) {
+                                                                                Navigator.pop(
+                                                                                  context,
+                                                                                );
+                                                                              }
+                                                                              setState(
+                                                                                () {},
                                                                               );
-                                                                            } else {
-                                                                              _galleryFromApi.removeAt(
-                                                                                index,
+                                                                              setState2(
+                                                                                () {},
                                                                               );
-                                                                            }
-
-                                                                            if (_gallery.isEmpty &&
-                                                                                _galleryFromApi.isEmpty) {
-                                                                              Navigator.pop(
-                                                                                context,
-                                                                              );
-                                                                            }
-                                                                            setState(
-                                                                              () {},
-                                                                            );
-                                                                            setState2(
-                                                                              () {},
-                                                                            );
-                                                                          },
-                                                                          child: Container(
-                                                                            decoration: const BoxDecoration(
-                                                                              color: AppTheme.canvasColor,
-                                                                              shape: BoxShape.circle,
-                                                                            ),
-                                                                            child: Icon(
-                                                                              Icons.close,
-                                                                              size: 20.sp,
-                                                                              color: AppTheme.primary,
+                                                                            },
+                                                                            child: Container(
+                                                                              decoration: const BoxDecoration(
+                                                                                color: AppTheme.canvasColor,
+                                                                                shape: BoxShape.circle,
+                                                                              ),
+                                                                              child: Icon(
+                                                                                Icons.close,
+                                                                                size: 20.sp,
+                                                                                color: AppTheme.primary,
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                    ],
+                                                                      ],
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  },
+                                                      );
+                                                    },
+                                                  ),
                                                 ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        LocaleKeys.nationalID.tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      if (_identityPhoto != null ||
-                                          _identityPhotoApi != null)
-                                        ItemImage(
-                                          image: _identityPhoto != null
-                                              ? _identityPhoto!.path
-                                              : _identityPhotoApi!,
-                                          onRemove: () {
-                                            _identityPhoto = null;
-                                            _identityPhotoApi = null;
-                                            setState(() {});
-                                          },
-                                        ),
-                                      if (_identityPhoto == null &&
-                                          _identityPhotoApi == null)
-                                        Center(
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              ItemPick(
-                                                onTap: _pickIdentityPhoto,
-                                              ),
-                                              SizedBox(width: 20.w),
-                                              ItemTake(
-                                                onTap: _takeIdentityPhoto,
-                                              ),
                                             ],
                                           ),
                                         ),
-
-                                      SizedBox(height: 20.h),
-                                      Text(
-                                        LocaleKeys.commercialRegistration.tr(),
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10.h),
-                                      if (_practicePhoto != null ||
-                                          _practicePhotoApi != null)
-                                        ItemImage(
-                                          image: _practicePhoto != null
-                                              ? _practicePhoto!.path
-                                              : _practicePhotoApi!,
-                                          onRemove: () {
-                                            _practicePhoto = null;
-                                            _practicePhotoApi = null;
-                                            setState(() {});
-                                          },
-                                        ),
-                                      if (_practicePhoto == null &&
-                                          _practicePhotoApi == null)
-                                        Center(
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              ItemPick(
-                                                onTap: _pickPracticePhoto,
-                                              ),
-                                              SizedBox(width: 20.w),
-                                              ItemTake(
-                                                onTap: _takePracticePhoto,
-                                              ),
-                                            ],
+        
+                                        SizedBox(height: 20.h),
+                                        Text(
+                                          LocaleKeys.nationalID.tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
                                           ),
                                         ),
-                                    ],
-                                  ),
-                          ),
-                        );
-                      }
-                      return Expanded(child: AppLoading());
-                    },
-                  ),
-                ],
+                                        SizedBox(height: 10.h),
+                                        if (_identityPhoto != null ||
+                                            _identityPhotoApi != null)
+                                          ItemImage(
+                                            image: _identityPhoto != null
+                                                ? _identityPhoto!.path
+                                                : _identityPhotoApi!,
+                                            onRemove: () {
+                                              _identityPhoto = null;
+                                              _identityPhotoApi = null;
+                                              setState(() {});
+                                            },
+                                          ),
+                                        if (_identityPhoto == null &&
+                                            _identityPhotoApi == null)
+                                          Center(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ItemPick(
+                                                  onTap: _pickIdentityPhoto,
+                                                ),
+                                                SizedBox(width: 20.w),
+                                                ItemTake(
+                                                  onTap: _takeIdentityPhoto,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+        
+                                        SizedBox(height: 20.h),
+                                        Text(
+                                          LocaleKeys.commercialRegistration.tr(),
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        SizedBox(height: 10.h),
+                                        if (_practicePhoto != null ||
+                                            _practicePhotoApi != null)
+                                          ItemImage(
+                                            image: _practicePhoto != null
+                                                ? _practicePhoto!.path
+                                                : _practicePhotoApi!,
+                                            onRemove: () {
+                                              _practicePhoto = null;
+                                              _practicePhotoApi = null;
+                                              setState(() {});
+                                            },
+                                          ),
+                                        if (_practicePhoto == null &&
+                                            _practicePhotoApi == null)
+                                          Center(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ItemPick(
+                                                  onTap: _pickPracticePhoto,
+                                                ),
+                                                SizedBox(width: 20.w),
+                                                ItemTake(
+                                                  onTap: _takePracticePhoto,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                            ),
+                          );
+                        }
+                        return Expanded(child: AppLoading());
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
       bottomNavigationBar: canEdit
           ? BlocConsumer(
