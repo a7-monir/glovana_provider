@@ -231,5 +231,18 @@
   "completeData": "أكمل البيانات",
   "accept": "قبول",
   "reject": "رفض",
-  "onTheWay": "في الطريق"
+  "onTheWay": "في الطريق",
+  "hereYouCanCreateGeneralDiscount": "هنا يمكنك إنشاء خصم عام لجميع خدماتك، أو خصم محدد لخدمة معينة.",
+  "selectTheServiceYouLikeToApplyDiscountTo": "اختر الخدمة التي ترغب في تطبيق الخصم عليها.",
+  "selectAll": "تحديد الكل",
+  "days": "الأيام",
+
+  "pleaseSelectService": "يرجى اختيار الخدمة",
+  "pleaseSelectDiscountPercentage": "يرجى اختيار نسبة الخصم",
+  "pleaseSelectRangeOfDays": "يرجى اختيار نطاق الأيام",
+  "discountTitle": "عنوان الخصم",
+  "discountDescription": "وصف الخصم",
+  "unselectAll": "إلغاء تحديد الكل"
+
+
 }

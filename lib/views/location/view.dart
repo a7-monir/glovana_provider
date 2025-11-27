@@ -28,17 +28,20 @@ class _LocationViewState extends State<LocationView> {
   late GoogleMapController googleMapController;
   final _controller = Completer<GoogleMapController>();
 
-  LatLng initialAddress = LatLng(31.963158, 35.930359);
-  LatLng? currentCenter;
+  LatLng currentCenter = const LatLng(31.963158, 35.930359);
   String? currentAddressText;
   double zoom = 14;
 
   @override
   void initState() {
     super.initState();
+
+    // لو فيه موقع مبدأي
     if (widget.initialLocation != null) {
-      initialAddress = widget.initialLocation!;
+      currentCenter = widget.initialLocation!;
     }
+
+    // متابعة حالة خدمة الـ GPS
     Geolocator.getServiceStatusStream().listen((event) {
       if (event == ServiceStatus.enabled) {
         goToMyLocation();
@@ -49,29 +52,32 @@ class _LocationViewState extends State<LocationView> {
   Future<void> goToMyLocation() async {
     googleMapController = await _controller.future;
     final pos = await getCurrentLocation();
-    final location = pos.latLang;
-    if (location != null) {
-      goTo(location);
-    }
-  }
-
-  Future<void> goTo(LatLng location) async {
-    zoom = 14;
-    await googleMapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(zoom: zoom, target: location),
-      ),
+    final location = pos.latLang ?? currentCenter;
+    googleMapController.animateCamera(
+      CameraUpdate.newLatLngZoom(location, zoom),
     );
+    await updateAddress(location);
+    setState(() {
+      currentCenter = location;
+    });
   }
 
   Future<void> updateAddress(LatLng location) async {
-    final placeMarks = await placemarkFromCoordinates(
-      location.latitude,
-      location.longitude,
-    );
-    currentAddressText =
-    "${placeMarks.first.locality ?? ''}${placeMarks.first.locality?.isNotEmpty == true ? " - " : ""}${placeMarks.first.subAdministrativeArea ?? ''}";
-    setState(() {});
+    try {
+      final placeMarks = await placemarkFromCoordinates(
+        location.latitude,
+        location.longitude,
+      );
+      if (placeMarks.isNotEmpty) {
+        final place = placeMarks.first;
+        setState(() {
+          currentAddressText =
+          "${place.locality ?? ''}${place.locality?.isNotEmpty == true ? " - " : ""}${place.subAdministrativeArea ?? ''}";
+        });
+      }
+    } catch (e) {
+      debugPrint("Error in get address: $e");
+    }
   }
 
   @override
@@ -81,19 +87,18 @@ class _LocationViewState extends State<LocationView> {
         alignment: Alignment.center,
         children: [
           GoogleMap(
-            myLocationButtonEnabled: true,
+            myLocationButtonEnabled: false,
             myLocationEnabled: true,
+            zoomControlsEnabled: false,
             initialCameraPosition: CameraPosition(
-              target: initialAddress,
+              target: currentCenter,
               zoom: zoom,
             ),
             onCameraMove: (position) {
               currentCenter = position.target;
             },
             onCameraIdle: () {
-              if (currentCenter != null) {
-                updateAddress(currentCenter!);
-              }
+              updateAddress(currentCenter);
             },
             onMapCreated: (controller) {
               _controller.complete(controller);
@@ -101,12 +106,13 @@ class _LocationViewState extends State<LocationView> {
             },
           ),
 
-           Icon(
-            Icons.location_pin,
-            size: 40,
-            color: AppTheme.primary,
+          IgnorePointer(
+            child: Icon(
+              Icons.location_on,
+              size: 50,
+              color: AppTheme.primary,
+            ),
           ),
-
 
           Positioned(
             top: 50,
@@ -122,13 +128,28 @@ class _LocationViewState extends State<LocationView> {
                 ],
               ),
               child: Text(
-                currentAddressText ??" LocaleKeys.loading.tr()",
+                currentAddressText ?? '',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14.sp),
               ),
             ),
           ),
 
+
+          Positioned(
+            bottom: 110,
+            right: 16,
+            child: FloatingActionButton(
+              heroTag: "goToMyLocation",
+              backgroundColor: Colors.white,
+              shape: const CircleBorder(),
+              onPressed: goToMyLocation,
+              child: Icon(
+                Icons.my_location,
+                color: AppTheme.primary,
+              ),
+            ),
+          ),
 
           if (widget.withButton)
             Positioned(
@@ -142,7 +163,7 @@ class _LocationViewState extends State<LocationView> {
                   Navigator.pop(
                     context,
                     MyAddressModel(
-                      location: currentCenter!,
+                      location: currentCenter,
                       description: currentAddressText ?? '',
                     ),
                   );

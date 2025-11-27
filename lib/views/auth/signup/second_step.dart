@@ -25,7 +25,11 @@ class SecondStepSignUpView extends StatefulWidget {
   final FirstStepModel firstStepModel;
   final bool isSalon;
 
-  const SecondStepSignUpView({super.key, required this.firstStepModel, required this.isSalon});
+  const SecondStepSignUpView({
+    super.key,
+    required this.firstStepModel,
+    required this.isSalon,
+  });
 
   @override
   State<SecondStepSignUpView> createState() => _SecondStepSignUpViewState();
@@ -217,58 +221,60 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
   List<Service2> _selectedServices = []; // For service booking type
   List<Service2> allServices = [];
 
-  // void _showMultiSelect(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (ctx) {
-  //       return StatefulBuilder(
-  //         builder: (context, setDialogState) {
-  //           return AlertDialog(
-  //             title: Text("select_services".tr()),
-  //             content: SizedBox(
-  //               width: double.maxFinite,
-  //               child: ListView.builder(
-  //                 shrinkWrap: true,
-  //                 itemCount: allServices.length,
-  //                 itemBuilder: (context, index) {
-  //                   final service = allServices[index];
-  //                   return CheckboxListTile(
-  //                     title: Text(service.name ?? ""),
-  //                     value: _selectedServices.contains(service),
-  //                     onChanged: (bool? value) {
-  //                       setDialogState(() {
-  //                         if (value == true) {
-  //                           _selectedServices.add(service);
-  //                         } else {
-  //                           _selectedServices.remove(service);
-  //                         }
-  //                       });
-  //                     },
-  //                   );
-  //                 },
-  //               ),
-  //             ),
-  //             actions: [
-  //               TextButton(
-  //                 onPressed: () => Navigator.pop(ctx),
-  //                 child: Text(LocaleKeys.cancel.tr()),
-  //               ),
-  //               TextButton(
-  //                 onPressed: () {
-  //                   Navigator.pop(ctx);
-  //                   setState(() {});
-  //                 },
-  //                 child: Text(LocaleKeys.confirm.tr()),
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     },
-  //   ).then((value) {
-  //     setState(() {});
-  //   });
-  // }
+  void _showMultiSelect(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text("select_services".tr()),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: allServices.length,
+                  itemBuilder: (context, index) {
+                    final service = allServices[index];
+                    return CheckboxListTile(
+                      title: Text(service.name),
+                      checkColor: AppTheme.bgLightColor,
+                      activeColor: AppTheme.primary,
+                      value: _selectedServices.contains(service),
+                      onChanged: (bool? value) {
+                        setDialogState(() {
+                          if (value == true) {
+                            _selectedServices.add(service);
+                          } else {
+                            _selectedServices.remove(service);
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(LocaleKeys.cancel.tr()),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    setState(() {});
+                  },
+                  child: Text(LocaleKeys.confirm.tr()),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((value) {
+      setState(() {});
+    });
+  }
 
   void _showServicePriceDialog(BuildContext context) {
     showDialog(
@@ -399,7 +405,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
 
   void _showPriceInputDialog(
     BuildContext context,
-      Service2 service,
+    Service2 service,
     Function setDialogState,
   ) {
     final priceController = TextEditingController();
@@ -585,7 +591,6 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                       }).toList(),
                     )
                   else
-                    // غير كده: نعرض كل الأيام المفعّلة ما عدا always
                     Column(
                       children: days.keys.map((day) {
                         final dayData = days[day]!;
@@ -607,125 +612,170 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
               Divider(height: 2),
               SizedBox(height: 20.h),
 
-              if (widget.firstStepModel.bookingType != "hourly") ...[
-                Text(LocaleKeys.WhatYourService.tr()),
-                SizedBox(height: 10.h),
-                BlocConsumer(
-                  bloc: servicesBloc,
-                  listener: (context, state) {
-                    if (state is GetServicesSuccessState) {
-                      allServices = state.list;
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is GetServicesFailedState) {
-                      return AppFailed(
-                        response: state.response,
-                        isSmallShape: true,
-                        onPress: () => servicesBloc.add(GetServicesEvent()),
-                      );
-                    } else if (state is GetServicesSuccessState) {
-                      return InkWell(
-                        onTap: () => _showServicePriceDialog(context),
-                        child:  Row(
-                                children: [
-                                  AppCircleIcon(
-                                    img: 'plus.png',
-                                    bgRadius: 18.r,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: _selectedServicesWithPrices
-                                            .map(
-                                              (serviceWithPrice) => Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                  vertical: 4.h,
+              Text(LocaleKeys.WhatYourService.tr()),
+              SizedBox(height: 10.h),
+              BlocConsumer(
+                bloc: servicesBloc,
+                listener: (context, state) {
+                  if (state is GetServicesSuccessState) {
+                    allServices = state.list;
+                  }
+                },
+                builder: (context, state) {
+                  if (state is GetServicesFailedState) {
+                    return AppFailed(
+                      response: state.response,
+                      isSmallShape: true,
+                      onPress: () => servicesBloc.add(GetServicesEvent()),
+                    );
+                  } else if (state is GetServicesSuccessState) {
+                    return InkWell(
+                      onTap: () => widget.firstStepModel.bookingType == "hourly"
+                          ? _showMultiSelect(context)
+                          : _showServicePriceDialog(context),
+                      child: Row(
+                        children: [
+                          AppCircleIcon(img: 'plus.png', bgRadius: 18.r),
+                          SizedBox(width: 8.w),
+                          if (widget.firstStepModel.bookingType ==
+                              "hourly") ...[
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: _selectedServices
+                                      .map(
+                                        (serviceWithPrice) => Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 4.h,
+                                          ),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 4.w,
+                                            ),
+                                            margin: EdgeInsetsDirectional.only(
+                                              end: 8.w,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.hoverColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(15.r),
+                                              boxShadow: [AppTheme.mainShadow],
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Text(serviceWithPrice.name),
+
+                                                IconButton(
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _selectedServices
+                                                          .remove(
+                                                            serviceWithPrice,
+                                                          );
+                                                    });
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.close,
+                                                    size: 20.sp,
+                                                    color: Colors.red,
+                                                  ),
                                                 ),
-                                                child: Container(
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
+                            ),
+                          ] else ...[
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: _selectedServicesWithPrices
+                                      .map(
+                                        (serviceWithPrice) => Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 4.h,
+                                          ),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 4.w,
+                                            ),
+                                            margin: EdgeInsetsDirectional.only(
+                                              end: 8.w,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.hoverColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(15.r),
+                                              boxShadow: [AppTheme.mainShadow],
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  serviceWithPrice.service.name,
+                                                ),
+                                                SizedBox(width: 4.w),
+                                                Container(
                                                   padding: EdgeInsets.symmetric(
                                                     horizontal: 4.w,
                                                   ),
-                                                  margin:
-                                                      EdgeInsetsDirectional.only(
-                                                        end: 8.w,
-                                                      ),
                                                   decoration: BoxDecoration(
-                                                    color: AppTheme.hoverColor,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           15.r,
                                                         ),
-                                                    boxShadow: [
-                                                      AppTheme.mainShadow,
-                                                    ],
+                                                    color: AppTheme.canvasColor,
                                                   ),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        serviceWithPrice
-                                                            .service
-                                                            .name,
-                                                      ),
-                                                      SizedBox(width: 4.w),
-                                                      Container(
-                                                        padding:
-                                                            EdgeInsets.symmetric(
-                                                              horizontal: 4.w,
-                                                            ),
-                                                        decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                15.r,
-                                                              ),
-                                                          color: AppTheme
-                                                              .canvasColor,
-                                                        ),
-                                                        child: Text(
-                                                          "${serviceWithPrice.price} ${LocaleKeys.jod.tr()}",
-                                                        ),
-                                                      ),
-                                                      IconButton(
-                                                        padding:
-                                                            EdgeInsets.zero,
-                                                        constraints:
-                                                            const BoxConstraints(),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            _selectedServicesWithPrices
-                                                                .remove(
-                                                                  serviceWithPrice,
-                                                                );
-                                                          });
-                                                        },
-                                                        icon: Icon(
-                                                          Icons.close,
-                                                          size: 20.sp,
-                                                          color: Colors.red,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  child: Text(
+                                                    "${serviceWithPrice.price} ${LocaleKeys.jod.tr()}",
                                                   ),
                                                 ),
-                                              ),
-                                            )
-                                            .toList(),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                                IconButton(
+                                                  padding: EdgeInsets.zero,
+                                                  constraints:
+                                                      const BoxConstraints(),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _selectedServicesWithPrices
+                                                          .remove(
+                                                            serviceWithPrice,
+                                                          );
+                                                    });
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.close,
+                                                    size: 20.sp,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
                               ),
-                      );
-                    }
-                    return SizedBox.shrink();
-                  },
-                ),
-                SizedBox(height: 32.h),
-              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  }
+                  return SizedBox.shrink();
+                },
+              ),
+              SizedBox(height: 32.h),
               Text(
                 widget.firstStepModel.bookingType != "hourly"
                     ? LocaleKeys.setTheMaximumNumberOfBookingsPerHour.tr()
@@ -750,7 +800,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                         ),
                       ),
                     ),
-                    if(widget.firstStepModel.bookingType == "hourly")...[
+                    if (widget.firstStepModel.bookingType == "hourly") ...[
                       SizedBox(width: 8.w),
 
                       Text(
@@ -762,8 +812,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                           color: Colors.black,
                         ),
                       ),
-                    ]
-
+                    ],
                   ],
                 ),
               ),
@@ -831,12 +880,17 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                         serviceWithPrice: _selectedServicesWithPrices
                             .map((service) => service.toMap())
                             .toList(),
-                        service: _selectedServicesWithPrices
-                            .map((service) => service.service.id)
+                        service: _selectedServices
+                            .map((service) => service.id)
                             .toList(),
                         availability: availability,
                       );
-                      navigateTo(LastStepSingUpView(secondStepModel: model,isSalon: widget.isSalon,));
+                      navigateTo(
+                        LastStepSingUpView(
+                          secondStepModel: model,
+                          isSalon: widget.isSalon,
+                        ),
+                      );
                     } else {
                       validateMode = AutovalidateMode.onUserInteraction;
                       setState(() {});
@@ -864,11 +918,7 @@ class ServiceWithPrice {
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'service_id': service.id,
-      'price': price,
-      'is_active': isActive,
-    };
+    return {'service_id': service.id, 'price': price, 'is_active': isActive};
   }
 }
 

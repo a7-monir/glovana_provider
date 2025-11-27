@@ -15,11 +15,13 @@ import 'package:kiwi/kiwi.dart';
 import '../core/logic/dio_helper.dart';
 import '../sheets/delete_account/bloc/bloc.dart';
 import 'add_address/bloc.dart';
+import 'add_discount/bloc.dart';
 import 'address/bloc.dart';
 import 'appointment_details/bloc.dart';
 import 'appointments/bloc.dart';
 
 import 'complete_data/bloc.dart';
+import 'complete_data_update/bloc.dart';
 import 'delivery/bloc.dart';
 import 'edit_profile/bloc.dart';
 
@@ -37,10 +39,9 @@ void initKiwi() {
   con.registerFactory((c) => GetProviderProfileBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetAppointmentsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetAddressBloc(c.resolve<DioHelper>()));
-
   con.registerFactory((c) => GetDeliveryBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => AddAddressBloc(c.resolve<DioHelper>()));
-
+  con.registerFactory((c) => AddDiscountBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => SocialLoginBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetWalletBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetStaticPageBloc(c.resolve<DioHelper>()));
@@ -54,4 +55,5 @@ void initKiwi() {
   con.registerFactory((c) => CompleteDataBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => ProviderUpdateStatusBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => DeleteAccountBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => CompleteDataUpdateBloc(c.resolve<DioHelper>()));
 }

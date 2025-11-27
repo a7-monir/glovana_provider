@@ -200,7 +200,7 @@ class ProviderType {
   late final String address;
   late final int pricePerHour;
   late final int status;
-  late final int isVip;
+  late final bool isVip;
   late final String createdAt;
   late final String updatedAt;
   late final int isFavourite;
@@ -218,10 +218,10 @@ class ProviderType {
     address = json["address"] ?? '';
     pricePerHour = json["price_per_hour"] ?? 0;
     status = json["status"] ?? 0;
-    isVip = json["is_vip"] ?? 0;
+    isVip = json["is_vip"] ?? false;
     createdAt = json["created_at"] ?? '';
     updatedAt = json["updated_at"] ?? '';
-    isFavourite = json["is_favourite"] ?? 0;
+    isFavourite = json["is_favourite"] ?? false;
     type = Type.fromJson(json["type"] ?? {});
   }
 }

@@ -236,5 +236,15 @@ abstract class  LocaleKeys {
   static const accept = 'accept';
   static const reject = 'reject';
   static const onTheWay = 'onTheWay';
+  static const hereYouCanCreateGeneralDiscount = 'hereYouCanCreateGeneralDiscount';
+  static const selectTheServiceYouLikeToApplyDiscountTo = 'selectTheServiceYouLikeToApplyDiscountTo';
+  static const selectAll = 'selectAll';
+  static const days = 'days';
+  static const pleaseSelectService = 'pleaseSelectService';
+  static const pleaseSelectDiscountPercentage = 'pleaseSelectDiscountPercentage';
+  static const pleaseSelectRangeOfDays = 'pleaseSelectRangeOfDays';
+  static const discountTitle = 'discountTitle';
+  static const discountDescription = 'discountDescription';
+  static const unselectAll = 'unselectAll';
 
 }

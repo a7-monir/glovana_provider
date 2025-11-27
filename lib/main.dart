@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,34 +20,9 @@ import 'firebase_options.dart';
 
 import 'package:firebase_app_check/firebase_app_check.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // await FirebaseAppCheck.instance.activate(
-  //   androidProvider: AndroidProvider.debug,
-  //   appleProvider: AppleProvider.debug,
-  // );
-
-  //FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
-
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await GlobalNotification.instance.setUpFirebase();
-
-  await EasyLocalization.ensureInitialized();
-  await CacheHelper.init();
-  Bloc.observer = MyBlocObserver();
-  initKiwi();
-
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-  ));
+  await init();
 
   runApp(
     EasyLocalization(
@@ -59,19 +35,80 @@ Future<void> main() async {
   );
 }
 
+Future<void> init() async {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
+
+  await EasyLocalization.ensureInitialized();
+  await CacheHelper.init();
+  await initFirebase();
+  Bloc.observer = MyBlocObserver();
+  initKiwi();
+}
+
+Future<void> initFirebase() async {
+  try {
+    const firebaseAppName = 'GlovanaApp';
+
+    FirebaseApp? app;
+
+    try {
+      app = Firebase.app(firebaseAppName);
+    } catch (_) {
+      app = await Firebase.initializeApp(
+        name: firebaseAppName,
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+
+    if (kDebugMode) {
+      print('✅ Firebase initialized with app name: ${app.name}');
+    }
+
+    await GlobalNotification().setUpFirebase();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  } catch (e) {
+    if (kDebugMode) {
+      print('⚠️ Firebase init error: $e');
+    }
+  }
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   final langBloc = KiwiContainer().resolve<ToggleLangBloc>();
+  bool isTablet = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final width = MediaQuery.of(context).size.width;
+    isTablet = width >= 650;
+
+    print("isTablet: $isTablet");
+  }
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(402, 874),
+      designSize: isTablet ? Size(874, 402) : Size(402, 874),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {

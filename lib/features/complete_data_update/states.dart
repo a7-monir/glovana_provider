@@ -1,18 +1,20 @@
 part of 'bloc.dart';
 
-class CompleteDataStates {}
+class CompleteDataUpdateStates {}
 
-class CompleteDataLoadingState extends CompleteDataStates {}
+class CompleteDataUpdateLoadingState extends CompleteDataUpdateStates {}
 
-class CompleteDataFailedState extends CompleteDataStates {
+class CompleteDataUpdateFailedState extends CompleteDataUpdateStates {
   final String msg;
   final int? statusCode;
 
-  CompleteDataFailedState({required this.msg, this.statusCode}) {
+  CompleteDataUpdateFailedState({required this.msg, this.statusCode}) {
     showMessage(msg);
   }
 }
 
-class CompleteDataSuccessState extends CompleteDataStates {
+class CompleteDataUpdateSuccessState extends CompleteDataUpdateStates {
+  final String msg;
 
+  CompleteDataUpdateSuccessState({required this.msg});
 }

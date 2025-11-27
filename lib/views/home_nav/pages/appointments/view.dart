@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
+import 'package:glovana_provider/core/design/app_refresh.dart';
 import 'package:glovana_provider/features/appointments/bloc.dart';
 import 'package:kiwi/kiwi.dart';
 import '../../../../core/app_theme.dart';
@@ -12,8 +13,11 @@ import '../../../../core/design/app_empty.dart';
 import '../../../../core/design/app_failed.dart';
 import '../../../../core/design/app_shimmer.dart';
 import '../../../../core/logic/helper_methods.dart';
+import '../../../../features/provider_profile/bloc.dart';
+import '../../../../features/provider_update_status/bloc.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../appointment_details/view.dart';
+import '../../../setting/view.dart';
 
 class AppointmentsView extends StatefulWidget {
   const AppointmentsView({super.key});
@@ -48,12 +52,20 @@ class _AppointmentsViewState extends State<AppointmentsView> {
     }
   }
 
+  bool isAscending = false;
+
   @override
   void initState() {
     super.initState();
     bloc.status = AppointmentStatus.pending;
     bloc.add(GetAppointmentsEvent());
   }
+
+  List<Appointment> selectedList = [];
+  final updateStatusBloc = KiwiContainer().resolve<ProviderUpdateStatusBloc>();
+  int? status,providerId;
+  final profileBloc = KiwiContainer().resolve<GetProviderProfileBloc>()
+    ..add(GetProviderProfileEvent());
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +87,106 @@ class _AppointmentsViewState extends State<AppointmentsView> {
       ),
       body: Column(
         children: [
+          BlocListener(
+            bloc: profileBloc,
+            listener: (context, state) {
+              if (state is GetProviderProfileSuccessState) {
+                if (state.model.providerTypes.isNotEmpty) {
+                  status = state.model.providerTypes.first.status;
+                  providerId=state.model.providerTypes.first.id;
+
+                  setState(() {});
+                }
+              }
+            },
+            child: Padding(
+              padding: EdgeInsetsDirectional.symmetric(
+                horizontal: 14.w,
+              ).copyWith(bottom: 20.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    LocaleKeys.stopReceivingAllOrders.tr(),
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  BlocConsumer(
+                    bloc: updateStatusBloc,
+                    listener: (context, state) {
+                      if (state is ProviderUpdateStatusSuccessState) {
+                        status = state.status;
+                        setState(() {});
+                      }
+                    },
+                    builder: (context, state) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40.r),
+                          color: Theme.of(context).cardColor,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.25),
+                              blurRadius: 4.r,
+                              offset: const Offset(0, 4),
+                              //blurStyle: BlurStyle.
+                            ),
+                          ],
+                        ),
+                        child: state is ProviderUpdateStatusLoadingState
+                            ? Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 30.w,
+                            vertical: 4.h,
+                          ),
+                          child: SizedBox(
+                            height: 16.h,
+                            width: 16.h,
+                            child: CircularProgressIndicator(
+                              color: AppTheme.primary,
+                              strokeWidth: 2.w,
+                            ),
+                          ),
+                        )
+                            : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            BuildToggleButton(
+                              text: LocaleKeys.off.tr(),
+                              isActive: status == 2,
+                              onTap: () {
+                                if (status != 2) {
+                                  updateStatusBloc.add(
+                                    ProviderUpdateStatusEvent(typeId: providerId!),
+                                  );
+                                }
+                              },
+                            ),
+                            BuildToggleButton(
+                              text: LocaleKeys.on.tr(),
+                              isActive: status == 1,
+                              onTap: () {
+                                if (status != 1) {
+                                  updateStatusBloc.add(
+                                    ProviderUpdateStatusEvent(typeId: providerId!),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
           Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 14.w),
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
             child: Row(
               children: [
                 Expanded(
@@ -86,6 +196,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                     onTap: () {
                       if (bloc.status != AppointmentStatus.pending) {
                         bloc.status = AppointmentStatus.pending;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
                         bloc.add(GetAppointmentsEvent());
                         setState(() {});
                       }
@@ -100,6 +212,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                     onTap: () {
                       if (bloc.status != AppointmentStatus.onTheWay) {
                         bloc.status = AppointmentStatus.onTheWay;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
                         bloc.add(GetAppointmentsEvent());
                         setState(() {});
                       }
@@ -114,6 +228,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                     onTap: () {
                       if (bloc.status != AppointmentStatus.confirmed) {
                         bloc.status = AppointmentStatus.confirmed;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
                         bloc.add(GetAppointmentsEvent());
                         setState(() {});
                       }
@@ -125,53 +241,94 @@ class _AppointmentsViewState extends State<AppointmentsView> {
           ),
           SizedBox(height: 20.h),
           Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 14.w),
-            child: GestureDetector(
-              onTap: selectDateRange,
-              child: Row(
-                children: [
-                  if (bloc.startDate != null && bloc.endDate != null) ...[
-                    Text.rich(TextSpan(
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (selectedList.isNotEmpty) {
+                      isAscending = !isAscending;
+                      selectedList.sort((a, b) {
+                        final dateA = DateTime.parse(a.date);
+                        final dateB = DateTime.parse(b.date);
+                        return isAscending
+                            ? dateA.compareTo(dateB)
+                            : dateB.compareTo(dateA);
+                      });
+                      setState(() {});
+                    }
+                  },
+                  child: Text(
+                    LocaleKeys.recently.tr(),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                AppImage('arrow_down.png', height: 12.h, width: 12.h),
+                SizedBox(width: 16.w),
+                if (bloc.startDate != null && bloc.endDate != null) ...[
+                  Expanded(
+                    child: Text.rich(
+                      TextSpan(
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400,
                         ),
                         children: [
-                          TextSpan(text: LocaleKeys.from.tr()),
+                          TextSpan(text: LocaleKeys.date.tr()),
                           TextSpan(
-                            text: ": ${bloc.startDate}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                            ),
+                            text: " : ${bloc.startDate} ",
+                            style: TextStyle(fontWeight: FontWeight.w700),
                           ),
-                          TextSpan(text: LocaleKeys.to.tr()),
-                          TextSpan(
-                            text: ': ${bloc.endDate}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ]))
-                  ] else ...[
-                    Text(
-                      LocaleKeys.recently.tr(),
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
+                        ],
                       ),
                     ),
-                    AppImage('arrow_down.png',height: 12.h,width: 12.h,)
-                  ],
+                  ),
+                ] else ...[
+                  SizedBox.shrink(),
                   Spacer(),
-                  AppCircleIcon(img: 'calender.png',bgRadius: 36.r,radius: 22.r,)
                 ],
-              ),
+
+                GestureDetector(
+                  onTap: () async {
+                    final result = await showDatePicker(
+                      context: context,
+                      locale: Locale("en"),
+                      firstDate: DateTime(1800),
+                      lastDate: DateTime.now(),
+                    );
+                    if (result != null) {
+                      bloc.startDate = DateFormat(
+                        "yyyy-MM-dd",
+                        "en",
+                      ).format(result);
+                      bloc.endDate = DateFormat(
+                        "yyyy-MM-dd",
+                        "en",
+                      ).format(result);
+                      bloc.add(GetAppointmentsEvent());
+                    }
+                  },
+                  child: AppCircleIcon(
+                    img: 'calender.png',
+                    bgRadius: 36.r,
+                    radius: 22.r,
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: 4.h),
           Expanded(
-            child: BlocBuilder(
+            child: BlocConsumer(
               bloc: bloc,
+              listener: (context, state) {
+                if (state is GetAppointmentsSuccessState) {
+                  selectedList = state.list;
+                }
+              },
               builder: (context, state) {
                 if (state is GetAppointmentsFailedState) {
                   return AppFailed(
@@ -182,19 +339,43 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   );
                 } else if (state is GetAppointmentsSuccessState) {
                   if (state.list.isEmpty) {
-                    return AppEmpty(title: LocaleKeys.appointments.tr());
+                    return AppRefresh(
+                      event: () async {
+                        bloc.add(GetAppointmentsEvent());
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height / 3,
+                          ),
+                          child: AppEmpty(title: LocaleKeys.appointments.tr()),
+                        ),
+                      ),
+                    );
                   }
-                  return ListView.separated(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 16.h,
-                      horizontal: 40.w,
+                  return AppRefresh(
+                    event: () async {
+                      bloc.add(GetAppointmentsEvent());
+                    },
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 16.h,
+                            horizontal: 40.w,
+                          ),
+                          itemBuilder: (context, index) =>
+                              _Item(model: selectedList[index]),
+                          separatorBuilder: (context, index) =>
+                              SizedBox(height: 23.h),
+                          itemCount: selectedList.length,
+                        );
+                      },
                     ),
-                    itemBuilder: (context, index) =>
-                        _Item(model: state.list[index]),
-                    separatorBuilder: (context, index) =>
-                        SizedBox(height: 23.h),
-                    itemCount: state.list.length,
                   );
+                  ;
                 }
                 return _Loading();
               },

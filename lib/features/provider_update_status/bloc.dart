@@ -27,7 +27,7 @@ class ProviderUpdateStatusBloc extends Bloc<ProviderUpdateStatusEvents, Provider
   void _sendData(ProviderUpdateStatusEvent event, Emitter<ProviderUpdateStatusStates> emit) async {
     emit(ProviderUpdateStatusLoadingState());
     final response = await _dio.send(
-      "provider/updateStatus/${CacheHelper.id}",
+      "provider/updateStatus/${event.typeId}",
 
     );
     if (response.isSuccess) {

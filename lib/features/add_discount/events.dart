@@ -1,9 +1,13 @@
 part of 'bloc.dart';
 
-class UpdateStatusEvents {}
+class AddDiscountEvents {}
 
-class UpdateStatusEvent extends UpdateStatusEvents {
-  final int id,newStatus;
+class AddDiscountEvent extends AddDiscountEvents {
+  final int providerId;
+  final double percentage;
+  final String startDate,endDate;
+  final List<int> serviceIds;
 
-  UpdateStatusEvent({required this.id, required this.newStatus});
+  AddDiscountEvent({required this.providerId, required this.percentage, required this.startDate, required this.endDate, required this.serviceIds});
+
 }

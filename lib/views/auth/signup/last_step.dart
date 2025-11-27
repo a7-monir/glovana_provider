@@ -485,7 +485,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                         serviceIds:
                             widget.secondStepModel.firstStepModel.bookingType ==
                                 "hourly"
-                            ? null
+                            ? List<int>.from(widget.secondStepModel.service)
                             : List<int>.from(widget.secondStepModel.service),
                         images: _images,
                         gallery: _gallery,

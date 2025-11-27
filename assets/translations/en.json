@@ -232,5 +232,17 @@
   "completeData":"Complete Data",
   "accept": "accept",
   "reject": "reject",
-  "onTheWay": "on the way"
+  "onTheWay": "on the way",
+  "hereYouCanCreateGeneralDiscount":"Here you can create a general discount for all your services, or a specific discount for a selected service.",
+  "selectTheServiceYouLikeToApplyDiscountTo": "Select the service you’d like to apply a discount to.",
+  "selectAll": "select all",
+  "days": "days",
+  "pleaseSelectService": "Please select service",
+  "pleaseSelectDiscountPercentage": "Please select discount percentage",
+  "pleaseSelectRangeOfDays": "Please select range of days",
+  "discountTitle": "Discount title",
+  "discountDescription": "Discount description",
+  "unselectAll": "unselect All"
+
+
 }

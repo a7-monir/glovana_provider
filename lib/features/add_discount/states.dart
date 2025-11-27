@@ -1,16 +1,23 @@
 part of 'bloc.dart';
 
-class UpdateStatusStates {}
+class AddDiscountStates {}
 
-class UpdateStatusLoadingState extends UpdateStatusStates {}
-
-class UpdateStatusFailedState extends UpdateStatusStates {
+class AddDiscountLoadingState extends AddDiscountStates {
+}
+class AddDiscountSuccessState extends AddDiscountStates {
   final CustomResponse response;
 
-  UpdateStatusFailedState({required this.response,}) {
+  AddDiscountSuccessState({required this.response}){
+    showMessage(response.msg,type: MessageType.success);
+  }
+}
+
+class AddDiscountFailedState extends AddDiscountStates {
+  final CustomResponse response;
+
+  AddDiscountFailedState({required this.response,}) {
     showMessage(response.msg);
   }
 }
 
-class UpdateStatusSuccessState extends UpdateStatusStates {
-}
+

@@ -17,18 +17,18 @@ part 'events.dart';
 
 part 'states.dart';
 
-class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
+class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteDataUpdateStates> {
   final DioHelper _dio;
   AutovalidateMode validateMode = AutovalidateMode.disabled;
   final formKey = GlobalKey<FormState>();
 
-  CompleteDataBloc(this._dio) : super(CompleteDataStates()) {
-    on<CompleteDataEvent>(_sendData);
+  CompleteDataUpdateBloc(this._dio) : super(CompleteDataUpdateStates()) {
+    on<CompleteDataUpdateEvent>(_sendData);
   }
 
 
-  void _sendData(CompleteDataEvent event, Emitter<CompleteDataStates> emit) async {
-    emit(CompleteDataLoadingState());
+  void _sendData(CompleteDataUpdateEvent event, Emitter<CompleteDataUpdateStates> emit) async {
+    emit(CompleteDataUpdateLoadingState());
 
     FormData formData = FormData();
 
@@ -142,14 +142,15 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
       }
     }
     final response = await _dio.postData(
-      url: "provider/complete-profile",
+      url: "provider/types/${event.providerId}",
+      withFiles: true,
       data:formData,
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
 
-      emit(CompleteDataSuccessState());
+      emit(CompleteDataUpdateSuccessState(msg: response.data['message']));
     } else {
-      emit(CompleteDataFailedState(msg:  response.data['message'] , statusCode: response.statusCode));
+      emit(CompleteDataUpdateFailedState(msg:  response.data['message'] , statusCode: response.statusCode));
     }
   }
 }

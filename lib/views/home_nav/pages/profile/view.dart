@@ -14,6 +14,7 @@ import '../../../../core/logic/cache_helper.dart';
 import '../../../../core/logic/helper_methods.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../sheets/logout.dart';
+import '../../../discounts/view.dart';
 import '../../../edit_profile/view.dart';
 import '../../../static_page/view.dart';
 import '../../../wallet/view.dart';
@@ -91,6 +92,13 @@ class ProfileView extends StatelessWidget {
                 title: LocaleKeys.providerType.tr(),
                 onTap: () {
                   navigateTo(ProviderTypeView());
+                },
+              ),
+              _ItemProfile(
+                image: 'discount.png',
+                title: LocaleKeys.discounts.tr(),
+                onTap: () {
+                  navigateTo(DiscountsView());
                 },
               ),
               _ItemProfile(

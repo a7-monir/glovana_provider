@@ -55,6 +55,7 @@ class _DoneCompleteProfileViewState extends State<DoneCompleteProfileView> {
                     text: LocaleKeys.confirm.tr(),
                     type: ButtonType.bottomNav,
                     onPress: () {
+                      CacheHelper.logOut();
                       navigateTo(const LoginView(), keepHistory: false);
                     },
                   ),

@@ -111,6 +111,27 @@ class DioHelper {
       rethrow;
     }
   }
+  Future<Response> putData({
+    required String url,
+    dynamic data,
+    String? lang,
+    String? token,
+    Map<String, dynamic>? query,
+  }) async {
+    _dio.options.headers = {
+      'Accept-Language': CacheHelper.lang,
+      'Accept': 'application/json',
+      'Content-Type': "multipart/form-data",
+      "Authorization": "Bearer ${CacheHelper.token}",
+    };
+    var res = await _dio.put(
+      url,
+      data: data,
+      queryParameters: query,
+    );
+
+    return res;
+  }
 
   Future<CustomResponse> get(
     String path, {
@@ -200,13 +221,26 @@ class CustomApiInterceptor extends Interceptor {
     }
 
     log.info("(${options.method}) ( ${options.baseUrl}${options.path} )");
-    if ((options.data ?? {}).isNotEmpty) {
-      log.info("Data : ${options.data}");
-      if (options.data is Iterable) {
-        options.data.forEach((key, value) {
-          log.info("$key : $value");
+    if (options.data != null) {
+      final data = options.data;
+
+      if (data is FormData) {
+        if (data.fields.isNotEmpty || data.files.isNotEmpty) {
+          log.info("📦 FormData:");
+          for (var field in data.fields) {
+            log.info("${field.key}: ${field.value}");
+          }
+          for (var file in data.files) {
+            log.info("🖼️ File: ${file.key} -> ${file.value.filename}");
+          }
+        }
+      } else if (data is Map && data.isNotEmpty) {
+        log.info("🧾 Data:");
+        data.forEach((key, value) {
+          log.info("$key: $value");
         });
-        log.info("-" * 20);
+      } else {
+        log.info("📤 Data type: ${data.runtimeType}");
       }
     }
 

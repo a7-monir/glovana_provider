@@ -14,31 +14,38 @@ part 'events.dart';
 
 part 'states.dart';
 
-class UpdateStatusBloc extends Bloc<UpdateStatusEvents, UpdateStatusStates> {
+class AddDiscountBloc extends Bloc<AddDiscountEvents, AddDiscountStates> {
   final DioHelper _dio;
   AutovalidateMode validateMode = AutovalidateMode.disabled;
   final formKey = GlobalKey<FormState>();
 
-  UpdateStatusBloc(this._dio) : super(UpdateStatusStates()) {
-    on<UpdateStatusEvent>(_sendData);
+  AddDiscountBloc(this._dio) : super(AddDiscountStates()) {
+    on<AddDiscountEvent>(_sendData);
   }
-final reason=TextEditingController();
+final name=TextEditingController();
+final description=TextEditingController();
 
-  void _sendData(UpdateStatusEvent event, Emitter<UpdateStatusStates> emit) async {
-    emit(UpdateStatusLoadingState());
+  void _sendData(AddDiscountEvent event, Emitter<AddDiscountStates> emit) async {
+    emit(AddDiscountLoadingState());
     final response = await _dio.send(
-      "provider/appointments/${event.id}/status",
+      "provider/discounts",
       data: {
-        "status": event.newStatus.toString(),
-        'reason':reason.text
+        "provider_type_id": event.providerId,
+        "name": name.text,
+        "description": description.text,
+        "percentage": event.percentage,
+        "start_date": event.startDate,
+        "end_date":event.endDate,
+        "is_active": true,
+        "service_ids": event.serviceIds  // Optional for service-based discounts
 
       },
     );
     if (response.isSuccess) {
 
-      emit(UpdateStatusSuccessState());
+      emit(AddDiscountSuccessState(response: response));
     } else {
-      emit(UpdateStatusFailedState(response: response));
+      emit(AddDiscountFailedState(response: response));
     }
   }
 }

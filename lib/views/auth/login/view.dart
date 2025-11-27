@@ -2,9 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:kiwi/kiwi.dart';
-
 import '../../../core/design/app_button.dart';
 import '../../../core/design/app_circle_icon.dart';
 import '../../../core/design/app_input.dart';
@@ -17,7 +15,6 @@ import '../../home_nav/view.dart';
 import '../components/auth_header.dart';
 import '../components/choose_lang_item.dart';
 import '../components/have_account.dart';
-import '../components/social_buttons.dart';
 import '../components/with_section.dart';
 import '../done_complete_profile.dart';
 import '../signup/view.dart';
@@ -123,19 +120,19 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsetsDirectional.only(end: 14.w),
-                      child: Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: Text(
-                          LocaleKeys.forgotPassword.tr(),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: EdgeInsetsDirectional.only(end: 14.w),
+                    //   child: Align(
+                    //     alignment: AlignmentDirectional.centerEnd,
+                    //     child: Text(
+                    //       LocaleKeys.forgotPassword.tr(),
+                    //       style: TextStyle(
+                    //         fontWeight: FontWeight.w400,
+                    //         fontSize: 14.sp,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(height: 50.h),
                     BlocConsumer(
                       bloc: bloc,
@@ -163,42 +160,42 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     SizedBox(height: 70.h),
                     WithSection(isLogin: true),
-                    SizedBox(height: 32.h),
-                    SocialSignInButtons(
-                      isGoogleLoading:
-                          socialState is SocialLoginLoadingState &&
-                          socialLoginBloc.isGoogle,
-                      isAppleLoading:
-                          socialState is SocialLoginLoadingState &&
-                          !socialLoginBloc.isGoogle,
-                      onGoogleSignIn: () {
-                        signInWithGoogle().then((value) {
-                          socialLoginBloc.photoUrl = value?.googleUser.photoUrl;
-                          socialLoginBloc.googleId = value?.googleUser.id;
-                          socialLoginBloc.name = value?.googleUser.displayName;
-                          socialLoginBloc.email = value?.googleUser.email;
-                          socialLoginBloc.accessToken =
-                              value?.googleAuth.accessToken ??
-                              value?.googleAuth.idToken;
-                          socialLoginBloc.add(SocialLoginEvent(isGoogle: true));
-                        });
-                      },
-                      onAppleSignIn: () {
-                        signInWithApple().then((value) {
-                          socialLoginBloc.appleId =
-                              value?.appleAuth.userIdentifier;
-                          socialLoginBloc.email = value?.appleAuth.email;
-                          socialLoginBloc.name =
-                              '${value?.appleAuth.givenName ?? ''} ${value?.appleAuth.familyName ?? ''}';
-                          socialLoginBloc.accessToken =
-                              value?.appleAuth.identityToken;
-
-                          socialLoginBloc.add(
-                            SocialLoginEvent(isGoogle: false),
-                          );
-                        });
-                      },
-                    ),
+                    // SizedBox(height: 32.h),
+                    // SocialSignInButtons(
+                    //   isGoogleLoading:
+                    //       socialState is SocialLoginLoadingState &&
+                    //       socialLoginBloc.isGoogle,
+                    //   isAppleLoading:
+                    //       socialState is SocialLoginLoadingState &&
+                    //       !socialLoginBloc.isGoogle,
+                    //   onGoogleSignIn: () {
+                    //     signInWithGoogle().then((value) {
+                    //       socialLoginBloc.photoUrl = value?.googleUser.photoUrl;
+                    //       socialLoginBloc.googleId = value?.googleUser.id;
+                    //       socialLoginBloc.name = value?.googleUser.displayName;
+                    //       socialLoginBloc.email = value?.googleUser.email;
+                    //       socialLoginBloc.accessToken =
+                    //           value?.googleAuth.accessToken ??
+                    //           value?.googleAuth.idToken;
+                    //       socialLoginBloc.add(SocialLoginEvent(isGoogle: true));
+                    //     });
+                    //   },
+                    //   onAppleSignIn: () {
+                    //     signInWithApple().then((value) {
+                    //       socialLoginBloc.appleId =
+                    //           value?.appleAuth.userIdentifier;
+                    //       socialLoginBloc.email = value?.appleAuth.email;
+                    //       socialLoginBloc.name =
+                    //           '${value?.appleAuth.givenName ?? ''} ${value?.appleAuth.familyName ?? ''}';
+                    //       socialLoginBloc.accessToken =
+                    //           value?.appleAuth.identityToken;
+                    //
+                    //       socialLoginBloc.add(
+                    //         SocialLoginEvent(isGoogle: false),
+                    //       );
+                    //     });
+                    //   },
+                    // ),
                     SizedBox(height: 43.h),
                     HaveAccountSection(isLogin: true),
                   ],

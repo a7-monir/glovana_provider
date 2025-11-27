@@ -1,11 +1,12 @@
 part of 'bloc.dart';
 
-class CompleteDataEvents {}
+class CompleteDataUpdateEvents {}
 
-class CompleteDataEvent extends CompleteDataEvents {
+class CompleteDataUpdateEvent extends CompleteDataUpdateEvents {
   final List<ProviderType> providerTypes;
+  final int providerId;
 
-  CompleteDataEvent({required this.providerTypes});
+  CompleteDataUpdateEvent({required this.providerTypes,required this.providerId});
 }
 
 class ProviderType {

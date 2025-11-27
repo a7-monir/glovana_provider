@@ -447,7 +447,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                         child: ItemSummary(
                           title: LocaleKeys.total.tr(),
                           value:
-                              "${((state.model.totalPrices) - (state.model.totalDiscounts) - (state.model.couponDiscount) + (state.model.deliveryFee)).toStringAsFixed(2)} ${LocaleKeys.jod.tr()}",
+                              "${((state.model.totalPrices) - (state.model.totalDiscounts) - (state.model.couponDiscount) + (state.model.deliveryFee)).toStringAsFixed(2)}}",
 
                           isTotal: true,
                         ),

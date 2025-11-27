@@ -73,10 +73,10 @@ class ProviderTypes {
   late final String address;
   late final num pricePerHour;
   late final int status;
-  late final int isVip;
+  late final bool isVip;
   late final String createdAt;
   late final String updatedAt;
-  late final int isFavourite;
+  late final bool isFavourite;
   late final Type type;
   late final List<Services> services;
   late final List<ProviderServices> providerServices;
@@ -98,10 +98,10 @@ class ProviderTypes {
     address = json['address']??'';
     pricePerHour = json['price_per_hour']??0;
     status = json['status']??0;
-    isVip = json['is_vip']??0;
+    isVip = json['is_vip']??false;
     createdAt = json['created_at']??'0';
     updatedAt = json['updated_at']??'0';
-    isFavourite = json['is_favourite']??0;
+    isFavourite = json['is_favourite']??false;
     type = Type.fromJson(json['type']??{});
     services = List.from(json['services']??[]).map((e)=>Services.fromJson(e)).toList();
     providerServices = List.from(json['provider_services']??[]).map((e)=>ProviderServices.fromJson(e)).toList();
