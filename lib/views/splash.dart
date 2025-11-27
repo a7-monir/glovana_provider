@@ -25,11 +25,11 @@ class _SplashScreenState extends State<SplashScreen>
   bool _moveBack = false;
   bool _showText = false;
   bool _showShapes = false;
+  bool isTablet = false;
 
   @override
   void initState() {
     super.initState();
-
     // Background color animation
     _bgController = AnimationController(
       vsync: this,
@@ -76,6 +76,15 @@ class _SplashScreenState extends State<SplashScreen>
       }
     }
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final width = MediaQuery.of(context).size.width;
+    isTablet = width >= 650;
+
+    print("isTablet: $isTablet");
+  }
 
   @override
   void dispose() {
@@ -98,18 +107,15 @@ class _SplashScreenState extends State<SplashScreen>
               AnimatedOpacity(
                 opacity: _showShapes ? 1 : 0,
                 duration: const Duration(seconds: 1),
-                child: Image.asset(
-                  "assets/images/splash_bg.png",
-                  fit: BoxFit.cover,
+                child: RotatedBox(
+                  quarterTurns: isTablet?1:0,
+                  child: Image.asset(
+                    "assets/images/splash_bg.png",
+                     fit: BoxFit.cover,
+                  ),
                 ),
               ),
-              // Background shapes
-              // Positioned.fill(
-              //   child: Image.asset(
-              //     "assets/images/splash_bg.png",
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
+
 
               // Foreground animation
               Center(
@@ -117,9 +123,8 @@ class _SplashScreenState extends State<SplashScreen>
                   alignment: Alignment.center,
                   children: [
                     // Text (hidden first, fades in later)
-                    Container(
+                    SizedBox(
                       width: screenWidth,
-
                       child: Padding(
                         padding: EdgeInsets.only(left: 70.w),
                         child: AnimatedOpacity(
@@ -139,16 +144,17 @@ class _SplashScreenState extends State<SplashScreen>
                       duration: const Duration(milliseconds: 1500),
                       curve: Curves.easeInOut,
                       left: !_moveToRight
-                          ? screenWidth / 2 -
+                          ? screenWidth
+                          / 2 -
                                 35
                                     .w // center
                           : !_moveBack
                           ? screenWidth -
                                 80
                                     .w // full right
-                          : screenWidth / 2 - 170.w, // beside text
+                          : screenWidth / 2 - (isTablet? 230.w:170.w), // beside text
                       child: Image.asset(
-                        "assets/images/logo.png", // exported logo only
+                        "assets/images/logo.png",
                         width: 67.h,
                         height: 67.h,
                       ),

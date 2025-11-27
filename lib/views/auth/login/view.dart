@@ -158,8 +158,8 @@ class _LoginViewState extends State<LoginView> {
                         );
                       },
                     ),
-                    SizedBox(height: 70.h),
-                    WithSection(isLogin: true),
+
+                    // WithSection(isLogin: true),
                     // SizedBox(height: 32.h),
                     // SocialSignInButtons(
                     //   isGoogleLoading:

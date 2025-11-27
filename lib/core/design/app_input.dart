@@ -74,41 +74,26 @@ class _AppInputState extends State<AppInput> {
       padding: EdgeInsets.only(bottom: widget.marginBottom ?? 16.h),
       child: Column(
         crossAxisAlignment:
-            widget.isCenterTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+        widget.isCenterTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: [
           if (widget.fixedPositionedLabel != null)
             Padding(
               padding: EdgeInsets.only(bottom: 8.h),
               child: Text(
                 widget.fixedPositionedLabel!,
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400
-                  ),
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400
+                ),
               ),
             ),
-          Container(
-
-
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30.r),
-              boxShadow: [
-                if(widget.isValid)
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  blurRadius: 4.r,
-                  offset: const Offset(0, 4),
-                  //blurStyle: BlurStyle.
-                ),
-                if(widget.withShadow)
-                BoxShadow(
-                  offset: Offset(0, -4),
-                  blurRadius: 100.r,
-                  color: Colors.white,
-                  blurStyle: BlurStyle.inner,
-                ),
-              ],
-            ),
+          Material(
+            // تطبيق الظل باستخدام elevation
+            elevation: widget.withShadow ? 4.r : 0,
+            shadowColor: widget.withShadow ? Colors.black.withValues(alpha: .8) : Colors.transparent,
+            borderRadius: BorderRadius.circular(30.r),
+            clipBehavior: Clip.antiAlias,
+            color: widget.filledColor ?? Theme.of(context).cardColor,
             child: GestureDetector(
               onTap: widget.onTap,
               child: AbsorbPointer(
@@ -117,21 +102,17 @@ class _AppInputState extends State<AppInput> {
                   onFocusChange: widget.onFocusChange,
                   child: TextFormField(
                     onTapOutside:(event) {
-                     if(widget.onFieldSubmitted!=null&&widget.controller!=null){
-                       widget.onFieldSubmitted!(widget.controller!.text);
-                     }
+                      if(widget.onFieldSubmitted!=null&&widget.controller!=null){
+                        widget.onFieldSubmitted!(widget.controller!.text);
+                      }
                     } ,
                     controller: widget.controller,
                     onChanged: widget.onChanged,
                     minLines: widget.maxLines,
                     maxLines: widget.maxLines,
                     textAlign:widget.textAlign??TextAlign.start,
-                    // textAlign: widget.keyboardType == TextInputType.phone ||
-                    //         context.locale.languageCode == 'en'
-                    //     ? TextAlign.end
-                    //     : TextAlign.start,
                     obscureText:
-                        ((widget.inputType == InputType.password) && !isPasswordShown) ||
+                    ((widget.inputType == InputType.password) && !isPasswordShown) ||
                         widget.isPassword,
                     textInputAction: widget.textInputAction,
                     onFieldSubmitted: widget.onFieldSubmitted,
@@ -140,8 +121,6 @@ class _AppInputState extends State<AppInput> {
                     inputFormatters: [
                       if ([InputType.money].contains(widget.inputType))
                         FilteringTextInputFormatter.allow(RegExp("^(?!0)[0-9\\s]*")),
-                      // if (widget.inputType == InputType.phone)
-                      //   FilteringTextInputFormatter.allow(RegExp("[0-9.]")),
                       if (widget.maxLength != null)
                         LengthLimitingTextInputFormatter(widget.maxLength),
                       if (widget.keyboardType == TextInputType.datetime) CardExpirationFormatter(),
@@ -150,48 +129,51 @@ class _AppInputState extends State<AppInput> {
                     decoration: InputDecoration(
                       hintText: widget.hint,
                       alignLabelWithHint: true,
-                      border: widget.border,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
                       hintStyle:widget.hintStyle ,
-                      enabledBorder: widget.border,
-                      focusedBorder: widget.border,
                       filled: true,
-                      fillColor: widget.filledColor ?? Theme.of(context).cardColor,
+                      fillColor: Colors.transparent,
                       isDense: widget.isDense,
                       labelText: widget.label,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h), // مساحة داخلية مناسبة
                       prefixIcon:
-                          widget.inputType == InputType.phone && CacheHelper.lang == "en"
-                              ? countryCode
-                              : widget.prefix,
-                      // prefix:widget.prefix ,
+                      widget.inputType == InputType.phone && CacheHelper.lang == "en"
+                          ? countryCode
+                          : widget.prefix,
                       suffixIcon:
-                          widget.inputType == InputType.password
-                              ? GestureDetector(
-                                child: Container(
-                                  color: Colors.transparent,
-                                  child: Icon(
-                                    Icons.remove_red_eye_outlined,
-                                    color: isPasswordShown ? Theme.of(context).primaryColor : Theme.of(context).hintColor,
-                                  ),
-                                ),
-                                onTap: () {
-                                  isPasswordShown = !isPasswordShown;
-                                  if (widget.onTogglePassword != null) {
-                                    widget.onTogglePassword!(isPasswordShown);
-                                  }
+                      widget.inputType == InputType.password
+                          ? GestureDetector(
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Icon(
+                            Icons.remove_red_eye_outlined,
+                            color: isPasswordShown ? Theme.of(context).primaryColor : Theme.of(context).hintColor,
+                          ),
+                        ),
+                        onTap: () {
+                          isPasswordShown = !isPasswordShown;
+                          if (widget.onTogglePassword != null) {
+                            widget.onTogglePassword!(isPasswordShown);
+                          }
 
-                                  setState(() {});
-                                },
-                              )
-                              : widget.suffix ??
-                                  (widget.inputType == InputType.phone && CacheHelper.lang == "ar"
-                                      ? countryCode
-                                      : null),
+                          setState(() {});
+                        },
+                      )
+                          : widget.suffix ??
+                          (widget.inputType == InputType.phone && CacheHelper.lang == "ar"
+                              ? countryCode
+                              : null),
                     ),
                   ),
                 ),
               ),
             ),
           ),
+
         ],
       ),
     );
