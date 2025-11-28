@@ -203,7 +203,7 @@ class ProviderType {
   late final bool isVip;
   late final String createdAt;
   late final String updatedAt;
-  late final int isFavourite;
+  late final bool isFavourite;
   late final Type type;
 
   ProviderType.fromJson(Map<String, dynamic> json) {
