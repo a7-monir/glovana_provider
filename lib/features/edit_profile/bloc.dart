@@ -45,28 +45,49 @@ class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
 
   void _sendData(EditProfileEvent event, Emitter<EditProfileStates> emit) async {
     emit(EditProfileLoadingState());
-    final response = await _dio.send(
-      "user/update_profile",
-      data: {
-        "name": "${firstNameController.text} ${lastNameController.text}",
-        'phone': phoneController.text,
-        'email': emailController.text,
-        if (photo != null) 'photo':  await MultipartFile.fromFile(photo!, filename: photo!.split('/').last),
-        "user_type": "provider",
-        "fcm_token": await GlobalNotification.getFcmToken(),
-      },
-      headers: {
-        'Content-Type':  "multipart/form-data"
-      }
+
+    FormData formData = FormData();
+    formData.fields.addAll([
+      MapEntry(
+          'name', "${firstNameController.text} ${lastNameController.text}"),
+      MapEntry(
+          'phone', phoneController.text),
+      MapEntry(
+          'email', emailController.text),
+
+      MapEntry(
+        'user_type', "user",),
+      MapEntry(
+        'fcm_token', await GlobalNotification.getFcmToken(),),
+
+
+
+      //    MapEntry('provider_types[$i][is_vip]', '0'),
+    ]);
+
+    if (photo!=null) {
+      formData.files.add(
+        MapEntry(
+          'photo',
+          await MultipartFile.fromFile(photo!),
+        ),
+      );
+    }
+
+
+    final response = await _dio.postData(
+      url: "user/update_profile",
+        data: formData,
+
 
     );
-    if (response.isSuccess) {
+    if (response.statusCode == 200 || response.statusCode == 201)  {
       model = User.fromJson(response.data['data']);
       token = CacheHelper.token;
       CacheHelper.saveData(model!);
-      emit(EditProfileSuccessState(msg: response.msg));
+      emit(EditProfileSuccessState(msg: response.data['message']));
     } else {
-      emit(EditProfileFailedState(msg: response.msg, statusCode: response.statusCode));
+      emit(EditProfileFailedState(msg: response.data['message'], statusCode: response.statusCode));
     }
   }
 }

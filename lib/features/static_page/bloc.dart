@@ -20,7 +20,7 @@ class GetStaticPageBloc extends Bloc<GetStaticPageEvents, GetStaticPageStates> {
     emit(GetStaticPageLoadingState());
     final response = await _dio.get("user/pages/${event.id}");
     if (response.isSuccess) {
-      final model = PageData.fromJson(response.data['data']);
+      final model =response.data['data']!=null? PageData.fromJson(response.data['data']):null;
       emit(GetStaticPageSuccessState(model: model));
     } else {
       emit(GetStaticPageFailedState(response: response));

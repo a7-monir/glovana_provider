@@ -7,6 +7,7 @@ import '../../../../../core/logic/cache_helper.dart';
 import '../../../../../core/logic/helper_methods.dart';
 import '../../../../edit_profile/view.dart';
 
+
 class ItemPhoto extends StatefulWidget {
   final bool canEdit;
 
@@ -19,7 +20,7 @@ class ItemPhoto extends StatefulWidget {
 }
 
 class _ItemPhotoState extends State<ItemPhoto> {
-   String?photoUrl;
+  String?photoUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +59,7 @@ class _ItemPhotoState extends State<ItemPhoto> {
                 photoUrl?? CacheHelper.photo,
                 height: 190.h,
                 width: 190.h,
+                withBaseImageUrl:photoUrl!=null? false:true,
                 fit: BoxFit.cover,
               ),
             ),

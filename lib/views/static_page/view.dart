@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:glovana_provider/core/design/app_empty.dart';
 import 'package:glovana_provider/core/design/app_failed.dart';
 import 'package:glovana_provider/core/design/app_loading.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
@@ -58,7 +59,7 @@ class _StaticPageViewState extends State<StaticPageView> {
         _errorMessage = null;
       });
 
-      final response = await _dio.get('user/pages/3');
+      final response = await _dio.get('user/pages/${widget.id}');
 
       if (response.statusCode == 200) {
         final apiResponse = ApiResponse.fromJson(response.data);
@@ -135,6 +136,7 @@ class _StaticPageViewState extends State<StaticPageView> {
           if (state is GetStaticPageLoadingState) {
             return AppLoading();
           } else if (state is GetStaticPageSuccessState) {
+            if(state.model==null) return AppEmpty(title: widget.title,);
             return RefreshIndicator(
               onRefresh: _fetchPageData,
               child: SingleChildScrollView(
@@ -144,11 +146,10 @@ class _StaticPageViewState extends State<StaticPageView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Title
-                    Text(state.model.title),
+                    Text(state.model!.title),
                     const SizedBox(height: 16),
-
                     // Content
-                    Html(data: state.model.content),
+                    Html(data: state.model!.content),
 
                     const SizedBox(height: 32),
 
@@ -160,7 +161,7 @@ class _StaticPageViewState extends State<StaticPageView> {
                         Text(
                           LocaleKeys.lastUpdated.tr(
                             namedArgs: {
-                              'date': _formatDate(state.model.updatedAt),
+                              'date': _formatDate(state.model!.updatedAt),
                             },
                           ),
                           style: Theme.of(context).textTheme.bodySmall

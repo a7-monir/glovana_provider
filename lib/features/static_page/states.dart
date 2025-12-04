@@ -11,7 +11,7 @@ class GetStaticPageFailedState extends GetStaticPageStates {
 }
 
 class GetStaticPageSuccessState extends GetStaticPageStates {
-  final PageData model;
+  final PageData? model;
 
-  GetStaticPageSuccessState({required this.model});
+  GetStaticPageSuccessState({ this.model});
 }

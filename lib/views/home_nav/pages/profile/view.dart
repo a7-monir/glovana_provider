@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/design/app_refresh.dart';
 import 'package:glovana_provider/views/Appointment_history/view.dart';
 import 'package:glovana_provider/views/payment_report/view.dart';
 import 'package:glovana_provider/views/provider_type/view.dart';
@@ -22,136 +23,147 @@ import 'components/photo.dart';
 
 
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            children: [
-              ItemPhoto(),
-              SizedBox(height: 20.h),
-              Text(
-                CacheHelper.name,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 32.sp,
-                  fontFamily: getFontFamily(FontFamilyType.inter),
-                  color: Colors.black,
-                ),
-              ),
+        child: AppRefresh(
+          event: () {
+            setState(() {});
 
-
-              if(CacheHelper.email.isNotEmpty)
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-                margin: EdgeInsets.only(top: 20.h),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).canvasColor,
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                child: Text(
-                  CacheHelper.email,
+          },
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              children: [
+                ItemPhoto(),
+                SizedBox(height: 20.h),
+                Text(
+                  CacheHelper.name,
                   style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 32.sp,
+                    fontFamily: getFontFamily(FontFamilyType.inter),
+                    color: Colors.black,
                   ),
                 ),
-              ),
-              SizedBox(height: 40.h),
-              _ItemProfile(
-                image: 'edit_user.png',
-                title: LocaleKeys.editProfile.tr(),
-                onTap: () {
-                  navigateTo(EditProfileView());
-                },
-              ),
-              _ItemProfile(
-                image: 'wallet.png',
-                title: LocaleKeys.wallet.tr(),
-                onTap: () => navigateTo(WalletView()),
-              ),
-              _ItemProfile(
-                image: 'card.png',
-                title: LocaleKeys.paymentReport.tr(),
-                onTap: () {
-                 navigateTo(PaymentReportView());
-                },
-              ),
-              _ItemProfile(
-                image: 'shop_fill.png',
-                title: LocaleKeys.ratings.tr(),
-                onTap: () => navigateTo(RatingsView()),
-              ),
-              _ItemProfile(
-                image: 'user_fill.png',
-                title: LocaleKeys.providerType.tr(),
-                onTap: () {
-                  navigateTo(ProviderTypeView());
-                },
-              ),
-              _ItemProfile(
-                image: 'discount.png',
-                title: LocaleKeys.discounts.tr(),
-                onTap: () {
-                  navigateTo(DiscountsView());
-                },
-              ),
-              _ItemProfile(
-                image: 'history.png',
-                title: LocaleKeys.appointmentsHistory.tr(),
-                onTap: () => navigateTo(AppointmentHistory()),
-              ),
-              _ItemProfile(
-                image: 'about_us.png',
-                title: LocaleKeys.aboutUs.tr(),
-                onTap:
-                    () => navigateTo(
-                      StaticPageView(id: 1, title: LocaleKeys.aboutUs.tr()),
+
+
+                if(CacheHelper.email.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                    margin: EdgeInsets.only(top: 20.h),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
-              ),
-              _ItemProfile(
-                image: 'terms.png',
-                title: LocaleKeys.termsCondition.tr(),
-                onTap:
-                    () => navigateTo(
-                  StaticPageView(id: 2, title: LocaleKeys.termsCondition.tr()),
-                ),
-              ),
-              _ItemProfile(
-                image: 'privacy.png',
-                title: LocaleKeys.privacyPolicy.tr(),
-                onTap:
-                    () => navigateTo(
-                  StaticPageView(id: 3, title: LocaleKeys.privacyPolicy.tr()),
-                ),
-              ),
-              _ItemProfile(
-                image: 'support.png',
-                title: LocaleKeys.support.tr(),
-              ),
-              _ItemProfile(
-                image: 'settings.png',
-                title: LocaleKeys.settings.tr(),
-                onTap:
-                    () => navigateTo(SettingsView()),
-              ),
-              _ItemProfile(
-                image: 'logout.png',
-                title: LocaleKeys.logout.tr(),
-                onTap:
-                    () => showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => LogoutSheet(),
+                    child: Text(
+                      CacheHelper.email,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14.sp,
+                      ),
                     ),
-                isLogout: true,
-              ),
-            ],
+                  ),
+                SizedBox(height: 40.h),
+                _ItemProfile(
+                  image: 'edit_user.png',
+                  title: LocaleKeys.editProfile.tr(),
+                  onTap: () {
+                    navigateTo(EditProfileView());
+                  },
+                ),
+                _ItemProfile(
+                  image: 'wallet.png',
+                  title: LocaleKeys.wallet.tr(),
+                  onTap: () => navigateTo(WalletView()),
+                ),
+                _ItemProfile(
+                  image: 'card.png',
+                  title: LocaleKeys.paymentReport.tr(),
+                  onTap: () {
+                    navigateTo(PaymentReportView());
+                  },
+                ),
+                _ItemProfile(
+                  image: 'shop_fill.png',
+                  title: LocaleKeys.ratings.tr(),
+                  onTap: () => navigateTo(RatingsView()),
+                ),
+                _ItemProfile(
+                  image: 'user_fill.png',
+                  title: LocaleKeys.providerType.tr(),
+                  onTap: () {
+                    navigateTo(ProviderTypeView());
+                  },
+                ),
+                _ItemProfile(
+                  image: 'discount.png',
+                  title: LocaleKeys.discounts.tr(),
+                  onTap: () {
+                    navigateTo(DiscountsView());
+                  },
+                ),
+                _ItemProfile(
+                  image: 'history.png',
+                  title: LocaleKeys.appointmentsHistory.tr(),
+                  onTap: () => navigateTo(AppointmentHistory()),
+                ),
+                _ItemProfile(
+                  image: 'about_us.png',
+                  title: LocaleKeys.aboutUs.tr(),
+                  onTap:
+                      () => navigateTo(
+                    StaticPageView(id: 1, title: LocaleKeys.aboutUs.tr()),
+                  ),
+                ),
+                _ItemProfile(
+                  image: 'terms.png',
+                  title: LocaleKeys.termsCondition.tr(),
+                  onTap:
+                      () => navigateTo(
+                    StaticPageView(id: 2, title: LocaleKeys.termsCondition.tr()),
+                  ),
+                ),
+                _ItemProfile(
+                  image: 'privacy.png',
+                  title: LocaleKeys.privacyPolicy.tr(),
+                  onTap:
+                      () => navigateTo(
+                    StaticPageView(id: 3, title: LocaleKeys.privacyPolicy.tr()),
+                  ),
+                ),
+                _ItemProfile(
+                  image: 'support.png',
+                  title: LocaleKeys.support.tr(),
+                ),
+                _ItemProfile(
+                  image: 'settings.png',
+                  title: LocaleKeys.settings.tr(),
+                  onTap:
+                      () => navigateTo(SettingsView()),
+                ),
+                _ItemProfile(
+                  image: 'logout.png',
+                  title: LocaleKeys.logout.tr(),
+                  onTap:
+                      () => showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => LogoutSheet(),
+                  ),
+                  isLogout: true,
+                ),
+              ],
+            ),
           ),
         ),
       ),
