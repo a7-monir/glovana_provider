@@ -59,7 +59,7 @@ class _ItemPhotoState extends State<ItemPhoto> {
                 photoUrl?? CacheHelper.photo,
                 height: 190.h,
                 width: 190.h,
-                withBaseImageUrl:photoUrl!=null? false:true,
+                withBaseImageUrl: (CacheHelper.photo.toLowerCase().startsWith('https')&&photoUrl==null)?false:  photoUrl!=null? false:true,
                 fit: BoxFit.cover,
               ),
             ),
