@@ -37,7 +37,7 @@ class Provider {
   late final int activate;
   late final String createdAt;
   late final String updatedAt;
-  late final Null photoUrl;
+  late final String photoUrl;
   late final List<ProviderTypes> providerTypes;
 
   Provider.fromJson(Map<String, dynamic> json){
@@ -53,7 +53,7 @@ class Provider {
     activate = json['activate']??0;
     createdAt = json['created_at']??'';
     updatedAt = json['updated_at']??'';
-    photoUrl = json['photo_url'];
+    photoUrl = json['photo_url']??'';
     providerTypes = List.from(json['provider_types']).map((e)=>ProviderTypes.fromJson(e)).toList();
   }
 }

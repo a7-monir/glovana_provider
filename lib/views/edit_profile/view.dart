@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/views/auth/otp/view.dart';
 
 
 import 'package:kiwi/kiwi.dart';
@@ -9,6 +10,7 @@ import 'package:kiwi/kiwi.dart';
 import '../../core/design/app_bar.dart';
 import '../../core/design/app_button.dart';
 import '../../core/design/app_input.dart';
+import '../../core/logic/cache_helper.dart';
 import '../../core/logic/helper_methods.dart';
 import '../../core/logic/input_validator.dart';
 import '../../features/edit_profile/bloc.dart';
@@ -145,7 +147,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                 bloc: bloc,
                 listener: (context, state) {
                   if(state is EditProfileSuccessState){
-                    navigateTo(HomeNavView(pageIndex: 2,),keepHistory: false);
+                   navigateTo(VerifyOtpScreen(phone: state.model.phone, onSuccess: () {
+                     CacheHelper.saveData(state.model);
+                     navigateTo(HomeNavView(pageIndex: 2,),keepHistory: false);
+
+                   },));
                   }
                 },
                 builder: (context, state) {

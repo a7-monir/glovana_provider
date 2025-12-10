@@ -6,6 +6,7 @@ import 'package:kiwi/kiwi.dart';
 import '../../../core/design/app_button.dart';
 import '../../../core/design/app_circle_icon.dart';
 import '../../../core/design/app_input.dart';
+import '../../../core/logic/cache_helper.dart';
 import '../../../core/logic/helper_methods.dart';
 import '../../../core/logic/input_validator.dart';
 import '../../../features/google_login/bloc.dart';
@@ -17,6 +18,8 @@ import '../components/choose_lang_item.dart';
 import '../components/have_account.dart';
 import '../components/with_section.dart';
 import '../done_complete_profile.dart';
+import '../forgot_password/view.dart';
+import '../otp/view.dart';
 import '../signup/view.dart';
 
 part '../components/social_section.dart';
@@ -120,25 +123,42 @@ class _LoginViewState extends State<LoginView> {
                         ),
                       ),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsetsDirectional.only(end: 14.w),
-                    //   child: Align(
-                    //     alignment: AlignmentDirectional.centerEnd,
-                    //     child: Text(
-                    //       LocaleKeys.forgotPassword.tr(),
-                    //       style: TextStyle(
-                    //         fontWeight: FontWeight.w400,
-                    //         fontSize: 14.sp,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+                    GestureDetector(
+                      onTap: () => navigateTo(ForgotPasswordView()),
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.only(end: 14.w),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: Text(
+                            LocaleKeys.forgotPassword.tr(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 50.h),
                     BlocConsumer(
                       bloc: bloc,
                       listener: (context, state) {
                         if (state is LoginSuccessState) {
-                          navigateTo(HomeNavView());
+                          navigateTo(
+                            VerifyOtpScreen(
+                              phone: bloc.phoneController.text,
+                              onSuccess: () {
+                                CacheHelper.setToken(state.token);
+                                CacheHelper.saveData(state.model);
+                                if(state.model.activate==3){
+                                  navigateTo(DoneCompleteProfileView(), keepHistory: false);
+                                }else{
+                                  navigateTo(HomeNavView());
+                                }
+
+                              },
+                            ),
+                          );
                         }
                       },
                       builder: (context, state) {

@@ -495,7 +495,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                         practicePhoto: _practicePhoto,
                       );
 
-                      bloc.add(CompleteDataEvent(providerTypes: [providerType]));
+                       bloc.add(CompleteDataEvent(providerTypes: [providerType]));
                       // if (bloc.formKey.currentState!.validate() &&
                       //     (bloc.lat != null || bloc.lng != null)) {
                       //   bloc.add(AddAddressEvent());

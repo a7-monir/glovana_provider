@@ -141,6 +141,7 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
         ]);
       }
     }
+
     final response = await _dio.postData(
       url: "provider/complete-profile",
       data:formData,

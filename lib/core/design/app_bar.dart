@@ -61,7 +61,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class SecondAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String? title;
+  final String title;
   final bool centerTitle, withBack;
   final VoidCallback? onBackPress;
   final List<Widget>? actions;
@@ -73,7 +73,7 @@ class SecondAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const SecondAppBar({
     super.key,
-    this.title,
+    this.title='',
     this.centerTitle = true,
     this.textStyle,
     this.onBackPress,
@@ -109,7 +109,7 @@ class SecondAppBar extends StatelessWidget implements PreferredSizeWidget {
               : null),
       title:
           titleWidget ??
-          Text(title!, style: textStyle ?? TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700)),
+          Text(title, style: textStyle ?? TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700)),
       centerTitle: centerTitle,
     );
   }

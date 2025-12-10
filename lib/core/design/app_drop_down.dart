@@ -46,7 +46,7 @@ class _AppDropDownState extends State<AppDropDown> {
     if (widget.selectedIndex != null) {
       selectedDurationIndex = widget.selectedIndex;
     }
-    if (!widget.isLoading && widget.list.isEmpty) return SizedBox.shrink();
+   // if (!widget.isLoading && widget.list.isEmpty) return SizedBox.shrink();
     return Padding(
       padding: EdgeInsets.only(bottom: widget.marginBottom ?? 20.h),
       child: Column(

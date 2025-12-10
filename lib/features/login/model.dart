@@ -26,7 +26,6 @@ class User {
       phone,
       email,
       password,
-      photo,
       fcmToken,
       referralCode,
       accessToken,
@@ -48,7 +47,6 @@ class User {
     phone = json['phone'] ?? '';
     email = json['email'] ?? '';
     password = json['password'] ?? '';
-    photo = json['photo']??json['photoUrl']?? '';
     fcmToken = json['fcmToken'] ?? '';
     balance = json['balance'] ?? 0;
     totalPoints = json['total_points'] ?? 0;
@@ -61,7 +59,7 @@ class User {
     type = json['type'] ?? 0;
     createdAt = json['created_at'] ?? '';
     updatedAt = json['updated_at'] ?? '';
-    photoUrl = json['photoUrl'] ?? '';
+    photoUrl = json['photo_url'] ?? '';
   }
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -70,7 +68,6 @@ class User {
     "phone": phone,
     "email": email,
     "password": password,
-    "photo": photo,
     "fcm_token": fcmToken,
     "balance": balance,
     "referral_code": referralCode,

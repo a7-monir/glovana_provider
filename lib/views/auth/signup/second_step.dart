@@ -518,7 +518,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
               ),
               SizedBox(height: 30.h),
               AppInput(
-                withShadow: false,
+                withShadow: true,
                 fixedPositionedLabel: LocaleKeys.workNumber.tr(),
                 controller: _workNumberController,
                 validator: (v) => InputValidator.requiredValidator(
@@ -790,7 +790,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                     SizedBox(
                       width: 100.w,
                       child: AppInput(
-                        withShadow: false,
+                        withShadow: true,
                         marginBottom: 0,
                         controller: _pricePerHourController,
                         keyboardType: TextInputType.number,
@@ -880,8 +880,11 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                         serviceWithPrice: _selectedServicesWithPrices
                             .map((service) => service.toMap())
                             .toList(),
-                        service: _selectedServices
+                        service:widget.firstStepModel.bookingType ==
+                            "hourly"? _selectedServices
                             .map((service) => service.id)
+                            .toList():_selectedServicesWithPrices
+                            .map((service) => service.service.id)
                             .toList(),
                         availability: availability,
                       );

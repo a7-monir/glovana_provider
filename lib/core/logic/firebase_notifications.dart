@@ -78,7 +78,7 @@ class GlobalNotification {
 
     // Initialize local notifications plugin
     const initSettings = InitializationSettings(
-      android: AndroidInitializationSettings('ic_notify'),
+      android: AndroidInitializationSettings('ic_notify.png'),
       iOS: DarwinInitializationSettings(),
     );
 
@@ -166,7 +166,7 @@ class GlobalNotification {
       "name",
       channelDescription: "Description",
       importance: Importance.high,
-      icon: "@mipmap/ic_launcher_adaptive_for",
+      icon: "ic_notify",
       colorized: true,
       color: Colors.white,
       priority: Priority.high,

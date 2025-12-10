@@ -242,7 +242,20 @@
   "pleaseSelectRangeOfDays": "Please select range of days",
   "discountTitle": "Discount title",
   "discountDescription": "Discount description",
-  "unselectAll": "unselect All"
+  "unselectAll": "unselect All",
+  "enterOtpCode": "Enter Otp Code",
+  "enterOtpSentTo": "enter otp sent to",
+  "youCanNotResendRightNow": "you can not resend right now",
+  "didNotGetCode": "did not get code",
+  "resend": "resend",
+  "canResentCodeAround": "can resent code around",
+  "minute": "minute",
+  "resetPassword": "reset Password",
+  "pleaseEnterYourPhoneToResetYourPassword": "please enter your phone to reset your password",
+  "pleaseEnterYourNewPassword": "please enter your new password",
+  "confirmPassword": "Confirm Password",
+  "passwordsNotMatched": "passwords not matched"
+
 
 
 }

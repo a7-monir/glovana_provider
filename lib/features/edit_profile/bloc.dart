@@ -54,13 +54,10 @@ class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
           'phone', phoneController.text),
       MapEntry(
           'email', emailController.text),
-
-      MapEntry(
-        'user_type', "user",),
+      // MapEntry(
+      //   'user_type', "user",),
       MapEntry(
         'fcm_token', await GlobalNotification.getFcmToken(),),
-
-
 
       //    MapEntry('provider_types[$i][is_vip]', '0'),
     ]);
@@ -68,7 +65,7 @@ class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
     if (photo!=null) {
       formData.files.add(
         MapEntry(
-          'photo',
+          'photo_of_manager',
           await MultipartFile.fromFile(photo!),
         ),
       );
@@ -76,16 +73,15 @@ class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
 
 
     final response = await _dio.postData(
-      url: "user/update_profile",
+      url: "provider/update_profile",
         data: formData,
 
 
     );
     if (response.statusCode == 200 || response.statusCode == 201)  {
-      model = User.fromJson(response.data['data']);
-      token = CacheHelper.token;
-      CacheHelper.saveData(model!);
-      emit(EditProfileSuccessState(msg: response.data['message']));
+      model = User.fromJson(response.data['data']['provider']);
+
+      emit(EditProfileSuccessState(msg: response.data['message'],model: model!));
     } else {
       emit(EditProfileFailedState(msg: response.data['message'], statusCode: response.statusCode));
     }

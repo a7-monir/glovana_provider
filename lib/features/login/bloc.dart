@@ -59,14 +59,10 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
       model = userModel.user;
       token = userModel.token;
 
-
-      await CacheHelper.setToken(token ?? '');
-      await CacheHelper.saveData(model!);
-
       phoneController.clear();
       passwordController.clear();
 
-      emit(LoginSuccessState(msg: response.msg));
+      emit(LoginSuccessState(msg: response.msg,model: model!,token: token??''));
     } catch (e) {
       emit(LoginFailedState(msg: e.toString(), statusCode: 0));
     }

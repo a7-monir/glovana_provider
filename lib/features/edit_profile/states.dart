@@ -15,6 +15,8 @@ class EditProfileFailedState extends EditProfileStates {
 
 class EditProfileSuccessState extends EditProfileStates {
   final String msg;
+  final User model;
 
-  EditProfileSuccessState({required this.msg});
+  EditProfileSuccessState({required this.msg, required this.model});
+
 }

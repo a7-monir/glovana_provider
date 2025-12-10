@@ -246,5 +246,17 @@ abstract class  LocaleKeys {
   static const discountTitle = 'discountTitle';
   static const discountDescription = 'discountDescription';
   static const unselectAll = 'unselectAll';
+  static const enterOtpCode = 'enterOtpCode';
+  static const enterOtpSentTo = 'enterOtpSentTo';
+  static const youCanNotResendRightNow = 'youCanNotResendRightNow';
+  static const didNotGetCode = 'didNotGetCode';
+  static const resend = 'resend';
+  static const canResentCodeAround = 'canResentCodeAround';
+  static const minute = 'minute';
+  static const resetPassword = 'resetPassword';
+  static const pleaseEnterYourPhoneToResetYourPassword = 'pleaseEnterYourPhoneToResetYourPassword';
+  static const pleaseEnterYourNewPassword = 'pleaseEnterYourNewPassword';
+  static const confirmPassword = 'confirmPassword';
+  static const passwordsNotMatched = 'passwordsNotMatched';
 
 }

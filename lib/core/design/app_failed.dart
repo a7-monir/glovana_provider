@@ -81,8 +81,8 @@ class AppFailed extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: withPaddingHorizontal ? 24.w : 0),
                 child: Row(
                   children: [
-                    image,
-                    SizedBox(width: 16.h),
+                    // image,
+                    // SizedBox(width: 16.h),
                     Expanded(child: texts),
                     IconButton(
                       onPressed: onPress,

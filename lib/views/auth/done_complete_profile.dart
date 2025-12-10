@@ -7,6 +7,7 @@ import 'package:glovana_provider/core/design/app_button.dart';
 
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/views/auth/login/view.dart';
+import 'package:glovana_provider/views/provider_type/view.dart';
 
 import '../../core/design/app_image.dart';
 import '../../core/logic/helper_methods.dart';
@@ -49,14 +50,21 @@ class _DoneCompleteProfileViewState extends State<DoneCompleteProfileView> {
             alignment: AlignmentGeometry.bottomCenter,
             child: Row(
               children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
+                Expanded(
                   child: AppButton(
                     text: LocaleKeys.confirm.tr(),
-                    type: ButtonType.bottomNav,
                     onPress: () {
                       CacheHelper.logOut();
                       navigateTo(const LoginView(), keepHistory: false);
+                    },
+                  ),
+                ),
+                SizedBox(height: 16.w),
+                Expanded(
+                  child: AppButton(
+                    text: CacheHelper.lang == 'en' ? 'edit' : 'تعديل',
+                    onPress: () {
+                      navigateTo(const ProviderTypeView(),replacement: true);
                     },
                   ),
                 ),

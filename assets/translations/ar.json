@@ -242,7 +242,20 @@
   "pleaseSelectRangeOfDays": "يرجى اختيار نطاق الأيام",
   "discountTitle": "عنوان الخصم",
   "discountDescription": "وصف الخصم",
-  "unselectAll": "إلغاء تحديد الكل"
+  "unselectAll": "إلغاء تحديد الكل",
+  "enterOtpCode": "أدخل رمز التحقق",
+  "enterOtpSentTo": "أدخل رمز التحقق المُرسل إلى",
+  "youCanNotResendRightNow": "لا يمكنك إعادة الإرسال الآن",
+  "didNotGetCode": "لم تستلم الرمز؟",
+  "resend": "إعادة الإرسال",
+  "canResentCodeAround": "يمكن إعادة إرسال الرمز بعد",
+  "minute": "دقيقة",
+  "resetPassword": "إعادة تعيين كلمة المرور",
+  "pleaseEnterYourPhoneToResetYourPassword": "يرجى إدخال هاتفك لإعادة تعيين كلمة المرور",
+  "pleaseEnterYourNewPassword": "يرجى إدخال كلمة المرور الجديدة",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "passwordsNotMatched": "كلمتا المرور غير متطابقتين"
+
 
 
 }

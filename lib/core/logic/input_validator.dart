@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 
 import '../../generated/locale_keys.g.dart';
 
@@ -92,16 +93,16 @@ class InputValidator {
     }
   }
 
-  // static String? confirmPasswordValidator(String password, TextEditingController confirmPassword) {
-  //   if (password.isEmpty) {
-  //     return LocaleKeys.validateRequired.tr(namedArgs: {"name": LocaleKeys.confirmPassword.tr()});
-  //   } else if (confirmPassword.text.isEmpty) {
-  //     return null;
-  //   } else if (password != confirmPassword.text) {
-  //     return LocaleKeys.passwordsNotMatched.tr();
-  //   }
-  //   return null;
-  // }
+  static String? confirmPasswordValidator(String password, String confirmPassword) {
+    if (password.isEmpty) {
+      return LocaleKeys.validateRequired.tr(namedArgs: {"name": LocaleKeys.confirmPassword.tr()});
+    } else if (confirmPassword.isEmpty) {
+      return null;
+    } else if (password != confirmPassword) {
+      return LocaleKeys.passwordsNotMatched.tr();
+    }
+    return null;
+  }
 
   static bool isNumbersArabic(String value) {
     if (arabicPhoneNumbersReg.hasMatch(value)) {

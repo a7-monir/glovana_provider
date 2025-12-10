@@ -200,15 +200,6 @@ class _SignupViewState extends State<SignupView> {
                       child: BlocBuilder(
                         bloc: typesBloc,
                         builder: (context, state) {
-                          if (state is GetServicesFailedState) {
-                            return AppFailed(
-                              isSmallShape: true,
-                              response: state.response,
-                              onPress: () {
-                                typesBloc.add(GetTypesEvent());
-                              },
-                            );
-                          }
                           return AppDropDown(
                             title: LocaleKeys.workType.tr(),
                             list: typesBloc.list.map((e) => e.name).toList(),
@@ -282,7 +273,7 @@ class _SignupViewState extends State<SignupView> {
                           text: LocaleKeys.signUp.tr(),
                           padding: EdgeInsets.symmetric(horizontal: 64.w),
                           isLoading: state is SignupLoadingState,
-                          onPress: () {
+                          onPress:() {
                             if (bloc.formKey.currentState!.validate()) {
                               if (isAccept) {
                                 bloc.add(SignupEvent());
@@ -306,44 +297,6 @@ class _SignupViewState extends State<SignupView> {
                         );
                       },
                     ),
-                    // SizedBox(height: 32.h),
-                    // WithSection(isLogin: false),
-                    // SizedBox(height: 32.h),
-                    // SocialSignInButtons(
-                    //   isGoogleLoading:
-                    //       state is SocialLoginLoadingState &&
-                    //       socialLoginBloc.isGoogle,
-                    //   isAppleLoading:
-                    //       state is SocialLoginLoadingState &&
-                    //       !socialLoginBloc.isGoogle,
-                    //   onGoogleSignIn: () {
-                    //     signInWithGoogle().then((value) {
-                    //       socialLoginBloc.photoUrl = value?.googleUser.photoUrl;
-                    //       socialLoginBloc.googleId = value?.googleUser.id;
-                    //       socialLoginBloc.name = value?.googleUser.displayName;
-                    //       socialLoginBloc.email = value?.googleUser.email;
-                    //       socialLoginBloc.accessToken =
-                    //           value?.googleAuth.accessToken ??
-                    //           value?.googleAuth.idToken;
-                    //       socialLoginBloc.add(SocialLoginEvent(isGoogle: true));
-                    //     });
-                    //   },
-                    //   onAppleSignIn: () {
-                    //     signInWithApple().then((value) {
-                    //       socialLoginBloc.appleId =
-                    //           value?.appleAuth.userIdentifier;
-                    //       socialLoginBloc.email = value?.appleAuth.email;
-                    //       socialLoginBloc.name =
-                    //           '${value?.appleAuth.givenName ?? ''} ${value?.appleAuth.familyName ?? ''}';
-                    //       socialLoginBloc.accessToken =
-                    //           value?.appleAuth.identityToken;
-                    //
-                    //       socialLoginBloc.add(
-                    //         SocialLoginEvent(isGoogle: false),
-                    //       );
-                    //     });
-                    //   },
-                    // ),
                     SizedBox(height: 40.h),
                     HaveAccountSection(isLogin: false),
                   ],

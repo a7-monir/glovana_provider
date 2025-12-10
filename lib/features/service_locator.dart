@@ -3,12 +3,15 @@ import 'package:glovana_provider/features/payment_report/bloc.dart';
 import 'package:glovana_provider/features/provider_profile/bloc.dart';
 import 'package:glovana_provider/features/provider_update_status/bloc.dart';
 import 'package:glovana_provider/features/ratings/bloc.dart';
+import 'package:glovana_provider/features/reset_password/bloc.dart';
+import 'package:glovana_provider/features/send_otp/bloc.dart';
 import 'package:glovana_provider/features/services/bloc.dart';
 import 'package:glovana_provider/features/signup/bloc.dart';
 import 'package:glovana_provider/features/static_page/bloc.dart';
 import 'package:glovana_provider/features/toggle_lang/bloc.dart';
 import 'package:glovana_provider/features/types/bloc.dart';
 import 'package:glovana_provider/features/update_status/bloc.dart';
+import 'package:glovana_provider/features/verify_otp/bloc.dart';
 import 'package:glovana_provider/features/wallet/bloc.dart';
 import 'package:kiwi/kiwi.dart';
 
@@ -20,6 +23,7 @@ import 'address/bloc.dart';
 import 'appointment_details/bloc.dart';
 import 'appointments/bloc.dart';
 
+import 'check_phone/bloc.dart';
 import 'complete_data/bloc.dart';
 import 'complete_data_update/bloc.dart';
 import 'delivery/bloc.dart';
@@ -56,4 +60,8 @@ void initKiwi() {
   con.registerFactory((c) => ProviderUpdateStatusBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => DeleteAccountBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => CompleteDataUpdateBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => CheckPhoneBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => ResetPasswordBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => SendOtpBloc());
+  con.registerFactory((c) => VerifyOtpBloc());
 }
