@@ -65,6 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
     setState(() => _showShapes = true);
     await Future.delayed(const Duration(seconds: 1));
     if (mounted) {
+
       if (CacheHelper.isAuthed) {
         if (CacheHelper.activate == 3) {
           navigateTo(DoneCompleteProfileView(), keepHistory: false);

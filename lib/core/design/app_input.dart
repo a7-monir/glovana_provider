@@ -125,6 +125,10 @@ class _AppInputState extends State<AppInput> {
                         LengthLimitingTextInputFormatter(widget.maxLength),
                       if (widget.keyboardType == TextInputType.datetime) CardExpirationFormatter(),
                       if (widget.isCardNumber) CardFormatter(separator: '-'),
+                      if (widget.keyboardType == TextInputType.phone ||
+                          widget.inputType == InputType.phone)
+                        FilteringTextInputFormatter.deny(
+                            RegExp(r'^0+(?=.)'))
                     ],
                     decoration: InputDecoration(
                       hintText: widget.hint,

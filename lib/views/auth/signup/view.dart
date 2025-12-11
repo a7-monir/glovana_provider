@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/features/types/bloc.dart';
+import 'package:glovana_provider/views/auth/otp/view.dart';
 import 'package:glovana_provider/views/static_page/view.dart';
 
 import 'package:kiwi/kiwi.dart';
@@ -276,7 +277,10 @@ class _SignupViewState extends State<SignupView> {
                           onPress:() {
                             if (bloc.formKey.currentState!.validate()) {
                               if (isAccept) {
-                                bloc.add(SignupEvent());
+                                navigateTo(VerifyOtpScreen(phone: bloc.phoneController.text, onSuccess: () {
+                                  bloc.add(SignupEvent());
+                                },));
+
                               } else {
                                 showMessage(
                                   LocaleKeys.mustAcceptWithName.tr(

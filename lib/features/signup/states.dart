@@ -15,6 +15,5 @@ class SignupFailedState extends SignupStates {
 
 class SignupSuccessState extends SignupStates {
   final String msg;
-
   SignupSuccessState({required this.msg});
 }

@@ -48,27 +48,31 @@ class _DoneCompleteProfileViewState extends State<DoneCompleteProfileView> {
           ),
           Align(
             alignment: AlignmentGeometry.bottomCenter,
-            child: Row(
-              children: [
-                Expanded(
-                  child: AppButton(
-                    text: LocaleKeys.confirm.tr(),
-                    onPress: () {
-                      CacheHelper.logOut();
-                      navigateTo(const LoginView(), keepHistory: false);
-                    },
+            child: Padding(
+              padding:  EdgeInsets.symmetric(horizontal: 24.w).copyWith(bottom: 16.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AppButton(
+                      text: LocaleKeys.confirm.tr(),
+                      onPress: () {
+                        CacheHelper.logOut();
+                        navigateTo(const LoginView(), keepHistory: false);
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(height: 16.w),
-                Expanded(
-                  child: AppButton(
-                    text: CacheHelper.lang == 'en' ? 'edit' : 'تعديل',
-                    onPress: () {
-                      navigateTo(const ProviderTypeView(),replacement: true);
-                    },
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: AppButton(
+                      text: CacheHelper.lang == 'en' ? 'edit' : 'تعديل',
+                      type: ButtonType.outlined,
+                      onPress: () {
+                        navigateTo(const ProviderTypeView(),replacement: true);
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           )
         ],

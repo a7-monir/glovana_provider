@@ -147,11 +147,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                 bloc: bloc,
                 listener: (context, state) {
                   if(state is EditProfileSuccessState){
-                   navigateTo(VerifyOtpScreen(phone: state.model.phone, onSuccess: () {
-                     CacheHelper.saveData(state.model);
-                     navigateTo(HomeNavView(pageIndex: 2,),keepHistory: false);
 
-                   },));
+                    navigateTo(HomeNavView(pageIndex: 2,),keepHistory: false);
+
                   }
                 },
                 builder: (context, state) {
@@ -160,7 +158,12 @@ class _EditProfileViewState extends State<EditProfileView> {
                     isLoading: state is EditProfileLoadingState,
                     onPress: () {
                       if (bloc.formKey.currentState!.validate()) {
-                        bloc.add(EditProfileEvent());
+                        navigateTo(VerifyOtpScreen(phone: bloc.phoneController.text,
+                        onSuccess: () {
+                          bloc.add(EditProfileEvent());
+                        },
+                        ));
+
                       } else {
                         bloc.validateMode = AutovalidateMode.onUserInteraction;
                         setState(() {});
