@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
+import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:kiwi/kiwi.dart';
@@ -14,12 +15,15 @@ import '../../../core/design/app_image.dart';
 import '../../../features/send_otp/bloc.dart';
 import '../../../features/verify_otp/bloc.dart';
 
-
 class VerifyOtpScreen extends StatefulWidget {
   final String phone;
   final Function() onSuccess;
 
-  const VerifyOtpScreen({super.key, required this.phone, required this.onSuccess});
+  const VerifyOtpScreen({
+    super.key,
+    required this.phone,
+    required this.onSuccess,
+  });
 
   @override
   State<VerifyOtpScreen> createState() => _VerifyOtpScreenState();
@@ -63,30 +67,11 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
         } else if (state is SendOtpFailedState) {
           showMessage(state.msg);
         }
-        // if (state.verifingOtpStatus == VerifingOtp.failure) {
-        //   errorController!.add(ErrorAnimationType.shake);
-        //   pinController.clear();
-        //   currentText = "";
-        // }
-        // if (state.loginStatus == LoginStatus.success) {
-        //   pushAndRemoveAll(context, const FirstSignUpStepScreen());
-        // }
+
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
+          appBar: SecondAppBar(),
           body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
@@ -94,20 +79,21 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(height: 16.h),
-                Center(child: AppImage('logo.png', height: 90.h, width: 90.h)),
+                Center(
+                  child: AppImage('logo.png', height: 90.h, width: 90.h),
+                ),
                 SizedBox(height: 24.h),
                 Text(
                   LocaleKeys.enterOtpCode.tr(),
 
                   style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w700
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "${LocaleKeys.enterOtpSentTo.tr()} ${widget
-                      .phone}",
+                  "${LocaleKeys.enterOtpSentTo.tr()} ${widget.phone}",
                   // style: AppStyles.black15BoldStyle
                   //     .copyWith(color: const Color(0xff767676)),
                 ),
@@ -115,7 +101,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                 BlocConsumer(
                   bloc: verifyOtpBloc,
                   listener: (context, state) {
-                    if(state is VerifyOtpSuccessState){
+                    if (state is VerifyOtpSuccessState) {
                       Navigator.pop(context);
                       widget.onSuccess();
                     }
@@ -134,36 +120,34 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                           keyboardType: TextInputType.number,
                           useHapticFeedback: true,
                           pinTheme: PinTheme(
-                              shape: PinCodeFieldShape.box,
-                              borderRadius: BorderRadius.circular(
-                                  13.sp),
-                              fieldHeight: 60.sp,
-                              fieldWidth: 50.sp,
-                              borderWidth: 0.97,
-                              errorBorderWidth: 0.97,
-                              activeBorderWidth: 0.97,
-                              disabledBorderWidth: 0.97,
-                              inactiveBorderWidth: 0.97,
-                              selectedBorderWidth: 0.97,
-                              selectedColor: AppTheme.primary,
-                              selectedFillColor: AppTheme.primary
-                                  .withValues(alpha: 0.07),
-                              inactiveFillColor: Colors.white,
-                              activeFillColor: AppTheme.primary
-                                  .withValues(alpha: 0.07),
-                              activeColor: AppTheme.primary,
-                              inactiveColor: const Color(0xffDFE2E8)),
-                          animationDuration:
-                          const Duration(milliseconds: 10),
+                            shape: PinCodeFieldShape.box,
+                            borderRadius: BorderRadius.circular(13.sp),
+                            fieldHeight: 60.sp,
+                            fieldWidth: 50.sp,
+                            borderWidth: 0.97,
+                            errorBorderWidth: 0.97,
+                            activeBorderWidth: 0.97,
+                            disabledBorderWidth: 0.97,
+                            inactiveBorderWidth: 0.97,
+                            selectedBorderWidth: 0.97,
+                            selectedColor: AppTheme.primary,
+                            selectedFillColor: AppTheme.primary.withValues(
+                              alpha: 0.07,
+                            ),
+                            inactiveFillColor: Colors.white,
+                            activeFillColor: AppTheme.primary.withValues(
+                              alpha: 0.07,
+                            ),
+                            activeColor: AppTheme.primary,
+                            inactiveColor: const Color(0xffDFE2E8),
+                          ),
+                          animationDuration: const Duration(milliseconds: 10),
                           enableActiveFill: true,
                           autoFocus: true,
                           errorAnimationController: errorController,
                           controller: verifyOtpBloc.codeController,
                           onCompleted: (v) {
-
                             verifyOtpBloc.add(VerifyOtpEvent(otp: otp));
-
-
                           },
                           onChanged: (value) {
                             setState(() {
@@ -181,77 +165,75 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                 SizedBox(height: 44.h),
                 countStarted >= 2
                     ? Text(
-                  LocaleKeys.youCanNotResendRightNow.tr(),
-                  style: TextStyle(
-                      color: AppTheme.primary,
-                      fontWeight: FontWeight.w600),
-                )
+                        LocaleKeys.youCanNotResendRightNow.tr(),
+                        style: TextStyle(
+                          color: AppTheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
                     : const SizedBox.shrink(),
                 SizedBox(height: 8.h),
-                !startTimer  && countStarted < 2
-                    ?
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      LocaleKeys.didNotGetCode.tr(),
-                      style: TextStyle(
-                          color: const Color(0xff767676)),
-                    ),
-                    SizedBox(width: 4.w),
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          countStarted += 1;
-                          startTimer = true;
+                !startTimer && countStarted < 2
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            LocaleKeys.didNotGetCode.tr(),
+                            style: TextStyle(color: const Color(0xff767676)),
+                          ),
+                          SizedBox(width: 4.w),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                countStarted += 1;
+                                startTimer = true;
 
-                          bloc.add(SendOtpEvent(phone: widget.phone));
-                        });
-                      },
-                      child: Text(
-                        LocaleKeys.resend.tr(),
-                        style: TextStyle(
-                            color: AppTheme.primary,
-                        fontSize: 16.sp,
-                          fontWeight: FontWeight.w700
-                        ),
-                      ),
-                    ),
-                  ],
-                )
+                                bloc.add(SendOtpEvent(phone: widget.phone));
+                              });
+                            },
+                            child: Text(
+                              LocaleKeys.resend.tr(),
+                              style: TextStyle(
+                                color: AppTheme.primary,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
                     : const SizedBox.shrink(),
                 startTimer == true && countStarted < 2
-                    ?
-                TimerWidget(
-                    preText: "${LocaleKeys.canResentCodeAround.tr()} ",
-                    afterText: " ${LocaleKeys.minute.tr()}",
-                    onTimerFinished: () {
-                      setState(() {
-                        startTimer = false;
-                      });
-                    },
-                    initialSeconds: countStarted == 1 ? 60 : 180)
-                : const SizedBox.shrink(),
+                    ? TimerWidget(
+                        preText: "${LocaleKeys.canResentCodeAround.tr()} ",
+                        afterText: " ${LocaleKeys.minute.tr()}",
+                        onTimerFinished: () {
+                          setState(() {
+                            startTimer = false;
+                          });
+                        },
+                        initialSeconds: countStarted == 1 ? 60 : 180,
+                      )
+                    : const SizedBox.shrink(),
                 SizedBox(height: 20.h),
 
                 state is SendOtpLoadingState
-                // ||
-                // state.verifingOtpStatus ==
-                //     VerifingOtp.loading ||
-                // state.loginStatus == LoginStatus.loading
-                    ?
-                Center(
-                  child: SizedBox(
-                    width: 50.sp,
-                    height: 50.sp,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppTheme.primary,
-                      ),
-                    ),
-                  ),
-                )
-                    : const SizedBox.shrink()
+                    // ||
+                    // state.verifingOtpStatus ==
+                    //     VerifingOtp.loading ||
+                    // state.loginStatus == LoginStatus.loading
+                    ? Center(
+                        child: SizedBox(
+                          width: 50.sp,
+                          height: 50.sp,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppTheme.primary,
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),
@@ -324,12 +306,9 @@ class _TimerWidgetState extends State<TimerWidget> {
     return Center(
       child: mainSeconds > 0
           ? Text(
-        '${widget.preText}${minutes.toString().padLeft(2, '0')}:${seconds
-            .toString().padLeft(2, '0')}${widget.afterText}',
-        style: TextStyle(
-          color: Colors.black,
-        ),
-      )
+              '${widget.preText}${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}${widget.afterText}',
+              style: TextStyle(color: Colors.black),
+            )
           : const SizedBox.shrink(),
     );
   }

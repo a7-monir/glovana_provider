@@ -23,7 +23,7 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
     on<LoginEvent>(_sendData);
   }
 
-  final phoneController = TextEditingController(text: kDebugMode ? '0799966613' : null);
+  final phoneController = TextEditingController(text: kDebugMode ? '799008912' : null);
   final passwordController = TextEditingController(text: kDebugMode ? '123456789' : null);
 
   User? model;

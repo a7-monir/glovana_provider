@@ -55,7 +55,7 @@ class JorMallSmsService {
   }) async {
     final message = 'Your OTP code is $otpCode';
 
-    phoneNumber = removeZeroAtIndex3(phoneNumber);
+    //phoneNumber = removeZeroAtIndex3(phoneNumber);
 
     final url =
         'https://www.josms.net/SMSServices/Clients/Prof/SingleSMS3/SMSService.asmx/SendSMS'

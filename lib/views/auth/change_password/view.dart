@@ -82,7 +82,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                 bloc: bloc,
                 listener: (context, state) {
                   if(state is ResetPasswordSuccessState){
-                    showMessage(state.msg);
+                    showMessage(state.msg,type: MessageType.success);
                    navigateTo(LoginView(),keepHistory: false);
                   }
                 },
