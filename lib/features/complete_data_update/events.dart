@@ -18,6 +18,7 @@ class ProviderType {
   final double lat;
   final double lng;
   final String address;
+  final String workNumber;
   final double? pricePerHour;
   final List<Map<String, dynamic>>? servicesWithPrices;
 
@@ -38,6 +39,7 @@ class ProviderType {
     this.providerId,
     required this.name,
     required this.description,
+    required this.workNumber,
     required this.lat,
     required this.lng,
     required this.address,

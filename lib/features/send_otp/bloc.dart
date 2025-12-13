@@ -34,6 +34,9 @@ class SendOtpBloc extends Bloc<SendOtpEvents, SendOtpStates> {
       final token = await smsService.generateToken();
       if (token != null) {
         final otp = generateOtp();
+        print("++++++++++++++");
+        print("962${event.phone}");
+        print("++++++++++++++");
         final success = await smsService.sendOtpSms(
           token: token,
           phoneNumber: "962${event.phone}",

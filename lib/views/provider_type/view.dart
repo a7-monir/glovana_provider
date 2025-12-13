@@ -443,27 +443,34 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
   }
 
   void loadAvailabilities(List<Availabilities> apiList) {
+    // 1️⃣ Reset كل البيانات
     days.forEach((key, value) {
-      days[key]!["enabled"] = false;
-      days[key]!["times"] = [];
+      value["enabled"] = false;
+      value["times"] = [];
     });
 
+    // 2️⃣ Fill كل يوم بمواعيده
     for (var item in apiList) {
-      if (days.containsKey(item.dayOfWeek)) {
-        days[item.dayOfWeek]!["enabled"] = true;
-        days[item.dayOfWeek]!["times"].add({
-          "from": item.startTime,
-          "to": item.endTime,
-        });
-      }
+      final day = item.dayOfWeek;
+
+      if (!days.containsKey(day)) continue;
+
+      days[day]!["enabled"] = true;
+      days[day]!["times"].add({
+        "from": item.startTime,
+        "to": item.endTime,
+      });
     }
 
+    // 3️⃣ فعّل Always لو كل الأيام متفعّلة
     bool allEnabled = true;
+
     days.forEach((key, value) {
-      if (key != "Always" && !value["enabled"]) {
+      if (key != "Always" && value["enabled"] != true) {
         allEnabled = false;
       }
     });
+
     days["Always"]!["enabled"] = allEnabled;
 
     setState(() {});
@@ -695,6 +702,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                 loadSelectedServicesFromResponse(model.providerServices);
                 servicesBloc.add(GetServicesEvent());
                 _pricePerHourController.text = model.pricePerHour.toString();
+                _workNumberController.text=model.numberOfWork.toString();
                 setState(() {});
               }
             }
@@ -748,14 +756,14 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                           padding: EdgeInsets.symmetric(horizontal: 12.w),
                           child: Tab(text: LocaleKeys.details.tr()),
                         ),
-        
+
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 12.w),
                           child: Tab(text: LocaleKeys.photos.tr()),
                         ),
                       ],
                     ),
-        
+
                     Builder(
                       builder: (context) {
                         if (state is GetProviderProfileFailedState) {
@@ -782,10 +790,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                           validator: (v) =>
                                               InputValidator.requiredValidator(
                                                 value: v!,
-                                                itemName: LocaleKeys.yourWorkName
+                                                itemName: LocaleKeys
+                                                    .yourWorkName
                                                     .tr(),
                                               ),
-        
+
                                           marginBottom: 32.h,
                                         ),
                                         AppInput(
@@ -802,7 +811,6 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               ),
                                         ),
                                         AppInput(
-                                          withShadow: false,
                                           fixedPositionedLabel: LocaleKeys
                                               .workNumber
                                               .tr(),
@@ -821,7 +829,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             navigateTo(
                                               LocationView(withButton: true),
                                             ).then((value) {
-                                              latitude = value.location.latitude;
+                                              latitude =
+                                                  value.location.latitude;
                                               longitude =
                                                   value.location.longitude;
                                               addressFromPicker =
@@ -830,15 +839,20 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             });
                                           },
                                           child: Stack(
-                                            alignment:
-                                                AlignmentDirectional.bottomCenter,
+                                            alignment: AlignmentDirectional
+                                                .bottomCenter,
                                             children: [
                                               ClipRRect(
-                                                borderRadius: BorderRadiusGeometry.circular(15.r),
+                                                borderRadius:
+                                                    BorderRadiusGeometry.circular(
+                                                      15.r,
+                                                    ),
                                                 child: AppImage(
                                                   'map.png',
                                                   height: 166.h,
-                                                  width: MediaQuery.of(context).size.width,
+                                                  width: MediaQuery.of(
+                                                    context,
+                                                  ).size.width,
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -848,9 +862,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                   borderRadius:
                                                       BorderRadiusDirectional.only(
                                                         bottomStart:
-                                                            Radius.circular(15.r),
+                                                            Radius.circular(
+                                                              15.r,
+                                                            ),
                                                         bottomEnd:
-                                                            Radius.circular(15.r),
+                                                            Radius.circular(
+                                                              15.r,
+                                                            ),
                                                       ),
                                                   color: Theme.of(
                                                     context,
@@ -885,7 +903,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                             style: TextStyle(
                                                               fontSize: 10.sp,
                                                               fontWeight:
-                                                                  FontWeight.w400,
+                                                                  FontWeight
+                                                                      .w400,
                                                               decoration:
                                                                   TextDecoration
                                                                       .underline,
@@ -899,12 +918,14 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                 .spaceBetween,
                                                         children: [
                                                           Text(
-                                                            LocaleKeys.addLocation
+                                                            LocaleKeys
+                                                                .addLocation
                                                                 .tr(),
                                                             style: TextStyle(
                                                               fontSize: 16.sp,
                                                               fontWeight:
-                                                                  FontWeight.w400,
+                                                                  FontWeight
+                                                                      .w400,
                                                             ),
                                                           ),
                                                           AppImage(
@@ -932,7 +953,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
-        
+
                                         SingleChildScrollView(
                                           padding: EdgeInsets.symmetric(
                                             vertical: 16.h,
@@ -950,7 +971,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                     horizontal: 8.w,
                                                   ),
                                                   child: Opacity(
-                                                    opacity: days[day]!["enabled"]
+                                                    opacity:
+                                                        days[day]!["enabled"]
                                                         ? 1
                                                         : 0.4,
                                                     child: Container(
@@ -980,59 +1002,67 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                           ),
                                         ),
                                         SizedBox(height: 18.h),
-                                        Column(
-                                          children: [
-                                            if (days["Always"]?["enabled"] ==
-                                                true) ...[
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: days["Always"]!["times"]
-                                                    .map<Widget>((timeSlot) {
-                                                      final index =
-                                                          days["Always"]!["times"]
-                                                              .indexOf(timeSlot);
-                                                      return _buildTimeRow(
-                                                        "Always",
-                                                        days["Always"]!,
-                                                        timeSlot,
-                                                        index,
-                                                      );
-                                                    })
-                                                    .toList(),
-                                              ),
-                                            ] else ...[
-                                              Column(
-                                                children: days.keys.map((day) {
-                                                  final dayData = days[day]!;
-                                                  if (!dayData["enabled"] ||
-                                                      day == "Always") {
-                                                    return const SizedBox.shrink();
-                                                  }
-                                                  return Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    children: dayData["times"]
-                                                        .map<Widget>((timeSlot) {
-                                                          final index =
-                                                              dayData["times"]
-                                                                  .indexOf(
-                                                                    timeSlot,
-                                                                  );
-                                                          return _buildTimeRow(
-                                                            day,
-                                                            dayData,
-                                                            timeSlot,
-                                                            index,
-                                                          );
-                                                        })
-                                                        .toList(),
-                                                  );
-                                                }).toList(),
-                                              ),
-                                            ],
-                                          ],
-                                        ),
+                              Column(
+                                children: [
+                                  if (days["Always"]?["enabled"] == true) ...[
+                                    // 🔹 Always = اعرض كل الأيام
+                                    Column(
+                                      children: days.keys.map((day) {
+                                        if (day == "Always") return const SizedBox.shrink();
+
+                                        final dayData = days[day]!;
+
+                                        if (!dayData["enabled"]) {
+                                          return const SizedBox.shrink();
+                                        }
+
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: dayData["times"].map<Widget>((timeSlot) {
+                                            final index =
+                                            dayData["times"].indexOf(timeSlot);
+
+                                            return _buildTimeRow(
+                                              day,
+                                              dayData,
+                                              timeSlot,
+                                              index,
+                                            );
+                                          }).toList(),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ] else ...[
+                                    // 🔹 مش Always = اعرض الأيام اللي شغالة بس
+                                    Column(
+                                      children: days.keys.map((day) {
+                                        if (day == "Always") return const SizedBox.shrink();
+
+                                        final dayData = days[day]!;
+
+                                        if (!dayData["enabled"]) {
+                                          return const SizedBox.shrink();
+                                        }
+
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: dayData["times"].map<Widget>((timeSlot) {
+                                            final index =
+                                            dayData["times"].indexOf(timeSlot);
+
+                                            return _buildTimeRow(
+                                              day,
+                                              dayData,
+                                              timeSlot,
+                                              index,
+                                            );
+                                          }).toList(),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ],
+                                ],
+                              ),
                                         SizedBox(height: 20.h),
                                         Divider(height: 2.h),
                                         SizedBox(height: 20.h),
@@ -1061,11 +1091,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               if (serviceState
                                                   is GetServicesFailedState) {
                                                 return AppFailed(
-                                                  response: serviceState.response,
+                                                  response:
+                                                      serviceState.response,
                                                   isSmallShape: true,
-                                                  onPress: () => servicesBloc.add(
-                                                    GetServicesEvent(),
-                                                  ),
+                                                  onPress: () => servicesBloc
+                                                      .add(GetServicesEvent()),
                                                 );
                                               } else if (serviceState
                                                   is GetServicesSuccessState) {
@@ -1094,21 +1124,19 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                   (
                                                                     serviceWithPrice,
                                                                   ) => Padding(
-                                                                    padding:
-                                                                        EdgeInsets.symmetric(
-                                                                          vertical:
-                                                                              4.h,
-                                                                        ),
+                                                                    padding: EdgeInsets.symmetric(
+                                                                      vertical:
+                                                                          4.h,
+                                                                    ),
                                                                     child: Container(
                                                                       padding: EdgeInsets.symmetric(
                                                                         horizontal:
                                                                             4.w,
                                                                       ),
-                                                                      margin:
-                                                                          EdgeInsetsDirectional.only(
-                                                                            end: 8
-                                                                                .w,
-                                                                          ),
+                                                                      margin: EdgeInsetsDirectional.only(
+                                                                        end:
+                                                                            8.w,
+                                                                      ),
                                                                       decoration: BoxDecoration(
                                                                         color: AppTheme
                                                                             .hoverColor,
@@ -1124,9 +1152,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                       child: Row(
                                                                         children: [
                                                                           Text(
-                                                                            serviceWithPrice
-                                                                                .service
-                                                                                .name,
+                                                                            serviceWithPrice.service.name,
                                                                           ),
                                                                           SizedBox(
                                                                             width:
@@ -1134,15 +1160,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                           ),
                                                                           Container(
                                                                             padding: EdgeInsets.symmetric(
-                                                                              horizontal:
-                                                                                  4.w,
+                                                                              horizontal: 4.w,
                                                                             ),
                                                                             decoration: BoxDecoration(
                                                                               borderRadius: BorderRadius.circular(
                                                                                 15.r,
                                                                               ),
-                                                                              color:
-                                                                                  AppTheme.canvasColor,
+                                                                              color: AppTheme.canvasColor,
                                                                             ),
                                                                             child: Text(
                                                                               "${serviceWithPrice.price} ${LocaleKeys.jod.tr()}",
@@ -1154,18 +1178,18 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                             constraints:
                                                                                 const BoxConstraints(),
                                                                             onPressed: () {
-                                                                              setState(() {
-                                                                                _selectedServicesWithPrices.remove(
-                                                                                  serviceWithPrice,
-                                                                                );
-                                                                              });
+                                                                              setState(
+                                                                                () {
+                                                                                  _selectedServicesWithPrices.remove(
+                                                                                    serviceWithPrice,
+                                                                                  );
+                                                                                },
+                                                                              );
                                                                             },
                                                                             icon: Icon(
                                                                               Icons.close,
-                                                                              size:
-                                                                                  20.sp,
-                                                                              color:
-                                                                                  Colors.red,
+                                                                              size: 20.sp,
+                                                                              color: Colors.red,
                                                                             ),
                                                                           ),
                                                                         ],
@@ -1185,22 +1209,21 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             },
                                           ),
                                           SizedBox(height: 32.h),
-        
                                         ],
                                         Text(
                                           state
-                                              .model
-                                              .providerTypes
-                                              .first
-                                              .type
-                                              .bookingType !=
-                                              "hourly"
+                                                      .model
+                                                      .providerTypes
+                                                      .first
+                                                      .type
+                                                      .bookingType !=
+                                                  "hourly"
                                               ? LocaleKeys
-                                              .setTheMaximumNumberOfBookingsPerHour
-                                              .tr()
+                                                    .setTheMaximumNumberOfBookingsPerHour
+                                                    .tr()
                                               : LocaleKeys
-                                              .howMuchDoYouChargePerHour
-                                              .tr(),
+                                                    .howMuchDoYouChargePerHour
+                                                    .tr(),
                                           style: TextStyle(
                                             fontSize: 14.sp,
                                             fontWeight: FontWeight.w400,
@@ -1214,12 +1237,12 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               SizedBox(
                                                 width: 100.w,
                                                 child: AppInput(
-                                                  withShadow: false,
+                                                  withShadow: true,
                                                   marginBottom: 0,
                                                   controller:
-                                                  _pricePerHourController,
+                                                      _pricePerHourController,
                                                   keyboardType:
-                                                  TextInputType.number,
+                                                      TextInputType.number,
                                                   validator: (v) =>
                                                       InputValidator.requiredValidator(
                                                         value: v!,
@@ -1228,14 +1251,14 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                 ),
                                               ),
                                               if (state
-                                                  .model
-                                                  .providerTypes
-                                                  .first
-                                                  .type
-                                                  .bookingType ==
+                                                      .model
+                                                      .providerTypes
+                                                      .first
+                                                      .type
+                                                      .bookingType ==
                                                   "hourly") ...[
                                                 SizedBox(width: 8.w),
-        
+
                                                 Text(
                                                   LocaleKeys.jodHour.tr(),
                                                   style: TextStyle(
@@ -1283,12 +1306,15 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               _images == null &&
                                                   _imageFromApi == null
                                               ? Stack(
-                                                  alignment: AlignmentDirectional
-                                                      .bottomCenter,
+                                                  alignment:
+                                                      AlignmentDirectional
+                                                          .bottomCenter,
                                                   children: [
                                                     Container(
                                                       decoration: BoxDecoration(
-                                                        color: Color(0xffF2F2F2),
+                                                        color: Color(
+                                                          0xffF2F2F2,
+                                                        ),
                                                         borderRadius:
                                                             BorderRadius.circular(
                                                               15.r,
@@ -1331,12 +1357,14 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                 .spaceBetween,
                                                         children: [
                                                           Text(
-                                                            LocaleKeys.uploadFile
+                                                            LocaleKeys
+                                                                .uploadFile
                                                                 .tr(),
                                                             style: TextStyle(
                                                               fontSize: 16.sp,
                                                               fontWeight:
-                                                                  FontWeight.w400,
+                                                                  FontWeight
+                                                                      .w400,
                                                             ),
                                                           ),
                                                           AppImage(
@@ -1379,7 +1407,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                         ),
                                         SizedBox(height: 2.h),
                                         Text(
-                                          LocaleKeys.youCanUploadYourWorkingPlace
+                                          LocaleKeys
+                                              .youCanUploadYourWorkingPlace
                                               .tr(),
                                           style: TextStyle(
                                             fontSize: 14.sp,
@@ -1400,15 +1429,19 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                         start: 20.w,
                                                       ),
                                                   child: AllImagesItem(
-                                                    imageList: _gallery.isNotEmpty
+                                                    imageList:
+                                                        _gallery.isNotEmpty
                                                         ? _gallery
-                                                              .map((e) => e.path)
+                                                              .map(
+                                                                (e) => e.path,
+                                                              )
                                                               .toList()
                                                         : _galleryFromApi,
                                                     onTap: () {
                                                       showModalBottomSheet(
                                                         context: context,
-                                                        isScrollControlled: true,
+                                                        isScrollControlled:
+                                                            true,
                                                         builder: (context) => StatefulBuilder(
                                                           builder: (context, setState2) => BaseSheet(
                                                             title: '',
@@ -1431,10 +1464,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                     child: Stack(
                                                                       children: [
                                                                         ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadiusGeometry.circular(
-                                                                                15.r,
-                                                                              ),
+                                                                          borderRadius: BorderRadiusGeometry.circular(
+                                                                            15.r,
+                                                                          ),
                                                                           child: AppImage(
                                                                             _gallery.isNotEmpty
                                                                                 ? _gallery[index].path
@@ -1444,12 +1476,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                             width: MediaQuery.of(
                                                                               context,
                                                                             ).size.width,
-                                                                            fit: BoxFit
-                                                                                .cover,
+                                                                            fit:
+                                                                                BoxFit.cover,
                                                                           ),
                                                                         ),
                                                                         Positioned(
-                                                                          top: 4,
+                                                                          top:
+                                                                              4,
                                                                           right:
                                                                               4,
                                                                           child: GestureDetector(
@@ -1463,7 +1496,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                                   index,
                                                                                 );
                                                                               }
-        
+
                                                                               if (_gallery.isEmpty &&
                                                                                   _galleryFromApi.isEmpty) {
                                                                                 Navigator.pop(
@@ -1505,7 +1538,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             ],
                                           ),
                                         ),
-        
+
                                         SizedBox(height: 20.h),
                                         Text(
                                           LocaleKeys.nationalID.tr(),
@@ -1521,6 +1554,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             image: _identityPhoto != null
                                                 ? _identityPhoto!.path
                                                 : _identityPhotoApi!,
+                                            withBaseImageUrl:
+                                                (_identityPhoto == null),
                                             onRemove: () {
                                               _identityPhoto = null;
                                               _identityPhotoApi = null;
@@ -1543,10 +1578,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               ],
                                             ),
                                           ),
-        
+
                                         SizedBox(height: 20.h),
                                         Text(
-                                          LocaleKeys.commercialRegistration.tr(),
+                                          LocaleKeys.commercialRegistration
+                                              .tr(),
                                           style: TextStyle(
                                             fontSize: 14.sp,
                                             fontWeight: FontWeight.w400,
@@ -1559,6 +1595,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                             image: _practicePhoto != null
                                                 ? _practicePhoto!.path
                                                 : _practicePhotoApi!,
+                                            withBaseImageUrl:
+                                                (_practicePhoto == null),
                                             onRemove: () {
                                               _practicePhoto = null;
                                               _practicePhotoApi = null;
@@ -1675,9 +1713,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                       typeId: typeId,
                       name: nickNameController.text,
                       description: descriptionController.text,
+                      workNumber: _workNumberController.text,
                       lat: longitude ?? 0,
                       lng: longitude ?? 0,
                       address: addressFromPicker ?? '',
+
                       // widget.signUpData['address'],
                       pricePerHour: bookingType == "hourly"
                           ? double.parse(_pricePerHourController.text)

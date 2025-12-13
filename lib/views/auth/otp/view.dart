@@ -47,6 +47,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
     errorController = StreamController<ErrorAnimationType>();
     bloc.add(SendOtpEvent(phone: widget.phone));
 
+
     super.initState();
   }
 

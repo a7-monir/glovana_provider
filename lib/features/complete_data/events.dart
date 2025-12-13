@@ -27,7 +27,7 @@ class ProviderType {
   final List<String>? deletedImages;
   final List<String>? deletedGalleries;
   final List<Availability> availability;
-
+final String workNumber;
   File? identityPhoto;
   File? practicePhoto;
 
@@ -40,6 +40,8 @@ class ProviderType {
     required this.lat,
     required this.lng,
     required this.address,
+    required this.workNumber,
+
     this.pricePerHour,
     this.servicesWithPrices,
     //  required this.isVip,

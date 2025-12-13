@@ -130,7 +130,6 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
               marginBottom: 0,
               withShadow: false,
               isValid: false,
-
               filledColor: AppTheme.secondaryHeaderColor,
               validator: (value) {
                 if (dayData["enabled"] && value!.isEmpty) {
@@ -874,6 +873,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                       }
                       final model = SecondStepModel(
                         firstStepModel: widget.firstStepModel,
+                        workNumber:_workNumberController.text,
                         pricePerHour: double.parse(
                           _pricePerHourController.text,
                         ),
@@ -928,6 +928,7 @@ class ServiceWithPrice {
 class SecondStepModel {
   final FirstStepModel firstStepModel;
   final double pricePerHour;
+  final String workNumber;
   final List<Map<String, dynamic>> serviceWithPrice;
   final List<int> service;
   List<Map<String, String>> availability;
@@ -935,6 +936,7 @@ class SecondStepModel {
   SecondStepModel({
     required this.firstStepModel,
     required this.pricePerHour,
+    required this.workNumber,
     required this.serviceWithPrice,
     required this.service,
     required this.availability,

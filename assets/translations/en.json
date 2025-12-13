@@ -254,7 +254,8 @@
   "pleaseEnterYourPhoneToResetYourPassword": "please enter your phone to reset your password",
   "pleaseEnterYourNewPassword": "please enter your new password",
   "confirmPassword": "Confirm Password",
-  "passwordsNotMatched": "passwords not matched"
+  "passwordsNotMatched": "passwords not matched",
+  "showHistory": "show history"
 
 
 

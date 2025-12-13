@@ -258,5 +258,6 @@ abstract class  LocaleKeys {
   static const pleaseEnterYourNewPassword = 'pleaseEnterYourNewPassword';
   static const confirmPassword = 'confirmPassword';
   static const passwordsNotMatched = 'passwordsNotMatched';
+  static const showHistory = 'showHistory';
 
 }

@@ -22,7 +22,7 @@ class SignupBloc extends Bloc<SignupEvents, SignupStates> {
   }
   final firstNameController = TextEditingController(text: kDebugMode?"Ahmed":null);
   final lastNameController = TextEditingController(text: kDebugMode?"Monir":null);
-  final phoneController = TextEditingController(text: kDebugMode?"0795970357":null);
+  final phoneController = TextEditingController(text: kDebugMode?"795970357":null);
   final passwordController = TextEditingController(text: kDebugMode?"123456789":null);
   final emailController = TextEditingController(text: kDebugMode?"ahmed@gmail.com":null);
   User? model;

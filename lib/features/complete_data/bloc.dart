@@ -49,8 +49,11 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
             provider.pricePerHour == null
                 ? '0'
                 : provider.pricePerHour.toString()),
+        MapEntry(
+            'provider_types[$i][number_of_work]',
+            provider.workNumber,)]
         //    MapEntry('provider_types[$i][is_vip]', '0'),
-      ]);
+      );
 
       if (provider.serviceIds != null) {
         // Add service IDs (keep for backward compatibility)

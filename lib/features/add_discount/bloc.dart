@@ -37,7 +37,7 @@ final description=TextEditingController();
         "start_date": event.startDate,
         "end_date":event.endDate,
         "is_active": true,
-        "service_ids": event.serviceIds  // Optional for service-based discounts
+        "service_ids": event.serviceIds
 
       },
     );

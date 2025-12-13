@@ -38,14 +38,15 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       // Add basic fields
       formData.fields.addAll([
         MapEntry(
-            'provider_types[$i][type_id]', provider.typeId?.toString() ?? ''),
-        MapEntry('provider_types[$i][name]', provider.name),
-        MapEntry('provider_types[$i][description]', provider.description),
-        MapEntry('provider_types[$i][lat]', provider.lat.toString()),
-        MapEntry('provider_types[$i][lng]', provider.lng.toString()),
-        MapEntry('provider_types[$i][address]', provider.address),
+            'type_id', provider.typeId?.toString() ?? ''),
+        MapEntry('name', provider.name),
+        MapEntry('description', provider.description),
+        MapEntry('lat', provider.lat.toString()),
+        MapEntry('lng', provider.lng.toString()),
+        MapEntry('address', provider.address),
+        MapEntry('number_of_work', provider.workNumber),
         MapEntry(
-            'provider_types[$i][price_per_hour]',
+            'price_per_hour',
             provider.pricePerHour == null
                 ? '0'
                 : provider.pricePerHour.toString()),
@@ -56,7 +57,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
         // Add service IDs (keep for backward compatibility)
         for (int j = 0; j < provider.serviceIds!.length; j++) {
           formData.fields.add(
-            MapEntry('provider_types[$i][service_ids][$j]',
+            MapEntry('service_ids[$j]',
                 provider.serviceIds![j].toString()),
           );
         }
@@ -68,12 +69,12 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
           final serviceWithPrice = provider.servicesWithPrices![j];
           formData.fields.addAll([
             MapEntry(
-                'provider_types[$i][services_with_prices][$j][service_id]',
+                'services_with_prices[$j][service_id]',
                 serviceWithPrice['service_id'].toString()),
-            MapEntry('provider_types[$i][services_with_prices][$j][price]',
+            MapEntry('services_with_prices[$j][price]',
                 serviceWithPrice['price'].toString()),
             MapEntry(
-                'provider_types[$i][services_with_prices][$j][is_active]',
+                'services_with_prices[$j][is_active]',
                 serviceWithPrice['is_active'].toString()),
           ]);
         }
@@ -83,7 +84,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       if (provider.images != null) {
         formData.files.add(
           MapEntry(
-            'provider_types[$i][images][0]',
+            'images[0]',
             await MultipartFile.fromFile(provider.images!.path),
           ),
         );
@@ -91,7 +92,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       if (provider.identityPhoto != null) {
         formData.files.add(
           MapEntry(
-            'provider_types[$i][identity_photo]',
+            'identity_photo',
             await MultipartFile.fromFile(provider.identityPhoto!.path),
           ),
         );
@@ -101,7 +102,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       for (int j = 0; j < provider.gallery.length; j++) {
         formData.files.add(
           MapEntry(
-            'provider_types[$i][galleries][$j]',
+            'galleries[$j]',
             await MultipartFile.fromFile(provider.gallery[j].path),
           ),
         );
@@ -112,7 +113,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       if (provider.identityPhoto != null) {
         formData.files.add(
           MapEntry(
-            'provider_types[$i][identity_photo]',
+            'identity_photo',
             await MultipartFile.fromFile(provider.identityPhoto!.path),
           ),
         );
@@ -122,7 +123,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       if (provider.practicePhoto != null) {
         formData.files.add(
           MapEntry(
-            'provider_types[$i][practice_license]',
+            'practice_license',
             await MultipartFile.fromFile(provider.practicePhoto!.path),
           ),
         );
@@ -132,11 +133,11 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       for (int j = 0; j < provider.availability.length; j++) {
         final avail = provider.availability[j];
         formData.fields.addAll([
-          MapEntry('provider_types[$i][availabilities][$j][day_of_week]',
+          MapEntry('availabilities[$j][day_of_week]',
               avail!.dayOfWeek ?? ""),
-          MapEntry('provider_types[$i][availabilities][$j][start_time]',
+          MapEntry('availabilities[$j][start_time]',
               avail.startTime ?? ""),
-          MapEntry('provider_types[$i][availabilities][$j][end_time]',
+          MapEntry('availabilities[$j][end_time]',
               avail.endTime ?? ""),
         ]);
       }

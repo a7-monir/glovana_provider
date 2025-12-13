@@ -35,7 +35,7 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final bloc = KiwiContainer().resolve<LoginBloc>();
-  final socialLoginBloc = KiwiContainer().resolve<SocialLoginBloc>();
+  //final socialLoginBloc = KiwiContainer().resolve<SocialLoginBloc>();
 
   @override
   void initState() {
@@ -60,14 +60,10 @@ class _LoginViewState extends State<LoginView> {
     });
   }
 
-  @override
-  void dispose() {
-    bloc.phoneController.dispose();
-    bloc.passwordController.dispose();
-    super.dispose();
-  }
+
 
   bool isLogin = true;
+  late String phone;
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +92,10 @@ class _LoginViewState extends State<LoginView> {
                     controller: bloc.phoneController,
                     isValid: bloc.phoneValid,
                     validator: (v) => InputValidator.validatePhone(v!),
+                    onChanged: (value) {
+
+                      phone=value;
+                    },
                   ),
                 ),
                 Padding(
@@ -134,7 +134,7 @@ class _LoginViewState extends State<LoginView> {
                     if (state is LoginSuccessState) {
                       navigateTo(
                         VerifyOtpScreen(
-                          phone: bloc.phoneController.text,
+                          phone: phone,
                           onSuccess: () {
                             CacheHelper.setToken(state.token);
                             CacheHelper.saveData(state.model);

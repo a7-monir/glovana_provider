@@ -18,6 +18,7 @@ import '../../core/design/main_gradient_item.dart';
 import '../../features/add_discount/bloc.dart';
 import '../../features/provider_profile/bloc.dart';
 import '../../generated/locale_keys.g.dart';
+import '../discounts_history/view.dart';
 
 class DiscountsView extends StatefulWidget {
   const DiscountsView({super.key});
@@ -81,7 +82,7 @@ class _DiscountsViewState extends State<DiscountsView> {
                   },
                 );
               } else if (state is GetProviderProfileSuccessState) {
-                providerId = state.model.id;
+                providerId = state.model.providerTypes.first.id;
                 if (state.model.providerTypes.isEmpty||(state.model.providerTypes.isNotEmpty&&state.model.providerTypes.first.providerServices.isEmpty)) {
                   return AppEmpty(title: LocaleKeys.providerType.tr());
                 }
@@ -398,6 +399,12 @@ class _DiscountsViewState extends State<DiscountsView> {
                             );
                           },
                         ),
+                        if(providerId!=null)
+                        AppButton(text: LocaleKeys.showHistory.tr(),
+                        type: ButtonType.outlined,
+                        onPress: () {
+                          navigateTo(DiscountsHistoryView(providerId: providerId!,));
+                        },)
                       ],
                     ),
                   ),

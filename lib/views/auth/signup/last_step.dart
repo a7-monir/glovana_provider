@@ -458,6 +458,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                         typeId: widget.secondStepModel.firstStepModel.typeId,
                         name: widget.secondStepModel.firstStepModel.nickName,
                         // widget.signUpData['nickName'],
+                        workNumber: widget.secondStepModel.workNumber,
                         description:
                             widget.secondStepModel.firstStepModel.description,
                         // widget.signUpData['description'],
@@ -619,9 +620,10 @@ class AllImagesItem extends StatelessWidget {
 
 class ItemImage extends StatelessWidget {
   final String image;
+  final bool withBaseImageUrl;
   final VoidCallback onRemove;
 
-  const ItemImage({super.key, required this.image, required this.onRemove});
+  const ItemImage({super.key, required this.image, required this.onRemove,  this.withBaseImageUrl=false});
 
   @override
   Widget build(BuildContext context) {
@@ -631,6 +633,7 @@ class ItemImage extends StatelessWidget {
           borderRadius: BorderRadiusGeometry.circular(15.r),
           child: AppImage(
             image,
+            withBaseImageUrl:withBaseImageUrl ,
             height: 160.h,
             fit: BoxFit.cover,
             width: MediaQuery.of(context).size.width,

@@ -71,7 +71,7 @@ class ProviderTypes {
   late final String practiceLicense;
   late final String identityPhoto;
   late final String address;
-  late final num pricePerHour;
+  late final num pricePerHour,numberOfWork;
   late final int status;
   late final bool isVip;
   late final String createdAt;
@@ -97,6 +97,7 @@ class ProviderTypes {
     identityPhoto = json['identity_photo']??'';
     address = json['address']??'';
     pricePerHour = json['price_per_hour']??0;
+    numberOfWork = json['number_of_work']??0;
     status = json['status']??0;
     isVip = json['is_vip']??false;
     createdAt = json['created_at']??'0';
