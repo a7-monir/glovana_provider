@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/auth/signup/first_step.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kiwi/kiwi.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../core/design/app_button.dart';
 import '../../core/design/app_circle_icon.dart';
@@ -41,7 +43,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
     ..add(GetProviderProfileEvent());
 
   final updateBloc = KiwiContainer().resolve<CompleteDataUpdateBloc>();
-  final servicesBloc = KiwiContainer().resolve<GetServicesBloc>();
+  final servicesBloc = KiwiContainer().resolve<GetServicesBloc>()..add(GetServicesEvent());
   final nickNameController = TextEditingController();
   bool isNickNameValid = true;
   bool isDescriptionValid = true;
@@ -456,10 +458,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       if (!days.containsKey(day)) continue;
 
       days[day]!["enabled"] = true;
-      days[day]!["times"].add({
-        "from": item.startTime,
-        "to": item.endTime,
-      });
+      days[day]!["times"].add({"from": item.startTime, "to": item.endTime});
     }
 
     // 3️⃣ فعّل Always لو كل الأيام متفعّلة
@@ -602,7 +601,17 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       );
     }
   }
+  Future<File> _fileFromUrl(String url) async {
+    final dio = Dio();
+    final dir = await getTemporaryDirectory();
 
+    final fileName = url.split('/').last;
+    final filePath = '${dir.path}/$fileName';
+
+    await dio.download(url, filePath);
+
+    return File(filePath);
+  }
   Future<void> _takePracticePhoto() async {
     try {
       final pickedFile = await _picker.pickImage(
@@ -682,16 +691,20 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                 longitude = model.lng.toDouble();
                 addressFromPicker = model.address;
                 if (model.images.isNotEmpty) {
-                  _imageFromApi = model.images.first.photoUrl;
+                  _imageFromApi = model.images.last.photoUrl;
                 }
                 if (model.galleries.isNotEmpty) {
                   for (var item in model.galleries) {
                     final url = item.photoUrl;
                     if (url.isNotEmpty) {
                       _galleryFromApi.add(url);
+                      // final file = await _fileFromUrl(url);
+                      // _gallery.add(file);
+
                     }
                   }
                 }
+
                 if (model.identityPhoto.isNotEmpty) {
                   _identityPhotoApi = model.identityPhoto;
                 }
@@ -702,7 +715,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                 loadSelectedServicesFromResponse(model.providerServices);
                 servicesBloc.add(GetServicesEvent());
                 _pricePerHourController.text = model.pricePerHour.toString();
-                _workNumberController.text=model.numberOfWork.toString();
+                _workNumberController.text = model.numberOfWork.toString();
+
+                print("!!!!!!!!");
+                print(_imageFromApi);
+                print(_images);
                 setState(() {});
               }
             }
@@ -1002,67 +1019,88 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                           ),
                                         ),
                                         SizedBox(height: 18.h),
-                              Column(
-                                children: [
-                                  if (days["Always"]?["enabled"] == true) ...[
-                                    // 🔹 Always = اعرض كل الأيام
-                                    Column(
-                                      children: days.keys.map((day) {
-                                        if (day == "Always") return const SizedBox.shrink();
+                                        Column(
+                                          children: [
+                                            if (days["Always"]?["enabled"] ==
+                                                true) ...[
+                                              // 🔹 Always = اعرض كل الأيام
+                                              Column(
+                                                children: days.keys.map((day) {
+                                                  if (day == "Always")
+                                                    return const SizedBox.shrink();
 
-                                        final dayData = days[day]!;
+                                                  final dayData = days[day]!;
 
-                                        if (!dayData["enabled"]) {
-                                          return const SizedBox.shrink();
-                                        }
+                                                  if (!dayData["enabled"]) {
+                                                    return const SizedBox.shrink();
+                                                  }
 
-                                        return Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: dayData["times"].map<Widget>((timeSlot) {
-                                            final index =
-                                            dayData["times"].indexOf(timeSlot);
+                                                  return Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: dayData["times"]
+                                                        .map<Widget>((
+                                                          timeSlot,
+                                                        ) {
+                                                          final index =
+                                                              dayData["times"]
+                                                                  .indexOf(
+                                                                    timeSlot,
+                                                                  );
 
-                                            return _buildTimeRow(
-                                              day,
-                                              dayData,
-                                              timeSlot,
-                                              index,
-                                            );
-                                          }).toList(),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ] else ...[
-                                    // 🔹 مش Always = اعرض الأيام اللي شغالة بس
-                                    Column(
-                                      children: days.keys.map((day) {
-                                        if (day == "Always") return const SizedBox.shrink();
+                                                          return _buildTimeRow(
+                                                            day,
+                                                            dayData,
+                                                            timeSlot,
+                                                            index,
+                                                          );
+                                                        })
+                                                        .toList(),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ] else ...[
+                                              // 🔹 مش Always = اعرض الأيام اللي شغالة بس
+                                              Column(
+                                                children: days.keys.map((day) {
+                                                  if (day == "Always")
+                                                    return const SizedBox.shrink();
 
-                                        final dayData = days[day]!;
+                                                  final dayData = days[day]!;
 
-                                        if (!dayData["enabled"]) {
-                                          return const SizedBox.shrink();
-                                        }
+                                                  if (!dayData["enabled"]) {
+                                                    return const SizedBox.shrink();
+                                                  }
 
-                                        return Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: dayData["times"].map<Widget>((timeSlot) {
-                                            final index =
-                                            dayData["times"].indexOf(timeSlot);
+                                                  return Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: dayData["times"]
+                                                        .map<Widget>((
+                                                          timeSlot,
+                                                        ) {
+                                                          final index =
+                                                              dayData["times"]
+                                                                  .indexOf(
+                                                                    timeSlot,
+                                                                  );
 
-                                            return _buildTimeRow(
-                                              day,
-                                              dayData,
-                                              timeSlot,
-                                              index,
-                                            );
-                                          }).toList(),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ],
-                                ],
-                              ),
+                                                          return _buildTimeRow(
+                                                            day,
+                                                            dayData,
+                                                            timeSlot,
+                                                            index,
+                                                          );
+                                                        })
+                                                        .toList(),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
                                         SizedBox(height: 20.h),
                                         Divider(height: 2.h),
                                         SizedBox(height: 20.h),
@@ -1077,10 +1115,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                           SizedBox(height: 10.h),
                                           BlocConsumer(
                                             bloc: servicesBloc,
+                                            buildWhen: (previous, current) => current is GetServicesSuccessState||current is GetServicesFailedState||current is GetServicesLoadingState,
                                             listener: (context, serviceState) {
-                                              print('+++++++++++++++');
-                                              if (serviceState
-                                                  is GetServicesSuccessState) {
+                                              if (serviceState is GetServicesSuccessState) {
                                                 allServices = servicesBloc.list;
                                                 print('+++++++++++++++');
                                                 print(allServices.length);
@@ -1321,7 +1358,10 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                             ),
                                                       ),
                                                       child: AppImage(
-                                                        'image.png',
+                                                        _images != null
+                                                            ? _images!.path
+                                                            : _imageFromApi??'',
+                                                        withBaseImageUrl: (_images == null),
                                                         height: 166.h,
                                                         width: MediaQuery.of(
                                                           context,
@@ -1708,6 +1748,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                           ),
                         )
                         .toList();
+print(_gallery.length);
+print(_gallery.first);
+// '/data/user/0/com.alianCode.glovana_provider/cache/scaled_1000000151.jpg'
 
                     final providerType = ProviderType(
                       typeId: typeId,
@@ -1717,7 +1760,6 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                       lat: longitude ?? 0,
                       lng: longitude ?? 0,
                       address: addressFromPicker ?? '',
-
                       // widget.signUpData['address'],
                       pricePerHour: bookingType == "hourly"
                           ? double.parse(_pricePerHourController.text)

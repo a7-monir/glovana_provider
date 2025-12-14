@@ -41,7 +41,9 @@ class _DiscountsHistoryViewState extends State<DiscountsHistoryView> {
           if(state is GetDiscountsFailedState){
             return AppFailed(onPress: () =>   bloc.add(GetDiscountsEvent(providerTypeId: widget.providerId)));
           }else if (state is GetDiscountsSuccessState){
-            return ListView.separated(itemBuilder: (context, index) => _Item(model: state.list[index]), separatorBuilder: (context, index) => SizedBox(height: 12.h,), itemCount: state.list.length);
+            return ListView.separated(
+                padding: EdgeInsets.all(14.r),
+                itemBuilder: (context, index) => _Item(model: state.list[index]), separatorBuilder: (context, index) => SizedBox(height: 12.h,), itemCount: state.list.length);
           }
           return AppLoading();
 
@@ -85,10 +87,11 @@ class _Item extends StatelessWidget {
                   ],
                 ),
               ),
-              Text("${model.percentage}%"),
+              Text("${model.percentage} %"),
 
             ],
           ),
+          Text( '${LocaleKeys.from.tr()}: ${DateFormat("dd MMM y").format(DateTime.parse(model.startDate))}, ${LocaleKeys.to.tr()}: ${DateFormat("dd MMM y").format(DateTime.parse(model.endDate))}',),
           SizedBox(height: 8.h,),
           Wrap(children: List.generate(model.services.length, (index) => Container(
             padding: EdgeInsets.all(8.r),
