@@ -144,6 +144,10 @@ class _ProfileViewState extends State<ProfileView> {
                 _ItemProfile(
                   image: 'support.png',
                   title: LocaleKeys.support.tr(),
+                  onTap:
+                      () => navigateTo(
+                    StaticPageView(id: 4, title: LocaleKeys.support.tr()),
+                  ),
                 ),
                 _ItemProfile(
                   image: 'settings.png',

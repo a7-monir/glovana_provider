@@ -801,7 +801,6 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                     ),
                     if (widget.firstStepModel.bookingType == "hourly") ...[
                       SizedBox(width: 8.w),
-
                       Text(
                         LocaleKeys.jodHour.tr(),
                         style: TextStyle(

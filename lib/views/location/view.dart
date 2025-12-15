@@ -83,95 +83,97 @@ class _LocationViewState extends State<LocationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          GoogleMap(
-            myLocationButtonEnabled: false,
-            myLocationEnabled: true,
-            zoomControlsEnabled: false,
-            initialCameraPosition: CameraPosition(
-              target: currentCenter,
-              zoom: zoom,
-            ),
-            onCameraMove: (position) {
-              currentCenter = position.target;
-            },
-            onCameraIdle: () {
-              updateAddress(currentCenter);
-            },
-            onMapCreated: (controller) {
-              _controller.complete(controller);
-              googleMapController = controller;
-            },
-          ),
-
-          IgnorePointer(
-            child: Icon(
-              Icons.location_on,
-              size: 50,
-              color: AppTheme.primary,
-            ),
-          ),
-
-          Positioned(
-            top: 50,
-            left: 20,
-            right: 20,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black26, blurRadius: 4)
-                ],
+      body: SafeArea(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            GoogleMap(
+              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              zoomControlsEnabled: false,
+              initialCameraPosition: CameraPosition(
+                target: currentCenter,
+                zoom: zoom,
               ),
-              child: Text(
-                currentAddressText ?? '',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14.sp),
-              ),
+              onCameraMove: (position) {
+                currentCenter = position.target;
+              },
+              onCameraIdle: () {
+                updateAddress(currentCenter);
+              },
+              onMapCreated: (controller) {
+                _controller.complete(controller);
+                googleMapController = controller;
+              },
             ),
-          ),
-
-
-          Positioned(
-            bottom: 110,
-            right: 16,
-            child: FloatingActionButton(
-              heroTag: "goToMyLocation",
-              backgroundColor: Colors.white,
-              shape: const CircleBorder(),
-              onPressed: goToMyLocation,
+        
+            IgnorePointer(
               child: Icon(
-                Icons.my_location,
+                Icons.location_on,
+                size: 50,
                 color: AppTheme.primary,
               ),
             ),
-          ),
-
-          if (widget.withButton)
+        
             Positioned(
-              bottom: 30,
-              left: 24.w,
-              right: 24.w,
-              child: AppButton(
-                onPress: currentCenter == null
-                    ? null
-                    : () {
-                  Navigator.pop(
-                    context,
-                    MyAddressModel(
-                      location: currentCenter,
-                      description: currentAddressText ?? '',
-                    ),
-                  );
-                },
-                text: LocaleKeys.confirm.tr(),
+              top: 50,
+              left: 20,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black26, blurRadius: 4)
+                  ],
+                ),
+                child: Text(
+                  currentAddressText ?? '',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14.sp),
+                ),
               ),
             ),
-        ],
+        
+        
+            Positioned(
+              bottom: 110,
+              right: 16,
+              child: FloatingActionButton(
+                heroTag: "goToMyLocation",
+                backgroundColor: Colors.white,
+                shape: const CircleBorder(),
+                onPressed: goToMyLocation,
+                child: Icon(
+                  Icons.my_location,
+                  color: AppTheme.primary,
+                ),
+              ),
+            ),
+        
+            if (widget.withButton)
+              Positioned(
+                bottom: 30,
+                left: 24.w,
+                right: 24.w,
+                child: AppButton(
+                  onPress: currentCenter == null
+                      ? null
+                      : () {
+                    Navigator.pop(
+                      context,
+                      MyAddressModel(
+                        location: currentCenter,
+                        description: currentAddressText ?? '',
+                      ),
+                    );
+                  },
+                  text: LocaleKeys.confirm.tr(),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

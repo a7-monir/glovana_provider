@@ -26,6 +26,7 @@ import 'appointments/bloc.dart';
 import 'check_phone/bloc.dart';
 import 'complete_data/bloc.dart';
 import 'complete_data_update/bloc.dart';
+import 'delete_discount/bloc.dart';
 import 'delete_gallary/bloc.dart';
 import 'delivery/bloc.dart';
 import 'edit_profile/bloc.dart';
@@ -34,6 +35,7 @@ import 'get_discount/bloc.dart';
 import 'google_login/bloc.dart';
 import 'login/bloc.dart';
 import 'logout/bloc.dart';
+import 'notifications/bloc.dart';
 
 void initKiwi() {
   final con = KiwiContainer();
@@ -66,6 +68,8 @@ void initKiwi() {
   con.registerFactory((c) => ResetPasswordBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetDiscountsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => DeleteGallaryBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => NotificationsBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => DeleteDiscountBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => SendOtpBloc());
   con.registerFactory((c) => VerifyOtpBloc());
 }

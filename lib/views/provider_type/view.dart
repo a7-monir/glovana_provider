@@ -1595,116 +1595,118 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
         ),
       ),
       bottomNavigationBar: canEdit
-          ? BlocConsumer(
-              bloc: updateBloc,
-              listener: (context, state) {
-                if (state is CompleteDataUpdateSuccessState) {
-                  Navigator.pop(context);
-                  showMessage(state.msg, type: MessageType.success);
-                }
-              },
-              builder: (context, state) {
-                return AppButton(
-                  text: CacheHelper.lang == 'en' ? 'edit' : 'تعديل',
-                  isLoading: state is CompleteDataUpdateLoadingState,
-                  type: ButtonType.bottomNav,
-                  onPress: () {
-                    final hasEnabledDays = days.entries
-                        .where((entry) => entry.key != "All")
-                        .any((entry) => entry.value["enabled"] == true);
-
-                    if (!hasEnabledDays) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Please select at least one day"),
-                        ),
-                      );
-                      return;
-                    }
-                    List<Map<String, String>> availability = [];
-
-                    final alwaysData = days["Always"];
-                    final weekDays = [
-                      "Sunday",
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                    ];
-                    if (alwaysData != null && alwaysData["enabled"] == true) {
-                      for (var day in weekDays) {
-                        for (var time in alwaysData["times"]) {
-                          availability.add({
-                            "day_of_week": day,
-                            "start_time": time["from"] ?? "",
-                            "end_time": time["to"] ?? "",
-                          });
-                        }
+          ? SafeArea(
+            child: BlocConsumer(
+                bloc: updateBloc,
+                listener: (context, state) {
+                  if (state is CompleteDataUpdateSuccessState) {
+                    Navigator.pop(context);
+                    showMessage(state.msg, type: MessageType.success);
+                  }
+                },
+                builder: (context, state) {
+                  return AppButton(
+                    text: CacheHelper.lang == 'en' ? 'edit' : 'تعديل',
+                    isLoading: state is CompleteDataUpdateLoadingState,
+                    type: ButtonType.bottomNav,
+                    onPress: () {
+                      final hasEnabledDays = days.entries
+                          .where((entry) => entry.key != "All")
+                          .any((entry) => entry.value["enabled"] == true);
+            
+                      if (!hasEnabledDays) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Please select at least one day"),
+                          ),
+                        );
+                        return;
                       }
-                    } else {
-                      for (var entry in days.entries) {
-                        final key = entry.key;
-                        final value = entry.value;
-
-                        if (key != "Always" && value["enabled"] == true) {
-                          for (var time in value["times"]) {
+                      List<Map<String, String>> availability = [];
+            
+                      final alwaysData = days["Always"];
+                      final weekDays = [
+                        "Sunday",
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                      ];
+                      if (alwaysData != null && alwaysData["enabled"] == true) {
+                        for (var day in weekDays) {
+                          for (var time in alwaysData["times"]) {
                             availability.add({
-                              "day_of_week": key,
+                              "day_of_week": day,
                               "start_time": time["from"] ?? "",
                               "end_time": time["to"] ?? "",
                             });
                           }
                         }
+                      } else {
+                        for (var entry in days.entries) {
+                          final key = entry.key;
+                          final value = entry.value;
+            
+                          if (key != "Always" && value["enabled"] == true) {
+                            for (var time in value["times"]) {
+                              availability.add({
+                                "day_of_week": key,
+                                "start_time": time["from"] ?? "",
+                                "end_time": time["to"] ?? "",
+                              });
+                            }
+                          }
+                        }
                       }
-                    }
-                    final availabilityData = (availability)
-                        .map(
-                          (a) => Availability(
-                            dayOfWeek: a['day_of_week'],
-                            startTime: a['start_time'],
-                            endTime: a['end_time'],
-                          ),
-                        )
-                        .toList();
-                    final providerType = ProviderType(
-                      bookingType: bookingType,
-                      typeId: typeId,
-                      name: nickNameController.text,
-                      description: descriptionController.text,
-                      workNumber: _workNumberController.text,
-                      lat: longitude ?? 0,
-                      lng: longitude ?? 0,
-                      address: addressFromPicker ?? '',
-                      // widget.signUpData['address'],
-                      pricePerHour: double.parse(_pricePerHourController.text),
-                      servicesWithPrices: bookingType == "service"
-                          ? _selectedServicesWithPrices
-                                .map((service) => service.toMap())
-                                .toList()
-                          : null,
-                      serviceIds: bookingType == "hourly"
-                          ? null
-                          : _selectedServicesWithPrices
-                                .map((service) => service.service.id)
-                                .toList(),
-                      images: _images,
-                      gallery: _gallery,
-                      availability: availabilityData,
-                      identityPhoto: _identityPhoto,
-                      practicePhoto: _practicePhoto,
-                    );
-                    updateBloc.add(
-                      CompleteDataUpdateEvent(
-                        providerTypes: [providerType],
-                        providerId: providerId,
-                      ),
-                    );
-                  },
-                );
-              },
-            )
+                      final availabilityData = (availability)
+                          .map(
+                            (a) => Availability(
+                              dayOfWeek: a['day_of_week'],
+                              startTime: a['start_time'],
+                              endTime: a['end_time'],
+                            ),
+                          )
+                          .toList();
+                      final providerType = ProviderType(
+                        bookingType: bookingType,
+                        typeId: typeId,
+                        name: nickNameController.text,
+                        description: descriptionController.text,
+                        workNumber: _workNumberController.text,
+                        lat: longitude ?? 0,
+                        lng: longitude ?? 0,
+                        address: addressFromPicker ?? '',
+                        // widget.signUpData['address'],
+                        pricePerHour: double.parse(_pricePerHourController.text),
+                        servicesWithPrices: bookingType == "service"
+                            ? _selectedServicesWithPrices
+                                  .map((service) => service.toMap())
+                                  .toList()
+                            : null,
+                        serviceIds: bookingType == "hourly"
+                            ? null
+                            : _selectedServicesWithPrices
+                                  .map((service) => service.service.id)
+                                  .toList(),
+                        images: _images,
+                        gallery: _gallery,
+                        availability: availabilityData,
+                        identityPhoto: _identityPhoto,
+                        practicePhoto: _practicePhoto,
+                      );
+                      updateBloc.add(
+                        CompleteDataUpdateEvent(
+                          providerTypes: [providerType],
+                          providerId: providerId,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+          )
           : SizedBox.shrink(),
     );
   }

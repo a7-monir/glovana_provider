@@ -145,16 +145,19 @@ class CustomBackIcon extends StatelessWidget {
       },
       child: Padding(
         padding: EdgeInsetsDirectional.only(start: paddingStart ?? 16.w),
-        child: AppCircleIcon(
-          img: 'arrow_back.png',
-          bgColor: circleColor ?? Theme.of(context).canvasColor,
-          bgRadius: 36.h,
-          radius: 24.r,
-          iconColor: Theme.of(context).primaryColor,
+        child: Transform.rotate(
+          angle: CacheHelper.lang == 'ar' ? pi : 0,
+          child: AppCircleIcon(
+            img: 'arrow_back.png',
+            bgColor: circleColor ?? Theme.of(context).canvasColor,
+            bgRadius: 36.h,
+            radius: 24.r,
+            iconColor: Theme.of(context).primaryColor,
 
-          // child: Transform.rotate(
-          //     angle: CacheHelper.lang == 'ar' ? 0 : pi,
-          //     child: AppImage('arrow_right.svg',height: size??20.h,width: size??20.h,color: backColor?? Colors.white,)),
+            // child: Transform.rotate(
+            //     angle: CacheHelper.lang == 'ar' ? 0 : pi,
+            //     child: AppImage('arrow_right.svg',height: size??20.h,width: size??20.h,color: backColor?? Colors.white,)),
+          ),
         ),
       ),
     );

@@ -78,7 +78,7 @@ class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
       url: "provider/update_profile",
       data: formData,
     );
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.data['status'] ==true) {
       model = User.fromJson(response.data['data']['provider']);
       CacheHelper.saveData(model!);
       emit(EditProfileSuccessState(msg: response.data['message']));

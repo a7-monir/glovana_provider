@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/app_refresh.dart';
 import 'package:glovana_provider/features/appointments/bloc.dart';
+import 'package:glovana_provider/views/notifications/view.dart';
 import 'package:kiwi/kiwi.dart';
 import '../../../../core/app_theme.dart';
 import '../../../../core/design/app_bar.dart';
@@ -78,6 +79,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
             padding: EdgeInsetsDirectional.only(end: 16.w),
             child: AppCircleIcon(
               img: 'notification.png',
+              onTap: () => navigateTo(NotificationsView()),
               radius: 20.h,
               bgRadius: 36.h,
               iconColor: Theme.of(context).primaryColor,

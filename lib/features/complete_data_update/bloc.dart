@@ -47,9 +47,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
         MapEntry('phone_number_of_provider_type', provider.workNumber),
         MapEntry(
             provider.bookingType == "hourly"?'price_per_hour':'number_of_work',
-            provider.pricePerHour == null
-                ? '0'
-                : provider.pricePerHour.toString()),
+             provider.pricePerHour.toString()),
         //    MapEntry('provider_types[$i][is_vip]', '0'),
       ]);
 
@@ -139,7 +137,7 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
       withFiles: true,
       data:formData,
     );
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.data['status'] ==true) {
 
       emit(CompleteDataUpdateSuccessState(msg: response.data['message']));
     } else {

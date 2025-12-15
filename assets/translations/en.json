@@ -255,8 +255,8 @@
   "pleaseEnterYourNewPassword": "please enter your new password",
   "confirmPassword": "Confirm Password",
   "passwordsNotMatched": "passwords not matched",
-  "showHistory": "show history"
-
+  "showHistory": "show history",
+  "notifications": "notifications"
 
 
 }

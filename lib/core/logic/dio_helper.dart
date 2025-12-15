@@ -141,6 +141,7 @@ class DioHelper {
         method,
         params,
       );
+print("|||||||||||||||||||${resp.data["status"]}");
 
       if ([500].contains(resp.data["code"]) ||
           resp.data["status"] == false) {
@@ -160,31 +161,6 @@ class DioHelper {
       return handleServerError(ex);
     }
   }
-  // deleteData({
-  //   required String url,
-  //   Map<String, dynamic>? query,
-  //   data,
-  //   String? lang,
-  //   String? token,
-  // }) async {
-  //   try {
-  //     ـdio.options.headers = {
-  //       'Authorization':
-  //            "Bearer  ${CacheHelper.token}"
-  //           ,
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json',
-  //       'Accept-Language': lang ?? CacheHelper.lang
-  //     };
-  //
-  //     var res = await _dio.delete(url, queryParameters: query, data: data);
-  //
-  //     return res;
-  //   } catch (e) {
-  //     log(e.toString());
-  //   }
-  // }
-
   Future<CustomResponse> deleteData({
     required String url,
     Map<String, dynamic>? query,
@@ -200,15 +176,15 @@ class DioHelper {
         'Accept-Language': lang ?? CacheHelper.lang,
       };
 
-      // ❌ تجنب dio.delete لأنه أحيانًا يتجاهل body
       final res = await _dio.delete(
         url,
         data: data,
         queryParameters: query,
       );
 
-      // ✅ التحقق من response
-      if ([500].contains(res.data["code"]) || res.data["status"] == false) {
+
+      if ([500].contains(res.data["code"]) ||
+          res.data["success"] == false) {
         return CustomResponse(
           data: res.data,
           msg: res.data["message"] ?? "Failed",
@@ -232,6 +208,8 @@ class DioHelper {
       );
     }
   }
+
+
   Future<Response> postData({
     required String url,
     dynamic data,

@@ -305,45 +305,47 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
           ),
         ),
       ),
-      bottomNavigationBar:   AppButton(
-        text: LocaleKeys.Continue.tr(),
-        type: ButtonType.bottomNav,
-        onPress: () {
-          if (formKey.currentState!.validate()) {
-            if (longitude != null &&
-                latitude != null &&
-                addressFromPicker != null &&
-                widget.typeModel != null) {
-              final model = FirstStepModel(
-                nickName: nickNameController.text,
-                bookingType: widget.typeModel!.bookingType,
-                description: descriptionController.text,
-                address: cityController.text,
-                city: cityController.text,
-                addressFromPicker: addressFromPicker!,
-                typeId: widget.typeModel!.id,
-                lat: latitude!,
-                lng: longitude!,
-              );
-              navigateTo(
-                SecondStepSignUpView(
-                  firstStepModel: model,
-                  isSalon:
-                  widget.typeModel!.name.toLowerCase() ==
-                      'saloon'||widget.typeModel!.name.toLowerCase() ==
-                      'salon',
-                ),
-              );
-            } else {
-              showMessage(
-                LocaleKeys.youMustChooseAddress.tr(),
-                type: MessageType.warning,
-              );
+      bottomNavigationBar:   SafeArea(
+        child: AppButton(
+          text: LocaleKeys.Continue.tr(),
+          type: ButtonType.bottomNav,
+          onPress: () {
+            if (formKey.currentState!.validate()) {
+              if (longitude != null &&
+                  latitude != null &&
+                  addressFromPicker != null &&
+                  widget.typeModel != null) {
+                final model = FirstStepModel(
+                  nickName: nickNameController.text,
+                  bookingType: widget.typeModel!.bookingType,
+                  description: descriptionController.text,
+                  address: cityController.text,
+                  city: cityController.text,
+                  addressFromPicker: addressFromPicker!,
+                  typeId: widget.typeModel!.id,
+                  lat: latitude!,
+                  lng: longitude!,
+                );
+                navigateTo(
+                  SecondStepSignUpView(
+                    firstStepModel: model,
+                    isSalon:
+                    widget.typeModel!.name.toLowerCase() ==
+                        'saloon'||widget.typeModel!.name.toLowerCase() ==
+                        'salon',
+                  ),
+                );
+              } else {
+                showMessage(
+                  LocaleKeys.youMustChooseAddress.tr(),
+                  type: MessageType.warning,
+                );
+              }
             }
-          }
-          validateMode = AutovalidateMode.onUserInteraction;
-          setState(() {});
-        },
+            validateMode = AutovalidateMode.onUserInteraction;
+            setState(() {});
+          },
+        ),
       ),
     );
   }

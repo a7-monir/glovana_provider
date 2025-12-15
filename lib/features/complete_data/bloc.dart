@@ -45,10 +45,8 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
         MapEntry('provider_types[$i][lng]', provider.lng.toString()),
         MapEntry('provider_types[$i][address]', provider.address),
         MapEntry(
-            provider.bookingType == "hourly"?'price_per_hour':'number_of_work',
-            provider.pricePerHour == null
-                ? '0'
-                : provider.pricePerHour.toString()),
+            provider.bookingType == "hourly"?'provider_types[$i][price_per_hour]':'provider_types[$i][number_of_work]',
+             provider.pricePerHour.toString()),
         MapEntry(
             'provider_types[$i][phone_number_of_provider_type]',
             provider.workNumber,)]);
@@ -147,7 +145,7 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
       url: "provider/complete-profile",
       data:formData,
     );
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.data['status'] ==true ) {
 
       emit(CompleteDataSuccessState());
     } else {
