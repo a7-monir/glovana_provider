@@ -434,7 +434,6 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
               builder: (context, state) {
                 return Center(
                   child: AppButton(
-
                     text: LocaleKeys.submit.tr(),
                     type: ButtonType.outlined,
                     bgColor: Color(0xffFDF2E3),
@@ -457,6 +456,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                       final providerType = ProviderType(
                         typeId: widget.secondStepModel.firstStepModel.typeId,
                         name: widget.secondStepModel.firstStepModel.nickName,
+                        bookingType: widget.secondStepModel.firstStepModel.bookingType,
                         // widget.signUpData['nickName'],
                         workNumber: widget.secondStepModel.workNumber,
                         description:

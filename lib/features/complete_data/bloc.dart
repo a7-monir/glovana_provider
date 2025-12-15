@@ -45,15 +45,13 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
         MapEntry('provider_types[$i][lng]', provider.lng.toString()),
         MapEntry('provider_types[$i][address]', provider.address),
         MapEntry(
-            'provider_types[$i][price_per_hour]',
+            provider.bookingType == "hourly"?'price_per_hour':'number_of_work',
             provider.pricePerHour == null
                 ? '0'
                 : provider.pricePerHour.toString()),
         MapEntry(
-            'provider_types[$i][number_of_work]',
-            provider.workNumber,)]
-        //    MapEntry('provider_types[$i][is_vip]', '0'),
-      );
+            'provider_types[$i][phone_number_of_provider_type]',
+            provider.workNumber,)]);
 
       if (provider.serviceIds != null) {
         // Add service IDs (keep for backward compatibility)

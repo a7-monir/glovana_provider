@@ -27,6 +27,7 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
   final passwordController = TextEditingController(text: kDebugMode ? '123456789' : null);
 
   User? model;
+  BanInfo? banInfo;
   String? token;
 
   bool passwordValid = true;
@@ -58,7 +59,7 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
 
       model = userModel.user;
       token = userModel.token;
-
+      banInfo=userModel.banInfo;
       phoneController.clear();
       passwordController.clear();
 

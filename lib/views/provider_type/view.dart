@@ -11,6 +11,7 @@ import 'package:glovana_provider/core/design/app_failed.dart';
 import 'package:glovana_provider/core/design/app_loading.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
+import 'package:glovana_provider/features/delete_gallary/bloc.dart';
 import 'package:glovana_provider/features/provider_profile/bloc.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/auth/signup/first_step.dart';
@@ -43,7 +44,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
     ..add(GetProviderProfileEvent());
 
   final updateBloc = KiwiContainer().resolve<CompleteDataUpdateBloc>();
-  final servicesBloc = KiwiContainer().resolve<GetServicesBloc>()..add(GetServicesEvent());
+  final servicesBloc = KiwiContainer().resolve<GetServicesBloc>();
+  final deleteGalleryBloc = KiwiContainer().resolve<DeleteGallaryBloc>();
   final nickNameController = TextEditingController();
   bool isNickNameValid = true;
   bool isDescriptionValid = true;
@@ -57,11 +59,12 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
   final _pricePerHourController = TextEditingController();
 
   File? _images;
-  List<File> _gallery = [];
+
   bool canEdit = false;
 
   String? _imageFromApi;
-  List<String> _galleryFromApi = [];
+  List<Galleries> _galleryFromApi = [];
+  List<File> _gallery = [];
 
   File? _identityPhoto;
   String? _identityPhotoApi;
@@ -204,7 +207,10 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
     );
   }
 
-  void _showServicePriceDialog(BuildContext context) {
+  void _showServicePriceDialog(
+    BuildContext context, {
+    required List<Service2> list,
+  }) {
     showDialog(
       context: context,
       builder: (ctx) {
@@ -263,9 +269,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                     Expanded(
                       child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: allServices.length,
+                        itemCount: list.length,
                         itemBuilder: (context, index) {
-                          final service = allServices[index];
+                          final service = list[index];
                           final isSelected = _selectedServicesWithPrices.any(
                             (s) => s.service.id == service.id,
                           );
@@ -601,17 +607,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       );
     }
   }
-  Future<File> _fileFromUrl(String url) async {
-    final dio = Dio();
-    final dir = await getTemporaryDirectory();
 
-    final fileName = url.split('/').last;
-    final filePath = '${dir.path}/$fileName';
-
-    await dio.download(url, filePath);
-
-    return File(filePath);
-  }
   Future<void> _takePracticePhoto() async {
     try {
       final pickedFile = await _picker.pickImage(
@@ -697,10 +693,8 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                   for (var item in model.galleries) {
                     final url = item.photoUrl;
                     if (url.isNotEmpty) {
-                      _galleryFromApi.add(url);
-                      // final file = await _fileFromUrl(url);
-                      // _gallery.add(file);
-
+                      _galleryFromApi.add(item);
+                      print('_galleryFromApi${item.photoUrl}');
                     }
                   }
                 }
@@ -714,12 +708,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                 loadAvailabilities(model.availabilities);
                 loadSelectedServicesFromResponse(model.providerServices);
                 servicesBloc.add(GetServicesEvent());
-                _pricePerHourController.text = model.pricePerHour.toString();
-                _workNumberController.text = model.numberOfWork.toString();
-
-                print("!!!!!!!!");
-                print(_imageFromApi);
-                print(_images);
+                _pricePerHourController.text = bookingType == "hourly"
+                    ? model.pricePerHour.toString()
+                    : model.numberOfWork.toString();
+                _workNumberController.text = model.phoneNumberOfProviderType
+                    .toString();
                 setState(() {});
               }
             }
@@ -1115,9 +1108,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                           SizedBox(height: 10.h),
                                           BlocConsumer(
                                             bloc: servicesBloc,
-                                            buildWhen: (previous, current) => current is GetServicesSuccessState||current is GetServicesFailedState||current is GetServicesLoadingState,
                                             listener: (context, serviceState) {
-                                              if (serviceState is GetServicesSuccessState) {
+                                              if (serviceState
+                                                  is GetServicesSuccessState) {
                                                 allServices = servicesBloc.list;
                                                 print('+++++++++++++++');
                                                 print(allServices.length);
@@ -1140,6 +1133,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                   onTap: () =>
                                                       _showServicePriceDialog(
                                                         context,
+                                                        list: servicesBloc.list,
                                                       ),
                                                   child: Row(
                                                     children: [
@@ -1360,8 +1354,10 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                       child: AppImage(
                                                         _images != null
                                                             ? _images!.path
-                                                            : _imageFromApi??'',
-                                                        withBaseImageUrl: (_images == null),
+                                                            : _imageFromApi ??
+                                                                  '',
+                                                        withBaseImageUrl:
+                                                            (_images == null),
                                                         height: 166.h,
                                                         width: MediaQuery.of(
                                                           context,
@@ -1456,6 +1452,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                           ),
                                         ),
                                         SizedBox(height: 20.h),
+
                                         Center(
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
@@ -1476,101 +1473,27 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                 (e) => e.path,
                                                               )
                                                               .toList()
-                                                        : _galleryFromApi,
+                                                        : _galleryFromApi
+                                                              .map(
+                                                                (e) =>
+                                                                    e.photoUrl,
+                                                              )
+                                                              .toList(),
                                                     onTap: () {
                                                       showModalBottomSheet(
                                                         context: context,
                                                         isScrollControlled:
                                                             true,
-                                                        builder: (context) => StatefulBuilder(
-                                                          builder: (context, setState2) => BaseSheet(
-                                                            title: '',
-                                                            child: SingleChildScrollView(
-                                                              child: Column(
-                                                                children: List.generate(
-                                                                  _gallery.isNotEmpty
-                                                                      ? _gallery
-                                                                            .length
-                                                                      : _galleryFromApi
-                                                                            .length,
-                                                                  (
-                                                                    index,
-                                                                  ) => Padding(
-                                                                    padding:
-                                                                        EdgeInsets.only(
-                                                                          bottom:
-                                                                              12.h,
-                                                                        ),
-                                                                    child: Stack(
-                                                                      children: [
-                                                                        ClipRRect(
-                                                                          borderRadius: BorderRadiusGeometry.circular(
-                                                                            15.r,
-                                                                          ),
-                                                                          child: AppImage(
-                                                                            _gallery.isNotEmpty
-                                                                                ? _gallery[index].path
-                                                                                : _galleryFromApi[index],
-                                                                            height:
-                                                                                150.h,
-                                                                            width: MediaQuery.of(
-                                                                              context,
-                                                                            ).size.width,
-                                                                            fit:
-                                                                                BoxFit.cover,
-                                                                          ),
-                                                                        ),
-                                                                        Positioned(
-                                                                          top:
-                                                                              4,
-                                                                          right:
-                                                                              4,
-                                                                          child: GestureDetector(
-                                                                            onTap: () {
-                                                                              if (_gallery.isNotEmpty) {
-                                                                                _gallery.removeAt(
-                                                                                  index,
-                                                                                );
-                                                                              } else {
-                                                                                _galleryFromApi.removeAt(
-                                                                                  index,
-                                                                                );
-                                                                              }
-
-                                                                              if (_gallery.isEmpty &&
-                                                                                  _galleryFromApi.isEmpty) {
-                                                                                Navigator.pop(
-                                                                                  context,
-                                                                                );
-                                                                              }
-                                                                              setState(
-                                                                                () {},
-                                                                              );
-                                                                              setState2(
-                                                                                () {},
-                                                                              );
-                                                                            },
-                                                                            child: Container(
-                                                                              decoration: const BoxDecoration(
-                                                                                color: AppTheme.canvasColor,
-                                                                                shape: BoxShape.circle,
-                                                                              ),
-                                                                              child: Icon(
-                                                                                Icons.close,
-                                                                                size: 20.sp,
-                                                                                color: AppTheme.primary,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
+                                                        builder: (context) =>
+                                                            _Sheet(
+                                                              galleryFromApi:
+                                                                  _galleryFromApi,
+                                                              gallery: _gallery,
+                                                              onSuccess: () {
+                                                                _galleryFromApi=[];
+                                                                bloc.add(GetProviderProfileEvent());
+                                                              },
                                                             ),
-                                                          ),
-                                                        ),
                                                       );
                                                     },
                                                   ),
@@ -1618,47 +1541,48 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               ],
                                             ),
                                           ),
-
-                                        SizedBox(height: 20.h),
-                                        Text(
-                                          LocaleKeys.commercialRegistration
-                                              .tr(),
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        SizedBox(height: 10.h),
-                                        if (_practicePhoto != null ||
-                                            _practicePhotoApi != null)
-                                          ItemImage(
-                                            image: _practicePhoto != null
-                                                ? _practicePhoto!.path
-                                                : _practicePhotoApi!,
-                                            withBaseImageUrl:
-                                                (_practicePhoto == null),
-                                            onRemove: () {
-                                              _practicePhoto = null;
-                                              _practicePhotoApi = null;
-                                              setState(() {});
-                                            },
-                                          ),
-                                        if (_practicePhoto == null &&
-                                            _practicePhotoApi == null)
-                                          Center(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                ItemPick(
-                                                  onTap: _pickPracticePhoto,
-                                                ),
-                                                SizedBox(width: 20.w),
-                                                ItemTake(
-                                                  onTap: _takePracticePhoto,
-                                                ),
-                                              ],
+                                        if (bookingType == "service") ...[
+                                          SizedBox(height: 20.h),
+                                          Text(
+                                            LocaleKeys.commercialRegistration
+                                                .tr(),
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
+                                          SizedBox(height: 10.h),
+                                          if (_practicePhoto != null ||
+                                              _practicePhotoApi != null)
+                                            ItemImage(
+                                              image: _practicePhoto != null
+                                                  ? _practicePhoto!.path
+                                                  : _practicePhotoApi!,
+                                              withBaseImageUrl:
+                                                  (_practicePhoto == null),
+                                              onRemove: () {
+                                                _practicePhoto = null;
+                                                _practicePhotoApi = null;
+                                                setState(() {});
+                                              },
+                                            ),
+                                          if (_practicePhoto == null &&
+                                              _practicePhotoApi == null)
+                                            Center(
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  ItemPick(
+                                                    onTap: _pickPracticePhoto,
+                                                  ),
+                                                  SizedBox(width: 20.w),
+                                                  ItemTake(
+                                                    onTap: _takePracticePhoto,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                        ],
                                       ],
                                     ),
                             ),
@@ -1748,11 +1672,10 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                           ),
                         )
                         .toList();
-print(_gallery.length);
-print(_gallery.first);
-// '/data/user/0/com.alianCode.glovana_provider/cache/scaled_1000000151.jpg'
+
 
                     final providerType = ProviderType(
+                      bookingType: bookingType,
                       typeId: typeId,
                       name: nickNameController.text,
                       description: descriptionController.text,
@@ -1761,9 +1684,7 @@ print(_gallery.first);
                       lng: longitude ?? 0,
                       address: addressFromPicker ?? '',
                       // widget.signUpData['address'],
-                      pricePerHour: bookingType == "hourly"
-                          ? double.parse(_pricePerHourController.text)
-                          : 0.0,
+                      pricePerHour: double.parse(_pricePerHourController.text),
                       servicesWithPrices: bookingType == "service"
                           ? _selectedServicesWithPrices
                                 .map((service) => service.toMap())
@@ -1791,6 +1712,124 @@ print(_gallery.first);
               },
             )
           : SizedBox.shrink(),
+    );
+  }
+}
+
+class _Sheet extends StatefulWidget {
+  List<Galleries> galleryFromApi;
+
+  List<File> gallery;
+final VoidCallback onSuccess;
+  _Sheet({super.key, required this.galleryFromApi, required this.gallery, required this.onSuccess});
+
+  @override
+  State<_Sheet> createState() => _SheetState();
+}
+
+class _SheetState extends State<_Sheet> {
+  final deleteGalleryBloc = KiwiContainer().resolve<DeleteGallaryBloc>();
+  int? selectedId;
+  bool hasPopped = false;
+  @override
+  Widget build(BuildContext context) {
+    return BaseSheet(
+      title: '',
+      child: SingleChildScrollView(
+        child: Column(
+          children: List.generate(
+            widget.gallery.isNotEmpty
+                ? widget.gallery.length
+                : widget.galleryFromApi.length,
+            (index) => BlocConsumer(
+              bloc: deleteGalleryBloc,
+              buildWhen: (previous, current) =>
+                  current is DeleteGallaryLoadingState ||
+                  current is DeleteGallarySuccessState,
+
+              listener: (context, deleteState) {
+
+                if (deleteState is DeleteGallarySuccessState &&
+                    selectedId == widget.galleryFromApi[index].id &&
+                    !hasPopped) {
+                  hasPopped = true;
+                  Navigator.pop(context);
+                  widget.onSuccess();
+                }
+
+              },
+              builder: (context, deleteState) {
+
+
+                if (
+                deleteState is DeleteGallaryLoadingState &&
+                    selectedId == widget.galleryFromApi[index].id) {
+                  return Padding(
+                    padding:  EdgeInsets.symmetric(vertical: 8.h),
+                    child: AppLoading(),
+                  );
+                }
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 12.h),
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadiusGeometry.circular(15.r),
+                        child: AppImage(
+                          widget.gallery.isNotEmpty
+                              ? widget.gallery[index].path
+                              : widget.galleryFromApi[index].photoUrl,
+                          height: 150.h,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        top: 4,
+                        right: 4,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (widget.gallery.isNotEmpty) {
+                              widget.gallery.removeAt(index);
+                            } else {
+                              selectedId = widget.galleryFromApi[index].id;
+                              print(selectedId);
+                              deleteGalleryBloc.add(
+                                DeleteGallaryEvent(
+                                  galleryId: widget.galleryFromApi[index].id,
+                                ),
+                              );
+
+                            }
+
+                            if (widget.gallery.isEmpty &&
+                                widget.galleryFromApi.isEmpty) {
+                              Navigator.pop(context);
+                            }
+                            setState(() {});
+
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: AppTheme.canvasColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.close,
+                              size: 20.sp,
+                              color: AppTheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

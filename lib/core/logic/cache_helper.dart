@@ -1,3 +1,4 @@
+import 'package:glovana_provider/features/login/bloc.dart' show User, BanInfo;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/login/bloc.dart' show User;
@@ -141,6 +142,28 @@ class CacheHelper {
     return _ref.get(key);
   }
 
+  static String get banReason {
+    return _ref.getString("banReason") ?? "";
+  }
+  static String get banDescription {
+    return _ref.getString("banDescription") ?? "";
+  }
+  static String get bannedAt {
+    return _ref.getString("bannedAt") ?? "";
+  }
+  static String get banUntil {
+    return _ref.getString("banUntil") ?? "";
+  }
+
+  static Future<void> saveBanInfo(BanInfo model) async {
+    print("************** Save the data *****************");
+    await _ref.setBool("is_permanent", model.isPermanent);
+    await _ref.setString("banReason", model.reason);
+    await _ref.setString("banDescription", model.description);
+    await _ref.setString("bannedAt", model.bannedAt);
+    await _ref.setString("banUntil", model.banUntil);
+
+  }
   static Future<void> saveData(User model) async {
     print("************** Save the data *****************");
     await _ref.setInt("id", model.id);

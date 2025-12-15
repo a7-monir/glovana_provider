@@ -138,7 +138,8 @@ class _LoginViewState extends State<LoginView> {
                           onSuccess: () {
                             CacheHelper.setToken(state.token);
                             CacheHelper.saveData(state.model);
-                            if(state.model.activate==3){
+                            CacheHelper.saveBanInfo(bloc.banInfo!);
+                            if(state.model.activate==3||state.model.activate==2){
                               navigateTo(DoneCompleteProfileView(), keepHistory: false);
                             }else{
                               navigateTo(HomeNavView());

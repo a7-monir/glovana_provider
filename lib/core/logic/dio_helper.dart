@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:glovana_provider/views/auth/login/view.dart';
 import 'package:quick_log/quick_log.dart';
 
 import 'cache_helper.dart';
+import 'helper_methods.dart';
 
 enum APIMethods { post, put, delete }
 
@@ -147,6 +149,7 @@ class DioHelper {
         final resp = await _dio.get(path, queryParameters: params);
 
         print(resp.data.runtimeType);
+
         if (resp.data is String ||
             resp.data is List ||
             [500].contains(resp.data["code"]) ||
@@ -264,7 +267,7 @@ class CustomApiInterceptor extends Interceptor {
     log.error(err);
     if (err.response?.statusCode == 401) {
       await CacheHelper.logOut();
-      //navigateTo(HomeNavView(), keepHistory: false);
+      navigateTo(LoginView(), keepHistory: false);
     }
     return super.onError(err, handler);
   }
@@ -289,6 +292,7 @@ abstract class NetworkExceptions {
       case 401:
       case 403:
         CacheHelper.logOut();
+        navigateTo(LoginView(), keepHistory: false);
         return "Unauthorized request. Please log in again.";
       case 404:
         return "Requested resource not found.";

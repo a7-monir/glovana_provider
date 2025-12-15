@@ -330,7 +330,8 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                   firstStepModel: model,
                   isSalon:
                   widget.typeModel!.name.toLowerCase() ==
-                      'saloon',
+                      'saloon'||widget.typeModel!.name.toLowerCase() ==
+                      'salon',
                 ),
               );
             } else {

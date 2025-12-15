@@ -26,6 +26,7 @@ import 'appointments/bloc.dart';
 import 'check_phone/bloc.dart';
 import 'complete_data/bloc.dart';
 import 'complete_data_update/bloc.dart';
+import 'delete_gallary/bloc.dart';
 import 'delivery/bloc.dart';
 import 'edit_profile/bloc.dart';
 
@@ -64,6 +65,7 @@ void initKiwi() {
   con.registerFactory((c) => CheckPhoneBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => ResetPasswordBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetDiscountsBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => DeleteGallaryBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => SendOtpBloc());
   con.registerFactory((c) => VerifyOtpBloc());
 }

@@ -13,7 +13,7 @@ class ProviderType {
   final int? providerId;
   final int? typeId;
   final String name;
-  final String description;
+  final String description,bookingType;
   final double lat;
   final double lng;
   final String address;
@@ -37,6 +37,7 @@ final String workNumber;
     this.providerId,
     required this.name,
     required this.description,
+    required this.bookingType,
     required this.lat,
     required this.lng,
     required this.address,

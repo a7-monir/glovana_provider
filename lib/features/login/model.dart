@@ -12,10 +12,12 @@ class UserData {
 class UserModel {
   late final String token;
   late final User user;
+  late final BanInfo banInfo;
 
   UserModel.fromJson(Map<String, dynamic> json) {
     token = json['token'] ?? "";
     user = User.fromJson(json['user'] ?? {});
+    banInfo = BanInfo.fromJson(json['ban_info'] ?? {});
   }
 }
 
@@ -73,10 +75,36 @@ class User {
     "referral_code": referralCode,
     "activate": activate,
     "user_id": userId,
-    "created_at": createdAt?.toString(),
-    "updated_at": updatedAt?.toString(),
+    "created_at": createdAt.toString(),
+    "updated_at": updatedAt.toString(),
     "photo_url": photoUrl,
   };
+}
+class BanInfo {
+
+  late final bool isPermanent;
+  late final String reason;
+  late final String description;
+  late final String bannedAt;
+  late final String banUntil;
+
+  BanInfo.fromJson(Map<String, dynamic> json){
+    isPermanent = json['is_permanent']??false;
+    reason = json['reason']??'';
+    description = json['description']??'';
+    bannedAt = json['banned_at']??'';
+    banUntil = json['ban_until']??'';
+  }
+
+  Map<String, dynamic> toJson() {
+    final _data = <String, dynamic>{};
+    _data['is_permanent'] = isPermanent;
+    _data['reason'] = reason;
+    _data['description'] = description;
+    _data['banned_at'] = bannedAt;
+    _data['ban_until'] = banUntil;
+    return _data;
+  }
 }
 
 UserResponseModel userResponseModelFromJson(String str) =>

@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (mounted) {
 
       if (CacheHelper.isAuthed) {
-        if (CacheHelper.activate == 3) {
+        if (CacheHelper.activate == 3||CacheHelper.activate == 2) {
           navigateTo(DoneCompleteProfileView(), keepHistory: false);
         } else {
           navigateTo(HomeNavView(), keepHistory: false);

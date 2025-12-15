@@ -44,9 +44,9 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
         MapEntry('lat', provider.lat.toString()),
         MapEntry('lng', provider.lng.toString()),
         MapEntry('address', provider.address),
-        MapEntry('number_of_work', provider.workNumber),
+        MapEntry('phone_number_of_provider_type', provider.workNumber),
         MapEntry(
-            'price_per_hour',
+            provider.bookingType == "hourly"?'price_per_hour':'number_of_work',
             provider.pricePerHour == null
                 ? '0'
                 : provider.pricePerHour.toString()),
@@ -86,14 +86,6 @@ class CompleteDataUpdateBloc extends Bloc<CompleteDataUpdateEvents, CompleteData
           MapEntry(
             'images[0]',
             await MultipartFile.fromFile(provider.images!.path),
-          ),
-        );
-      }
-      if (provider.identityPhoto != null) {
-        formData.files.add(
-          MapEntry(
-            'identity_photo',
-            await MultipartFile.fromFile(provider.identityPhoto!.path),
           ),
         );
       }
