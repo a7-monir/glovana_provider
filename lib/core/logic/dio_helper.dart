@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -59,37 +60,178 @@ class DioHelper {
     return resp;
   }
 
+  // Future<CustomResponse> send(
+  //     String path, {
+  //       Map<String, dynamic>? data,
+  //       Map<String, dynamic>? params,
+  //       Map<String, dynamic>? rawData,
+  //       Map<String, dynamic>? headers,
+  //       APIMethods method = APIMethods.post,
+  //     }) async {
+  //   if (path.isEmpty) {
+  //     return fakeCase();
+  //   }
+  //
+  //   try {
+  //     headers ??= {
+  //       'Accept': 'application/json',
+  //     };
+  //
+  //     // ✅ DELETE لازم JSON
+  //     if (method == APIMethods.delete) {
+  //       headers['Content-Type'] = 'application/json';
+  //     }
+  //
+  //     /// ✅ body اللي هيتبعت فعليًا
+  //     final Map<String, dynamic>? body =
+  //     method == APIMethods.delete
+  //         ? (rawData ?? {})
+  //         : data;
+  //
+  //     final resp = await getResponse(
+  //       path,
+  //       body,
+  //       headers,
+  //       method,
+  //       params,
+  //     );
+  //
+  //     if (resp.data is Map &&
+  //         (resp.data["status"] == false ||
+  //             resp.data["code"] == 500)) {
+  //       return CustomResponse(
+  //         data: resp.data,
+  //         msg: resp.data["message"],
+  //         isSuccess: false,
+  //       );
+  //     }
+  //
+  //     return CustomResponse(
+  //       data: resp.data,
+  //       isSuccess: true,
+  //       msg: resp.data["message"] ?? "status",
+  //     );
+  //   } on DioException catch (ex) {
+  //     return handleServerError(ex);
+  //   }
+  // }
+
   Future<CustomResponse> send(
-    String path, {
-    Map<String, dynamic>? data,
-    Map<String, dynamic>? params,
-    Object? rawData,
-    Map<String, dynamic>? headers,
-    APIMethods method = APIMethods.post,
-  }) async {
+      String path, {
+        Map<String, dynamic>? data,
+        Map<String, dynamic>? params,
+        Map<String, dynamic>? rawData,
+        Map<String, dynamic>? headers,
+        APIMethods method = APIMethods.post,
+      }) async {
     if (path.isEmpty) {
       return fakeCase();
-    } else {
-      try {
-        final resp = await getResponse(path, data, headers, method, params);
-        if ([500].contains(resp.data["code"]) || resp.data["status"] == false) {
-          return CustomResponse(
-            data: rawData ?? resp.data,
-            msg: resp.data["message"],
-            isSuccess: false,
-          );
-        }
+    }
+
+    try {
+      final body =
+      method == APIMethods.delete && rawData != null
+          ? rawData
+          : data;
+
+      final resp = await getResponse(
+        path,
+        body,
+        headers,
+        method,
+        params,
+      );
+
+      if ([500].contains(resp.data["code"]) ||
+          resp.data["status"] == false) {
         return CustomResponse(
           data: resp.data,
-          isSuccess: true,
-          msg: resp.data["message"] ?? "status",
+          msg: resp.data["message"],
+          isSuccess: false,
         );
-      } on DioException catch (ex) {
-        return handleServerError(ex);
       }
+
+      return CustomResponse(
+        data: resp.data,
+        isSuccess: true,
+        msg: resp.data["message"] ?? "status",
+      );
+    } on DioException catch (ex) {
+      return handleServerError(ex);
     }
   }
+  // deleteData({
+  //   required String url,
+  //   Map<String, dynamic>? query,
+  //   data,
+  //   String? lang,
+  //   String? token,
+  // }) async {
+  //   try {
+  //     ـdio.options.headers = {
+  //       'Authorization':
+  //            "Bearer  ${CacheHelper.token}"
+  //           ,
+  //       'Accept': 'application/json',
+  //       'Content-Type': 'application/json',
+  //       'Accept-Language': lang ?? CacheHelper.lang
+  //     };
+  //
+  //     var res = await _dio.delete(url, queryParameters: query, data: data);
+  //
+  //     return res;
+  //   } catch (e) {
+  //     log(e.toString());
+  //   }
+  // }
 
+  Future<CustomResponse> deleteData({
+    required String url,
+    Map<String, dynamic>? query,
+    Object? data,
+    String? lang,
+    String? token,
+  }) async {
+    try {
+      _dio.options.headers = {
+        'Authorization': "Bearer ${token ?? CacheHelper.token}",
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Accept-Language': lang ?? CacheHelper.lang,
+      };
+
+      // ❌ تجنب dio.delete لأنه أحيانًا يتجاهل body
+      final res = await _dio.delete(
+        url,
+        data: data,
+        queryParameters: query,
+      );
+
+      // ✅ التحقق من response
+      if ([500].contains(res.data["code"]) || res.data["status"] == false) {
+        return CustomResponse(
+          data: res.data,
+          msg: res.data["message"] ?? "Failed",
+          isSuccess: false,
+        );
+      }
+
+      return CustomResponse(
+        data: res.data,
+        msg: res.data["message"] ?? "Success",
+        isSuccess: true,
+      );
+    } on DioException catch (ex) {
+      return handleServerError(ex);
+    } catch (e) {
+      // أي error غير dio
+      return CustomResponse(
+        data: null,
+        msg: e.toString(),
+        isSuccess: false,
+      );
+    }
+  }
   Future<Response> postData({
     required String url,
     dynamic data,

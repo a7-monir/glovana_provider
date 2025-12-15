@@ -68,12 +68,10 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
         imageQuality: 85,
       );
 
-      if (pickedFile != null) {
-        setState(() {
-          _gallery.addAll(pickedFile.map((file) => File(file.path)).toList());
-        });
-      }
-    } catch (e) {
+      setState(() {
+        _gallery.addAll(pickedFile.map((file) => File(file.path)).toList());
+      });
+        } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("failed_to_take_photo".tr())));

@@ -27,9 +27,8 @@ final description=TextEditingController();
 
   void _sendData(DeleteGallaryEvent event, Emitter<DeleteGallaryStates> emit) async {
     emit(DeleteGallaryLoadingState());
-    final response = await _dio.send(
-      "provider/gallery",
-      method: APIMethods.delete,
+    final response = await _dio.deleteData(
+      url: "provider/gallery",
       data: {
         "gallery_ids": [event.galleryId],
       },

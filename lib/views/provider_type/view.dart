@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,8 +15,6 @@ import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/auth/signup/first_step.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kiwi/kiwi.dart';
-import 'package:path_provider/path_provider.dart';
-
 import '../../core/design/app_button.dart';
 import '../../core/design/app_circle_icon.dart';
 import '../../core/design/app_image.dart';
@@ -531,11 +527,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
         imageQuality: 85,
       );
 
-      if (pickedFile != null) {
-        setState(() {
-          _gallery.addAll(pickedFile.map((file) => File(file.path)).toList());
-        });
-      }
+      setState(() {
+        _gallery.addAll(pickedFile.map((file) => File(file.path)).toList());
+      });
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -1484,16 +1478,18 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                         context: context,
                                                         isScrollControlled:
                                                             true,
-                                                        builder: (context) =>
-                                                            _Sheet(
-                                                              galleryFromApi:
-                                                                  _galleryFromApi,
-                                                              gallery: _gallery,
-                                                              onSuccess: () {
-                                                                _galleryFromApi=[];
-                                                                bloc.add(GetProviderProfileEvent());
-                                                              },
-                                                            ),
+                                                        builder: (context) => _Sheet(
+                                                          galleryFromApi:
+                                                              _galleryFromApi,
+                                                          gallery: _gallery,
+                                                          onSuccess: () {
+                                                            _galleryFromApi =
+                                                                [];
+                                                            bloc.add(
+                                                              GetProviderProfileEvent(),
+                                                            );
+                                                          },
+                                                        ),
                                                       );
                                                     },
                                                   ),
@@ -1672,8 +1668,6 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                           ),
                         )
                         .toList();
-
-
                     final providerType = ProviderType(
                       bookingType: bookingType,
                       typeId: typeId,
@@ -1720,8 +1714,13 @@ class _Sheet extends StatefulWidget {
   List<Galleries> galleryFromApi;
 
   List<File> gallery;
-final VoidCallback onSuccess;
-  _Sheet({super.key, required this.galleryFromApi, required this.gallery, required this.onSuccess});
+  final VoidCallback onSuccess;
+
+  _Sheet({
+    required this.galleryFromApi,
+    required this.gallery,
+    required this.onSuccess,
+  });
 
   @override
   State<_Sheet> createState() => _SheetState();
@@ -1730,7 +1729,8 @@ final VoidCallback onSuccess;
 class _SheetState extends State<_Sheet> {
   final deleteGalleryBloc = KiwiContainer().resolve<DeleteGallaryBloc>();
   int? selectedId;
-  bool hasPopped = false;
+  bool isDeleting = false; // ✅ Flag لمنع double delete
+
   @override
   Widget build(BuildContext context) {
     return BaseSheet(
@@ -1741,92 +1741,96 @@ class _SheetState extends State<_Sheet> {
             widget.gallery.isNotEmpty
                 ? widget.gallery.length
                 : widget.galleryFromApi.length,
-            (index) => BlocConsumer(
-              bloc: deleteGalleryBloc,
-              buildWhen: (previous, current) =>
-                  current is DeleteGallaryLoadingState ||
-                  current is DeleteGallarySuccessState,
+                (index) {
+              final item = widget.gallery.isNotEmpty
+                  ? widget.gallery[index]
+                  : widget.galleryFromApi[index];
 
-              listener: (context, deleteState) {
+              return BlocConsumer(
+                bloc: deleteGalleryBloc,
+                listener: (context, deleteState) {
+                  if (deleteState is DeleteGallarySuccessState &&
+                      selectedId == (item is Galleries ? item.id : null)) {
+                    // ✅ بعد نجاح delete
+                    if (!widget.gallery.isNotEmpty) {
+                      widget.galleryFromApi
+                          .removeWhere((e) => e.id == selectedId);
+                    } else {
+                      widget.gallery.removeAt(index);
+                    }
+                    isDeleting = false;
+                    selectedId = null;
 
-                if (deleteState is DeleteGallarySuccessState &&
-                    selectedId == widget.galleryFromApi[index].id &&
-                    !hasPopped) {
-                  hasPopped = true;
-                  Navigator.pop(context);
-                  widget.onSuccess();
-                }
+                    Navigator.pop(context);
+                    widget.onSuccess();
+                  }
 
-              },
-              builder: (context, deleteState) {
+                  if (deleteState is DeleteGallaryFailedState) {
+                    isDeleting = false; // Reset flag
+                  }
+                },
+                builder: (context, deleteState) {
+                  final loading = deleteState is DeleteGallaryLoadingState &&
+                      selectedId == (item is Galleries ? item.id : null);
 
-
-                if (
-                deleteState is DeleteGallaryLoadingState &&
-                    selectedId == widget.galleryFromApi[index].id) {
                   return Padding(
-                    padding:  EdgeInsets.symmetric(vertical: 8.h),
-                    child: AppLoading(),
-                  );
-                }
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 12.h),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadiusGeometry.circular(15.r),
-                        child: AppImage(
-                          widget.gallery.isNotEmpty
-                              ? widget.gallery[index].path
-                              : widget.galleryFromApi[index].photoUrl,
-                          height: 150.h,
-                          width: MediaQuery.of(context).size.width,
-                          fit: BoxFit.cover,
+                    padding: EdgeInsets.only(bottom: 12.h),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15.r),
+                          child: AppImage(
+                            widget.gallery.isNotEmpty
+                                ? (item as File).path
+                                : (item as Galleries).photoUrl,
+                            height: 150.h,
+                            width: MediaQuery.of(context).size.width,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      Positioned(
-                        top: 4,
-                        right: 4,
-                        child: GestureDetector(
-                          onTap: () {
-                            if (widget.gallery.isNotEmpty) {
-                              widget.gallery.removeAt(index);
-                            } else {
-                              selectedId = widget.galleryFromApi[index].id;
-                              print(selectedId);
-                              deleteGalleryBloc.add(
-                                DeleteGallaryEvent(
-                                  galleryId: widget.galleryFromApi[index].id,
-                                ),
-                              );
-
-                            }
-
-                            if (widget.gallery.isEmpty &&
-                                widget.galleryFromApi.isEmpty) {
-                              Navigator.pop(context);
-                            }
-                            setState(() {});
-
-                          },
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: AppTheme.canvasColor,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.close,
-                              size: 20.sp,
-                              color: AppTheme.primary,
+                        PositionedDirectional(
+                          top: 4,
+                          end: 4,
+                          child: GestureDetector(
+                            onTap: loading
+                                ? null
+                                : () {
+                              if (widget.gallery.isNotEmpty) {
+                                widget.gallery.removeAt(index);
+                                setState(() {});
+                              } else {
+                                selectedId = (item as Galleries).id;
+                                isDeleting = true;
+                                deleteGalleryBloc.add(
+                                  DeleteGallaryEvent(
+                                    galleryId: selectedId!,
+                                  ),
+                                );
+                              }
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: AppTheme.canvasColor,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                size: 20.sp,
+                                color: AppTheme.primary,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                        if (loading)
+                          Positioned.fill(
+                            child: Center(child: AppLoading()),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
           ),
         ),
       ),
