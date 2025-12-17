@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_colors.dart';
+import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/constants.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -26,15 +27,15 @@ class ReceiverMsgItemWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         ClipRRect(
           borderRadius: BorderRadius.circular(100.r),
-          child: CachedNetworkImage(
-            imageUrl: recieverPhoto == null || recieverPhoto.isEmpty
-                ? "https://www.greiner-gmbh.de/fileadmin/images/hairline/galerie/saloneinrichtung_berlin_blacklabel/bl_store_3_big.jpg"
-                : (recieverPhoto!),
+          child:
+          AppImage(recieverPhoto,
             height: 40.sp,
             width: 40.sp,
             fit: BoxFit.fill,
+            withBaseImageUrl: true,
           ),
         ),
         const SizedBox(width: 8),

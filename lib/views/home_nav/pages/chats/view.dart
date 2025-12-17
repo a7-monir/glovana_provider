@@ -97,6 +97,7 @@ class _ChatsViewState extends State<ChatsView> {
       appBar: MainAppBar(
         title: LocaleKeys.chats.tr(),
         backgroundColor: Color(0xffFFE9D8),
+        withBack: false,
       ),
 
       // floatingActionButton: FloatingActionButton(
@@ -175,6 +176,7 @@ class _ChatsViewState extends State<ChatsView> {
                       ),
                     );
                   }
+
 
                   return ListView.builder(
                     itemCount: filteredRooms.length,

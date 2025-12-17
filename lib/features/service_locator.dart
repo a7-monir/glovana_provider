@@ -4,6 +4,7 @@ import 'package:glovana_provider/features/provider_profile/bloc.dart';
 import 'package:glovana_provider/features/provider_update_status/bloc.dart';
 import 'package:glovana_provider/features/ratings/bloc.dart';
 import 'package:glovana_provider/features/reset_password/bloc.dart';
+import 'package:glovana_provider/features/send_notification/bloc.dart';
 import 'package:glovana_provider/features/send_otp/bloc.dart';
 import 'package:glovana_provider/features/services/bloc.dart';
 import 'package:glovana_provider/features/signup/bloc.dart';
@@ -70,6 +71,7 @@ void initKiwi() {
   con.registerFactory((c) => DeleteGallaryBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => NotificationsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => DeleteDiscountBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => SendNotificationsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => SendOtpBloc());
   con.registerFactory((c) => VerifyOtpBloc());
 }

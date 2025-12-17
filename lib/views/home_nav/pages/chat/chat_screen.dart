@@ -53,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MainAppBar(title: LocaleKeys.chats.tr(), centerTitle: true),
+      appBar: MainAppBar(title: LocaleKeys.chats.tr(), centerTitle: true,),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(

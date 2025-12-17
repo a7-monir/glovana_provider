@@ -30,7 +30,7 @@ final reason=TextEditingController();
       "provider/appointments/${event.id}/status",
       data: {
         "status": event.newStatus.toString(),
-        'reason':reason.text
+        'reason_of_cancel':reason.text
 
       },
     );

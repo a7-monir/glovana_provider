@@ -40,79 +40,81 @@ class _PaymentReportViewState extends State<PaymentReportView> {
               },
             );
           } else if (state is GetPaymentReportSuccessState) {
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 18.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ItemGrid(
-                          title: LocaleKeys.totalAppointments.tr(),
-                          value: state.model.totalAppointments.toString(),
-                          icon: 'calender.png',
-                          color: Color(0xffD3DCFF),
-                          iconColor: Color(0xff354790),
+            return SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 18.w).copyWith(bottom: 12.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ItemGrid(
+                            title: LocaleKeys.totalAppointments.tr(),
+                            value: state.model.totalAppointments.toString(),
+                            icon: 'calender.png',
+                            color: Color(0xffD3DCFF),
+                            iconColor: Color(0xff354790),
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: ItemGrid(
-                          title: LocaleKeys.totalAmount.tr(),
-                          value:
-                              "${state.model.totalAmount.toStringAsFixed(2)} ${LocaleKeys.jod.tr()}",
-                          icon: 'dollar2.png',
-                          color: Color(0xffC5FDC5),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: ItemGrid(
+                            title: LocaleKeys.totalAmount.tr(),
+                            value:
+                                "${state.model.totalAmount.toStringAsFixed(2)} ${LocaleKeys.jod.tr()}",
+                            icon: 'dollar2.png',
+                            color: Color(0xffC5FDC5),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ItemGrid(
-                          title: LocaleKeys.totalCommission.tr(),
-                          value:
-                              "${state.model.totalCommission.toStringAsFixed(2)} ${LocaleKeys.jod.tr()}",
-                          icon: '%.png',
-                          color: Color(0xffFAEFAE),
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: ItemGrid(
-                          title: LocaleKeys.yourEarnings.tr(),
-                          value:
-                              "${state.model.totalProviderEarnings.toStringAsFixed(2)} ${LocaleKeys.jod.tr()}",
-                          icon: 'wallet_in.png',
-                          color: Color(0xffF1C5F2),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 36.h),
-                  Text(
-                    LocaleKeys.appointmentList.tr(),
-                    style: TextStyle(
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w400,
+                      ],
                     ),
-                  ),
-                  SizedBox( height: 16.h),
-                  if(state.model.appointments.isNotEmpty)
-                  ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 14.w),
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) => ItemList(model: state.model.appointments[index],),
-                    separatorBuilder: (context, index) => SizedBox(height: 16.h,),
-                    itemCount: state.model.appointments.length,
-                  ),
-                  if(state.model.appointments.isEmpty)
-                    AppEmpty(title: LocaleKeys.appointmentList.tr(),)
-                ],
+                    SizedBox(height: 16.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ItemGrid(
+                            title: LocaleKeys.totalCommission.tr(),
+                            value:
+                                "${state.model.totalCommission.toStringAsFixed(2)} ${LocaleKeys.jod.tr()}",
+                            icon: '%.png',
+                            color: Color(0xffFAEFAE),
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: ItemGrid(
+                            title: LocaleKeys.yourEarnings.tr(),
+                            value:
+                                "${state.model.totalProviderEarnings.toStringAsFixed(2)} ${LocaleKeys.jod.tr()}",
+                            icon: 'wallet_in.png',
+                            color: Color(0xffF1C5F2),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 36.h),
+                    Text(
+                      LocaleKeys.appointmentList.tr(),
+                      style: TextStyle(
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    SizedBox( height: 16.h),
+                    if(state.model.appointments.isNotEmpty)
+                    ListView.separated(
+                      padding: EdgeInsets.symmetric(horizontal: 14.w),
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => ItemList(model: state.model.appointments[index],),
+                      separatorBuilder: (context, index) => SizedBox(height: 16.h,),
+                      itemCount: state.model.appointments.length,
+                    ),
+                    if(state.model.appointments.isEmpty)
+                      AppEmpty(title: LocaleKeys.appointmentList.tr(),)
+                  ],
+                ),
               ),
             );
           }

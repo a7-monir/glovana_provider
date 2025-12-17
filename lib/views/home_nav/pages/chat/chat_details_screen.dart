@@ -171,73 +171,75 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
       //     ),
       //   ),
       // ),
-      body: Column(
-        children: [
-          Container(
-            height: 20.h,
-            decoration: BoxDecoration(
-              color: Color(0xffFFE9D8),
-              borderRadius: BorderRadiusDirectional.only(
-                bottomStart: Radius.circular(30.r),
-                bottomEnd: Radius.circular(30.r),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              height: 20.h,
+              decoration: BoxDecoration(
+                color: Color(0xffFFE9D8),
+                borderRadius: BorderRadiusDirectional.only(
+                  bottomStart: Radius.circular(30.r),
+                  bottomEnd: Radius.circular(30.r),
+                ),
               ),
             ),
-          ),
-          StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: ChatUtils.getRoomMessages(widget.userId, widget.providerId),
-            builder: (context, snapshot) {
-              final docs = snapshot.data?.docs ?? [];
-
-              if (docs.isNotEmpty) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (scrollController.hasClients) {
-                    scrollController.animateTo(
-                      scrollController.position.maxScrollExtent,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOut,
-                    );
-                  }
-                });
-              }
-
-              return Expanded(
-                child: snapshot.connectionState == ConnectionState.waiting
-                    ? const Center(child: CircularProgressIndicator())
-                    : (snapshot.hasError || docs.isEmpty)
-                    ? const SizedBox.shrink()
-                    : ListView.builder(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 30),
-                  itemCount: docs.length,
-                  itemBuilder: (context, i) {
-                    final message = Message.fromJson(docs[i].data());
-                    final senderId = (message.senderId ?? '').toString();
-                    final isMe = senderId == currentProviderId;
-
-                    return isMe
-                        ? SenderMsgItemWidget(
-                      message: message,
-                      senderPhoto: widget.providerImage ?? '',
-                    )
-                        : ReceiverMsgItemWidget(
-                      message: message,
-                      recieverPhoto: widget.userImage ?? '',
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-          // Send box
-          SendMessageWidget(
-            scrollController: scrollController,
-            providerId: widget.providerId,
-            userId: widget.userId,
-            user: null,
-            providerImage: widget.providerImage,
-            providerName: widget.providerName,
-          ),
-        ],
+            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: ChatUtils.getRoomMessages(widget.userId, widget.providerId),
+              builder: (context, snapshot) {
+                final docs = snapshot.data?.docs ?? [];
+        
+                if (docs.isNotEmpty) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (scrollController.hasClients) {
+                      scrollController.animateTo(
+                        scrollController.position.maxScrollExtent,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                      );
+                    }
+                  });
+                }
+        
+                return Expanded(
+                  child: snapshot.connectionState == ConnectionState.waiting
+                      ? const Center(child: CircularProgressIndicator())
+                      : (snapshot.hasError || docs.isEmpty)
+                      ? const SizedBox.shrink()
+                      : ListView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 30),
+                    itemCount: docs.length,
+                    itemBuilder: (context, i) {
+                      final message = Message.fromJson(docs[i].data());
+                      final senderId = (message.senderId ?? '').toString();
+                      final isMe = senderId == currentProviderId;
+        
+                      return isMe
+                          ? SenderMsgItemWidget(
+                        message: message,
+                        senderPhoto: widget.providerImage ?? '',
+                      )
+                          : ReceiverMsgItemWidget(
+                        message: message,
+                        recieverPhoto: widget.userImage ?? '',
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+            // Send box
+            SendMessageWidget(
+              id: CacheHelper.id,
+              name:CacheHelper.name ,
+              scrollController: scrollController,
+              userId: widget.userId,
+              userImage: widget.userImage,
+              userName: widget.userName,
+            ),
+          ],
+        ),
       ),
     );
   }

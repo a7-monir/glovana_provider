@@ -4,6 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/app_theme.dart';
+import 'package:glovana_provider/core/design/app_image.dart';
 
 
 import '../models/rooms_model.dart';
@@ -27,12 +29,9 @@ class OnePersonChatItem extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
-                  child: CachedNetworkImage(
-                    imageUrl: room.userImageUrl == null ||
-                            room.userImageUrl!.isEmpty ||
-                            room.userImageUrl == "null"
-                        ? "https://www.greiner-gmbh.de/fileadmin/images/hairline/galerie/saloneinrichtung_berlin_blacklabel/bl_store_3_big.jpg"
-                        : room.userImageUrl!,
+                  child: AppImage(
+                    room.userImageUrl!,
+                    withBaseImageUrl: true,
                     height: 43.sp,
                     width: 43.sp,
                     fit: BoxFit.cover,
