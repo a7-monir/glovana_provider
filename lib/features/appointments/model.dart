@@ -63,6 +63,8 @@ class Appointment {
   late final List<AppointmentService> appointmentServices;
   bool get isHourly => bookingType == 'hourly';
 
+  bool get canShowPhone => appointmentStatus != 5&&appointmentStatus!=1&&appointmentStatus!=4;
+
   Appointment.fromJson(Map<String, dynamic> json) {
     id = json["id"] ?? 0;
     number = json["number"] ?? 0;

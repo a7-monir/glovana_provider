@@ -270,6 +270,24 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                               ? LocaleKeys.hourly.tr()
                               : LocaleKeys.salon.tr(),
                         ),
+                        if(state.model.canShowPhone)
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 18.w).copyWith(bottom: 16.h),
+                          child: Row(
+                            children: [
+                              Icon(Icons.phone,size: 16.h,color: AppTheme.primary,),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: Text(
+                                  state.model.user.phone,
+                                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 18.w,
@@ -493,19 +511,26 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
         StatusAction(text: LocaleKeys.accept.tr(), status: 2),
         StatusAction(text: LocaleKeys.reject.tr(), status: 5),
       ];
-    } else if (currentStatus == 2) {
+    } else if (currentStatus == 2&&widget.model.isHourly) {
       // Accepted
       actions = [
         StatusAction(text: LocaleKeys.onTheWay.tr(), status: 3),
         StatusAction(text: LocaleKeys.cancel.tr(), status: 5),
       ];
-    } else if (currentStatus == 3) {
+    }else if((currentStatus==2 && !widget.model.isHourly)){
+      actions = [StatusAction(text:LocaleKeys.userArrive.tr(), status: 7),
+        StatusAction(text: LocaleKeys.cancel.tr(), status: 5),
+      ];
+    }
+
+    else if((currentStatus==7 && !widget.model.isHourly)||( currentStatus==3&&widget.model.isHourly )){
+      actions = [StatusAction(text:LocaleKeys.startWork.tr(), status: 6)];
+    }
+
+    else if (currentStatus == 6) {
       // Accepted
       actions = [StatusAction(text: LocaleKeys.completed.tr(), status: 4)];
-    } else if (currentStatus == 6) {
-      // Work Started - Provider can only cancel, completion is handled by user
-      actions = [StatusAction(text: LocaleKeys.cancel.tr(), status: 5)];
-    } else {
+    }  else {
       // No actions for completed or cancelled appointments
       return const SizedBox.shrink();
     }
@@ -566,6 +591,16 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
             .tr(); // "confirm_cancel_title".tr();
         dialogContent = LocaleKeys.confirmCancelMessage
             .tr(); // "confirm_cancel_message".tr();
+      case 6:
+        dialogTitle = LocaleKeys.confirmStartWorkTitle
+            .tr(); // "confirm_cancel_title".tr();
+        dialogContent = LocaleKeys.confirmStartWorkMessage
+            .tr();
+      case 7:
+        dialogTitle = LocaleKeys.confirmUserArriveTitle
+            .tr(); // "confirm_cancel_title".tr();
+        dialogContent = LocaleKeys.confirmUserArriveMessage
+            .tr();
         break;
       default:
         dialogTitle = LocaleKeys.confirmStatusChange.tr();

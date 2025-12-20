@@ -260,5 +260,12 @@ abstract class  LocaleKeys {
   static const passwordsNotMatched = 'passwordsNotMatched';
   static const showHistory = 'showHistory';
   static const notifications = 'notifications';
+  static const youHaveAMessage = 'youHaveAMessage';
+  static const startWork = 'startWork';
+  static const userArrive = 'userArrive';
+  static const confirmUserArriveTitle = 'confirmUserArriveTitle';
+  static const confirmUserArriveMessage = 'confirmUserArriveMessage';
+  static const confirmStartWorkTitle = 'confirmStartWorkTitle';
+  static const confirmStartWorkMessage = 'confirmStartWorkMessage';
 
 }

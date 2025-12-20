@@ -63,10 +63,10 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
       Message(
         content: text,
         createdAt: Timestamp.now(),
-        providerId: widget.userId,
+        providerId: widget.id.toString(),
         sentAt: Timestamp.now(),
         type: "TEXT",
-        userId: widget.id.toString(),
+        userId: widget.userId.toString(),
         senderId: widget.id.toString(),
         isReadUser: true,
         isReadProvider: false,
@@ -76,7 +76,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
     sendNotificationsBloc.add(
       SendNotificationsEvent(
         userId: widget.userId,
-        title: "you_have_a_message".tr(),
+        title: LocaleKeys.youHaveAMessage.tr(),
         body: "$text\n${LocaleKeys.from.tr()} ${widget.name}",
       ),
     );
@@ -90,14 +90,15 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
         if (state is UploadFilesSuccessState) {
 
           if (state.uploadFileModel.data?.photo != null) {
+
             ChatUtils.addMessage(
               Message(
                 content: state.uploadFileModel.data!.photo!,
                 createdAt: Timestamp.now(),
-                providerId: widget.userId,
+                providerId: widget.id.toString(),
                 sentAt: Timestamp.now(),
                 type: "IMAGE",
-                userId: widget.id.toString(),
+                userId: widget.userId.toString(),
                 senderId: widget.id.toString(),
                 isReadUser: true,
                 isReadProvider: false,
@@ -299,7 +300,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                 )
                     : GestureDetector(
                   onTap: () {
-                    /// upload image / voice
+
                     if (currentSelectedImage != null ||
                         currentAudioFile != null) {
                       sendNotificationsBloc.add(
@@ -310,7 +311,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                       );
                     }
 
-                    /// send text
+
                     if (messageController.text.isNotEmpty) {
                       _sendTextMessage(messageController.text);
                       messageController.clear();

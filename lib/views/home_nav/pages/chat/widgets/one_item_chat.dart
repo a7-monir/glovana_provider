@@ -30,7 +30,7 @@ class OnePersonChatItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
                   child: AppImage(
-                    room.userImageUrl!,
+                    room.userImageUrl??'',
                     withBaseImageUrl: true,
                     height: 43.sp,
                     width: 43.sp,

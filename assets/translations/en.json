@@ -256,7 +256,12 @@
   "confirmPassword": "Confirm Password",
   "passwordsNotMatched": "passwords not matched",
   "showHistory": "show history",
-  "notifications": "notifications"
-
-
+  "notifications": "notifications",
+  "youHaveAMessage": "you have a message",
+  "startWork": "start work",
+  "userArrive": "user arrived",
+  "confirmUserArriveTitle": "Confirm User Arrived",
+  "confirmUserArriveMessage": "Are you sure you want user arrived status",
+  "confirmStartWorkTitle": "Confirm Start Work",
+  "confirmStartWorkMessage": "Are you sure you want start work "
 }
