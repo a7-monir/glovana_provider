@@ -2,7 +2,8 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
+import '../../../../core/app_theme.dart';
+import '../../../../core/logic/cache_helper.dart';
 import 'models/message_model.dart';
 import 'models/rooms_model.dart';
 
@@ -59,7 +60,9 @@ class ChatUtils {
   }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> getRoomMessages(
-      String userId, String providerId) {
+    String userId,
+    String providerId,
+  ) {
     return firestore
         .collection('messages')
         .where('provider_id', isEqualTo: providerId)
@@ -83,14 +86,17 @@ class ChatUtils {
       await firestore
           .collection('rooms')
           .doc(querySnapshot.docs.first.id)
-          .update(Room(
-                  lastMessage: message.content,
-                  lastMessageDate: message.sentAt,
-                  lastMessageType: message.type,
-                  lastMessageUserId: message.userId,
-                  isReadUser: true,
-                  isReadProvider: false)
-              .toJson());
+          .update(
+            Room(
+              lastMessage: message.content,
+              lastMessageDate: message.sentAt,
+              lastMessageType: message.type,
+              lastMessageUserId: message.userId,
+              userImageUrl: '${AppTheme.imageUrl}${CacheHelper.photo}',
+              isReadUser: true,
+              isReadProvider: false,
+            ).toJson(),
+          );
     }
   }
 }

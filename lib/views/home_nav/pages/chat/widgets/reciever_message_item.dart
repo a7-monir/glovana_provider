@@ -27,7 +27,6 @@ class ReceiverMsgItemWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         ClipRRect(
           borderRadius: BorderRadius.circular(100.r),
           child:
@@ -35,7 +34,7 @@ class ReceiverMsgItemWidget extends StatelessWidget {
             height: 40.sp,
             width: 40.sp,
             fit: BoxFit.fill,
-            withBaseImageUrl: true,
+
           ),
         ),
         const SizedBox(width: 8),

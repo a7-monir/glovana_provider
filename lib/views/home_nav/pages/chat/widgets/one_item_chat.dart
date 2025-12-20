@@ -31,7 +31,6 @@ class OnePersonChatItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50.r),
                   child: AppImage(
                     room.userImageUrl??'',
-                    withBaseImageUrl: true,
                     height: 43.sp,
                     width: 43.sp,
                     fit: BoxFit.cover,

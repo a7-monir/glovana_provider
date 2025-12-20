@@ -182,6 +182,10 @@ class _ChatsViewState extends State<ChatsView> {
                     itemCount: filteredRooms.length,
                     itemBuilder: (context, index) {
                       final room = filteredRooms[index];
+                      print(room.userName);
+                      print(room.userImageUrl);
+                      print(room.providerImageUrl);
+                      print(room.providerName);
                       return OnePersonChatItem(
                         room: room,
                         onTap: () {

@@ -192,297 +192,299 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                     },
                   );
                 } else if (state is GetAppointmentDetailsSuccessState) {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.only(top: 20.h, bottom: 16.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 18.w),
-                          child: Text(
-                            LocaleKeys.bookedAt.tr(),
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 18.w),
-                          child: Text(
-                            DateFormat(
-                              "d / MMMM / y h:mm a",
-                            ).format(DateTime.parse(state.model.createdAt)),
-                            style: TextStyle(
-                              fontSize: 8.sp,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 18.w),
-                          child: Divider(height: 2.h),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 18.w,
-                            vertical: 16.h,
-                          ),
-                          child: Text(
-                            '${LocaleKeys.appointmentNo.tr()} #${state.model.id}',
-                            style: TextStyle(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-            
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 18.w,
-                          ).copyWith(bottom: 16.h),
-                          child: Text(
-                            LocaleKeys.serviceDetails.tr(),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        _InfoItem(
-                          img: 'calender.png',
-                          title: DateFormat(
-                            'EEEE, MMMM d, y',
-                          ).format(DateTime.parse(state.model.date)),
-                        ),
-                        _InfoItem(
-                          img: 'clock.png',
-                          title: DateFormat.jm().format(
-                            DateTime.parse(state.model.date),
-                          ),
-                        ),
-                        _InfoItem(img: 'user.png', title: state.model.user.name),
-                        _InfoItem(
-                          img: 'shop.png',
-                          title: state.model.isHourly
-                              ? LocaleKeys.hourly.tr()
-                              : LocaleKeys.salon.tr(),
-                        ),
-                        if(state.model.canShowPhone)
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 18.w).copyWith(bottom: 16.h),
-                          child: Row(
-                            children: [
-                              Icon(Icons.phone,size: 16.h,color: AppTheme.primary,),
-                              SizedBox(width: 8.w),
-                              Expanded(
-                                child: Text(
-                                  state.model.user.phone,
-                                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 18.w,
-                          ).copyWith(bottom: 16.h),
-                          child: Text(
-                            LocaleKeys.location.tr(),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        _InfoItem(
-                          img: 'marker_fill.png',
-                          title: state.model.address.address,
-                        ),
-                        if (state.model.isHourly)
+                  return SafeArea(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(top: 20.h, bottom: 16.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
                           Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 28.w,
-                            ).copyWith(bottom: 16.h),
-                            child: GestureDetector(
-                              onTap: () => navigateTo(
-                                LocationView(
-                                  initialLocation: LatLng(
-                                    double.parse(state.model.address.lat),
-                                    double.parse(state.model.address.lng),
-                                  ),
-                                ),
-                              ),
-                              child: Stack(
-                                alignment: AlignmentDirectional.bottomCenter,
-                                children: [
-                                  Container(
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.r),
-                                    ),
-                                    child: AppImage(
-                                      'map.png',
-                                      height: 166.h,
-                                      fit: BoxFit.cover,
-                                      width: MediaQuery.of(context).size.width,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(16.r),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadiusDirectional.only(
-                                        bottomStart: Radius.circular(15.r),
-                                        bottomEnd: Radius.circular(15.r),
-                                      ),
-                                      color: Theme.of(
-                                        context,
-                                      ).scaffoldBackgroundColor,
-                                      boxShadow: [AppTheme.mainShadow],
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          LocaleKeys.viewLocation.tr(),
-                                          style: TextStyle(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                            padding: EdgeInsets.symmetric(horizontal: 18.w),
+                            child: Text(
+                              LocaleKeys.bookedAt.tr(),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                           ),
-            
-                        if (!state.model.isHourly) ...[
-                          _InfoItem(
-                            img: 'customers.png',
-                            title:
-                                "${_getUniqueCustomerCount(state.model.appointmentServices)} ${LocaleKeys.customers.tr()}",
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 18.w),
+                            child: Text(
+                              DateFormat(
+                                "d / MMMM / y h:mm a",
+                              ).format(DateTime.parse(state.model.createdAt)),
+                              style: TextStyle(
+                                fontSize: 8.sp,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
-            
-                          _buildPersonServicesBreakdown(
-                            state.model.appointmentServices,
+                          SizedBox(height: 4.h),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 18.w),
+                            child: Divider(height: 2.h),
                           ),
-                          SizedBox(height: 16.h),
-                        ],
-                        if (state.model.note.isNotEmpty) ...[
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: 18.w,
-                            ).copyWith(bottom: 12.h),
+                              vertical: 16.h,
+                            ),
                             child: Text(
-                              LocaleKeys.clientNotes.tr(),
+                              '${LocaleKeys.appointmentNo.tr()} #${state.model.id}',
+                              style: TextStyle(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                                
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 18.w,
+                            ).copyWith(bottom: 16.h),
+                            child: Text(
+                              LocaleKeys.serviceDetails.tr(),
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
                           ),
-            
-                          Container(
-                            padding: EdgeInsets.all(8.r),
-                            margin: EdgeInsets.symmetric(horizontal: 18.w),
-                            decoration: BoxDecoration(
-                              boxShadow: [AppTheme.mainShadow],
-                              color: AppTheme.hoverColor,
-                              borderRadius: BorderRadius.circular(16.r),
-                              border: Border.all(color: AppTheme.primary),
-                            ),
-                            child: Text(state.model.note),
+                          _InfoItem(
+                            img: 'calender.png',
+                            title: DateFormat(
+                              'EEEE, MMMM d, y',
+                            ).format(DateTime.parse(state.model.date)),
                           ),
-                          SizedBox(height: 16.h),
+                          _InfoItem(
+                            img: 'clock.png',
+                            title: DateFormat.jm().format(
+                              DateTime.parse(state.model.date),
+                            ),
+                          ),
+                          _InfoItem(img: 'user.png', title: state.model.user.name),
+                          _InfoItem(
+                            img: 'shop.png',
+                            title: state.model.isHourly
+                                ? LocaleKeys.hourly.tr()
+                                : LocaleKeys.salon.tr(),
+                          ),
+                          if(state.model.canShowPhone)
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 18.w).copyWith(bottom: 16.h),
+                            child: Row(
+                              children: [
+                                Icon(Icons.phone,size: 16.h,color: AppTheme.primary,),
+                                SizedBox(width: 8.w),
+                                Expanded(
+                                  child: Text(
+                                    state.model.user.phone,
+                                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 18.w,
+                            ).copyWith(bottom: 16.h),
+                            child: Text(
+                              LocaleKeys.location.tr(),
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          if(state.model.canShowPhone)
+                          _InfoItem(
+                            img: 'marker_fill.png',
+                            title: state.model.address.address,
+                          ),
+                          if (state.model.isHourly&&state.model.canShowPhone)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 28.w,
+                              ).copyWith(bottom: 16.h),
+                              child: GestureDetector(
+                                onTap: () => navigateTo(
+                                  LocationView(
+                                    initialLocation: LatLng(
+                                      double.parse(state.model.address.lat),
+                                      double.parse(state.model.address.lng),
+                                    ),
+                                  ),
+                                ),
+                                child: Stack(
+                                  alignment: AlignmentDirectional.bottomCenter,
+                                  children: [
+                                    Container(
+                                      clipBehavior: Clip.antiAlias,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15.r),
+                                      ),
+                                      child: AppImage(
+                                        'map.png',
+                                        height: 166.h,
+                                        fit: BoxFit.cover,
+                                        width: MediaQuery.of(context).size.width,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(16.r),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadiusDirectional.only(
+                                          bottomStart: Radius.circular(15.r),
+                                          bottomEnd: Radius.circular(15.r),
+                                        ),
+                                        color: Theme.of(
+                                          context,
+                                        ).scaffoldBackgroundColor,
+                                        boxShadow: [AppTheme.mainShadow],
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            LocaleKeys.viewLocation.tr(),
+                                            style: TextStyle(
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                                
+                          if (!state.model.isHourly) ...[
+                            _InfoItem(
+                              img: 'customers.png',
+                              title:
+                                  "${_getUniqueCustomerCount(state.model.appointmentServices)} ${LocaleKeys.customers.tr()}",
+                            ),
+                                
+                            _buildPersonServicesBreakdown(
+                              state.model.appointmentServices,
+                            ),
+                            SizedBox(height: 16.h),
+                          ],
+                          if (state.model.note.isNotEmpty) ...[
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 18.w,
+                              ).copyWith(bottom: 12.h),
+                              child: Text(
+                                LocaleKeys.clientNotes.tr(),
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                                
+                            Container(
+                              padding: EdgeInsets.all(8.r),
+                              margin: EdgeInsets.symmetric(horizontal: 18.w),
+                              decoration: BoxDecoration(
+                                boxShadow: [AppTheme.mainShadow],
+                                color: AppTheme.hoverColor,
+                                borderRadius: BorderRadius.circular(16.r),
+                                border: Border.all(color: AppTheme.primary),
+                              ),
+                              child: Text(state.model.note),
+                            ),
+                            SizedBox(height: 16.h),
+                          ],
+                                
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 18.w,
+                            ).copyWith(bottom: 12.h),
+                            child: Text(
+                              LocaleKeys.paymentDetails.tr(),
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          if (state.model.totalPrices > 0)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 18.w,
+                              ).copyWith(bottom: 16.h),
+                              child: ItemSummary(
+                                title: LocaleKeys.subTotal.tr(),
+                                value: state.model.totalPrices.toString(),
+                                withJod: false,
+                              ),
+                            ),
+                          if (state.model.deliveryFee > 0)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 18.w,
+                              ).copyWith(bottom: 16.h),
+                              child: ItemSummary(
+                                title: LocaleKeys.deliveryFee.tr(),
+                                value: state.model.deliveryFee.toString(),
+                                withJod: false,
+                              ),
+                            ),
+                                
+                          if (state.model.totalDiscounts > 0)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 18.w,
+                              ).copyWith(bottom: 16.h),
+                              child: ItemSummary(
+                                title: LocaleKeys.discount.tr(),
+                                value: state.model.totalDiscounts.toString(),
+                                withJod: false,
+                              ),
+                            ),
+                          if (state.model.couponDiscount > 0)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 18.w,
+                              ).copyWith(bottom: 16.h),
+                              child: ItemSummary(
+                                title: LocaleKeys.coupon.tr(),
+                                value: state.model.couponDiscount.toString(),
+                                withJod: false,
+                              ),
+                            ),
+                                
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 18.w),
+                            child: ItemSummary(
+                              title: LocaleKeys.total.tr(),
+                              value:
+                                  ((state.model.totalPrices) - (state.model.totalDiscounts) - (state.model.couponDiscount) + (state.model.deliveryFee)).toStringAsFixed(2),
+                                
+                              isTotal: true,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 18.w,
+                            ).copyWith(top: 20.h),
+                            child: ItemSummary(
+                              title: LocaleKeys.paymentMethod.tr(),
+                              value: state.model.paymentType,
+                                
+                              withJod: false,
+                            ),
+                          ),
                         ],
-            
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 18.w,
-                          ).copyWith(bottom: 12.h),
-                          child: Text(
-                            LocaleKeys.paymentDetails.tr(),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        if (state.model.totalPrices > 0)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 18.w,
-                            ).copyWith(bottom: 16.h),
-                            child: ItemSummary(
-                              title: LocaleKeys.subTotal.tr(),
-                              value: state.model.totalPrices.toString(),
-                              withJod: false,
-                            ),
-                          ),
-                        if (state.model.deliveryFee > 0)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 18.w,
-                            ).copyWith(bottom: 16.h),
-                            child: ItemSummary(
-                              title: LocaleKeys.deliveryFee.tr(),
-                              value: state.model.deliveryFee.toString(),
-                              withJod: false,
-                            ),
-                          ),
-            
-                        if (state.model.totalDiscounts > 0)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 18.w,
-                            ).copyWith(bottom: 16.h),
-                            child: ItemSummary(
-                              title: LocaleKeys.discount.tr(),
-                              value: state.model.totalDiscounts.toString(),
-                              withJod: false,
-                            ),
-                          ),
-                        if (state.model.couponDiscount > 0)
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 18.w,
-                            ).copyWith(bottom: 16.h),
-                            child: ItemSummary(
-                              title: LocaleKeys.coupon.tr(),
-                              value: state.model.couponDiscount.toString(),
-                              withJod: false,
-                            ),
-                          ),
-            
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 18.w),
-                          child: ItemSummary(
-                            title: LocaleKeys.total.tr(),
-                            value:
-                                ((state.model.totalPrices) - (state.model.totalDiscounts) - (state.model.couponDiscount) + (state.model.deliveryFee)).toStringAsFixed(2),
-            
-                            isTotal: true,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 18.w,
-                          ).copyWith(top: 20.h),
-                          child: ItemSummary(
-                            title: LocaleKeys.paymentMethod.tr(),
-                            value: state.model.paymentType,
-            
-                            withJod: false,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 }
@@ -491,11 +493,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
             ),
           ),
           bottomNavigationBar:
-              //widget.model.appointmentStatus == 3 ||
-              widget.model.appointmentStatus == 7 ||
-                  state is! GetAppointmentDetailsSuccessState
-              ? SizedBox.shrink()
-              : SafeArea(child: _buildStatusButtons(context)),
+              SafeArea(child: _buildStatusButtons(context)),
         );
       },
     );
