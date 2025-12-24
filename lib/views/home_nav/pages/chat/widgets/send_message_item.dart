@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
-import 'package:glovana_provider/core/design/app_colors.dart';
 import 'package:glovana_provider/core/design/app_input.dart';
-import 'package:glovana_provider/core/design/constants.dart';
-import 'package:glovana_provider/core/design/custom_text_field.dart';
 import 'package:glovana_provider/core/design/space_widget.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/chat_utils.dart';
@@ -19,10 +16,6 @@ import 'package:kiwi/kiwi.dart';
 import 'package:voice_note_kit/voice_note_kit.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
-
 import '../../../../../core/design/main_services.dart';
 import '../../../../../features/send_notification/bloc.dart';
 
@@ -48,28 +41,27 @@ class SendMessageWidget extends StatefulWidget {
 }
 
 class _SendMessageWidgetState extends State<SendMessageWidget> {
-  final sendNotificationsBloc =
-  KiwiContainer().resolve<SendNotificationsBloc>();
+  final sendNotificationsBloc = KiwiContainer().resolve<SendNotificationsBloc>();
 
   File? currentSelectedImage;
   File? currentAudioFile;
-
 
   final TextEditingController messageController = TextEditingController();
   bool isTyping = false;
 
   void _sendTextMessage(String text) {
     ChatUtils.addMessage(
+      fromProvider: true, // <- من البروفايدر
       Message(
         content: text,
         createdAt: Timestamp.now(),
         providerId: widget.id.toString(),
         sentAt: Timestamp.now(),
         type: "TEXT",
-        userId: widget.userId.toString(),
+        userId: widget.userId,
         senderId: widget.id.toString(),
-        isReadUser: true,
-        isReadProvider: false,
+        isReadUser: false,
+        isReadProvider: true,
       ),
     );
 
@@ -88,37 +80,36 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
       bloc: sendNotificationsBloc,
       listener: (context, state) {
         if (state is UploadFilesSuccessState) {
-
           if (state.uploadFileModel.data?.photo != null) {
-
             ChatUtils.addMessage(
+              fromProvider: true, // <- من البروفايدر
               Message(
                 content: state.uploadFileModel.data!.photo!,
                 createdAt: Timestamp.now(),
                 providerId: widget.id.toString(),
                 sentAt: Timestamp.now(),
                 type: "IMAGE",
-                userId: widget.userId.toString(),
+                userId: widget.userId,
                 senderId: widget.id.toString(),
-                isReadUser: true,
-                isReadProvider: false,
+                isReadUser: false,
+                isReadProvider: true,
               ),
             );
           }
 
-
           if (state.uploadFileModel.data?.voice != null) {
             ChatUtils.addMessage(
+              fromProvider: true, // <- من البروفايدر
               Message(
                 content: state.uploadFileModel.data!.voice!,
                 createdAt: Timestamp.now(),
-                providerId: widget.userId,
+                providerId: widget.id.toString(),
                 sentAt: Timestamp.now(),
                 type: "VOICE",
-                userId: widget.id.toString(),
+                userId: widget.userId,
                 senderId: widget.id.toString(),
-                isReadUser: true,
-                isReadProvider: false,
+                isReadUser: false,
+                isReadProvider: true,
               ),
             );
           }
@@ -138,9 +129,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
       child: Column(
         children: [
           currentAudioFile != null || currentSelectedImage != null
-              ? const SizedBox(
-            height: 35,
-          )
+              ? const SizedBox(height: 35)
               : const SizedBox.shrink(),
           currentAudioFile != null || currentSelectedImage != null
               ? Container(
@@ -153,9 +142,8 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                currentSelectedImage == null
-                    ? const SizedBox.shrink()
-                    : Stack(
+                currentSelectedImage != null
+                    ? Stack(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(30),
@@ -167,73 +155,75 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                       ),
                     ),
                     Positioned(
-                        top: 10,
-                        right: 10,
-                        child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                currentSelectedImage = null;
-                                isTyping = false;
-                              });
-                            },
-                            child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                    BorderRadius.circular(30)),
-                                child: const Icon(
-                                  Icons.close,
-                                  color: Colors.black,
-                                )))),
+                      top: 10,
+                      right: 10,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            currentSelectedImage = null;
+                            isTyping = false;
+                          });
+                        },
+                        child: Container(
+                          height: 30,
+                          width: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-                currentAudioFile == null
-                    ? const SizedBox.shrink()
-                    : Column(
+                )
+                    : const SizedBox.shrink(),
+                currentAudioFile != null
+                    ? Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                currentAudioFile = null;
-                                isTyping = false;
-                              });
-                            },
-                            child: Container(
-                                height: 30,
-                                width: 30,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                    BorderRadius.circular(30)),
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.redAccent,
-                                ))),
+                          onTap: () {
+                            setState(() {
+                              currentAudioFile = null;
+                              isTyping = false;
+                            });
+                          },
+                          child: Container(
+                            height: 30,
+                            width: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    SizedBox(height:8.h),
+                    SizedBox(height: 8.h),
                     AudioPlayerWidget(
-                        backgroundColor: AppTheme.primary,
-                        progressBarColor: Colors.white,
-                        audioType: AudioType.directFile,
-                        audioPath: currentAudioFile!.path),
+                      backgroundColor: AppTheme.primary,
+                      progressBarColor: Colors.white,
+                      audioType: AudioType.directFile,
+                      audioPath: currentAudioFile!.path,
+                    ),
                   ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
+                )
+                    : const SizedBox.shrink(),
+                const SizedBox(height: 20),
               ],
             ),
           )
               : const SizedBox.shrink(),
-
-
           Container(
             padding: EdgeInsets.only(
               top: 16.sp,
@@ -245,7 +235,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withValues(alpha: 0.5),
+                  color: Colors.grey.withOpacity(0.5),
                   blurRadius: 7,
                   offset: const Offset(0, 3),
                 ),
@@ -253,7 +243,6 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
             ),
             child: Row(
               children: [
-                /// INPUT
                 Expanded(
                   child: AppInput(
                     hint: "${'message'.tr()} ..",
@@ -269,14 +258,10 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                       width: 45,
                       child: GestureDetector(
                         onTap: () async {
-                          currentSelectedImage =
-                          await MainServices.getImageUsingImagePicker(
+                          currentSelectedImage = await MainServices.getImageUsingImagePicker(
                             ImageSource.gallery,
                           );
-
-                          if (currentSelectedImage != null) {
-                            setState(() => isTyping = true);
-                          }
+                          if (currentSelectedImage != null) setState(() => isTyping = true);
                         },
                         child: Icon(
                           Icons.image,
@@ -286,9 +271,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                     ),
                   ),
                 ),
-
                 const SizedBox(width: 12),
-
                 isTyping == false
                     ? VoiceRecorderWidget(
                   backgroundColor: AppTheme.primary,
@@ -300,9 +283,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                 )
                     : GestureDetector(
                   onTap: () {
-
-                    if (currentSelectedImage != null ||
-                        currentAudioFile != null) {
+                    if (currentSelectedImage != null || currentAudioFile != null) {
                       sendNotificationsBloc.add(
                         UploadFileEvent(
                           image: currentSelectedImage,
@@ -310,8 +291,6 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                         ),
                       );
                     }
-
-
                     if (messageController.text.isNotEmpty) {
                       _sendTextMessage(messageController.text);
                       messageController.clear();

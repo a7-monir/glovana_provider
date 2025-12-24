@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +7,8 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:glovana_provider/core/app_theme.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../core/design/app_button.dart';
 import '../../core/logic/helper_methods.dart';
 import '../../generated/locale_keys.g.dart';
@@ -13,11 +16,13 @@ import '../../generated/locale_keys.g.dart';
 class LocationView extends StatefulWidget {
   final LatLng? initialLocation;
   final bool withButton;
+  final bool canEdit;
 
   const LocationView({
     super.key,
     this.initialLocation,
     this.withButton = false,
+    this.canEdit = true,
   });
 
   @override
@@ -28,35 +33,56 @@ class _LocationViewState extends State<LocationView> {
   late GoogleMapController googleMapController;
   final _controller = Completer<GoogleMapController>();
 
-  LatLng currentCenter = const LatLng(31.963158, 35.930359);
+  late LatLng currentCenter;
   String? currentAddressText;
-  double zoom = 14;
+  final double zoom = 14;
+
+  Future<void> openInGoogleMaps(LatLng location) async {
+    final lat = location.latitude;
+    final lng = location.longitude;
+
+    final url = Platform.isIOS
+        ? 'https://maps.apple.com/?q=$lat,$lng'
+        : 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+
+    final uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      showMessage('Could not launch Google Maps');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
 
-    // لو فيه موقع مبدأي
-    if (widget.initialLocation != null) {
-      currentCenter = widget.initialLocation!;
-    }
+    currentCenter =
+        widget.initialLocation ?? const LatLng(31.963158, 35.930359);
 
-    // متابعة حالة خدمة الـ GPS
+    updateAddress(currentCenter);
+
     Geolocator.getServiceStatusStream().listen((event) {
-      if (event == ServiceStatus.enabled) {
+      if (event == ServiceStatus.enabled && widget.canEdit) {
         goToMyLocation();
       }
     });
   }
 
   Future<void> goToMyLocation() async {
+    if (!widget.canEdit) return;
+
     googleMapController = await _controller.future;
     final pos = await getCurrentLocation();
     final location = pos.latLang ?? currentCenter;
+
     googleMapController.animateCamera(
       CameraUpdate.newLatLngZoom(location, zoom),
     );
+
     await updateAddress(location);
+
     setState(() {
       currentCenter = location;
     });
@@ -68,11 +94,12 @@ class _LocationViewState extends State<LocationView> {
         location.latitude,
         location.longitude,
       );
+
       if (placeMarks.isNotEmpty) {
         final place = placeMarks.first;
         setState(() {
           currentAddressText =
-          "${place.locality ?? ''}${place.locality?.isNotEmpty == true ? " - " : ""}${place.subAdministrativeArea ?? ''}";
+              "${place.locality ?? ''}${place.locality?.isNotEmpty == true ? " - " : ""}${place.subAdministrativeArea ?? ''}";
         });
       }
     } catch (e) {
@@ -89,32 +116,48 @@ class _LocationViewState extends State<LocationView> {
           children: [
             GoogleMap(
               myLocationButtonEnabled: false,
-              myLocationEnabled: true,
+              myLocationEnabled: widget.canEdit,
               zoomControlsEnabled: false,
               initialCameraPosition: CameraPosition(
                 target: currentCenter,
                 zoom: zoom,
               ),
               onCameraMove: (position) {
-                currentCenter = position.target;
+                if (widget.canEdit) {
+                  currentCenter = position.target;
+                }
               },
+
               onCameraIdle: () {
-                updateAddress(currentCenter);
+                if (widget.canEdit) {
+                  updateAddress(currentCenter);
+                }
               },
+
+              markers: widget.canEdit
+                  ? {}
+                  : {
+                      Marker(
+                        markerId: const MarkerId('fixed_location'),
+                        position: currentCenter,
+                      ),
+                    },
+
               onMapCreated: (controller) {
                 _controller.complete(controller);
                 googleMapController = controller;
               },
             ),
-        
-            IgnorePointer(
-              child: Icon(
-                Icons.location_on,
-                size: 50,
-                color: AppTheme.primary,
+
+            if (widget.canEdit)
+              IgnorePointer(
+                child: Icon(
+                  Icons.location_on,
+                  size: 50,
+                  color: AppTheme.primary,
+                ),
               ),
-            ),
-        
+
             Positioned(
               top: 50,
               left: 20,
@@ -125,7 +168,7 @@ class _LocationViewState extends State<LocationView> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: const [
-                    BoxShadow(color: Colors.black26, blurRadius: 4)
+                    BoxShadow(color: Colors.black26, blurRadius: 4),
                   ],
                 ),
                 child: Text(
@@ -135,32 +178,27 @@ class _LocationViewState extends State<LocationView> {
                 ),
               ),
             ),
-        
-        
-            Positioned(
-              bottom: 110,
-              right: 16,
-              child: FloatingActionButton(
-                heroTag: "goToMyLocation",
-                backgroundColor: Colors.white,
-                shape: const CircleBorder(),
-                onPressed: goToMyLocation,
-                child: Icon(
-                  Icons.my_location,
-                  color: AppTheme.primary,
+
+            if (widget.canEdit)
+              Positioned(
+                bottom: 110,
+                right: 16,
+                child: FloatingActionButton(
+                  heroTag: "goToMyLocation",
+                  backgroundColor: Colors.white,
+                  shape: const CircleBorder(),
+                  onPressed: goToMyLocation,
+                  child: Icon(Icons.my_location, color: AppTheme.primary),
                 ),
               ),
-            ),
-        
+
             if (widget.withButton)
               Positioned(
                 bottom: 30,
                 left: 24.w,
                 right: 24.w,
                 child: AppButton(
-                  onPress: currentCenter == null
-                      ? null
-                      : () {
+                  onPress: () {
                     Navigator.pop(
                       context,
                       MyAddressModel(
@@ -170,6 +208,18 @@ class _LocationViewState extends State<LocationView> {
                     );
                   },
                   text: LocaleKeys.confirm.tr(),
+                ),
+              ),
+            if (!widget.canEdit)
+              Positioned(
+                bottom: 30,
+                left: 24.w,
+                right: 24.w,
+                child: AppButton(
+                  onPress: () {
+                    openInGoogleMaps(widget.initialLocation!);
+                  },
+                  text: LocaleKeys.openInGoogleMaps.tr(),
                 ),
               ),
           ],

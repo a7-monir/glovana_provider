@@ -60,7 +60,6 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
           );
         }
       }
-
       // Add services with prices (new field)
       if (provider.servicesWithPrices != null) {
         for (int j = 0; j < provider.servicesWithPrices!.length; j++) {

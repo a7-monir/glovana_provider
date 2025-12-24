@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -239,7 +240,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                               ),
                             ),
                           ),
-                                
+
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: 18.w,
@@ -264,29 +265,41 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                               DateTime.parse(state.model.date),
                             ),
                           ),
-                          _InfoItem(img: 'user.png', title: state.model.user.name),
+                          _InfoItem(
+                            img: 'user.png',
+                            title: state.model.user.name,
+                          ),
                           _InfoItem(
                             img: 'shop.png',
                             title: state.model.isHourly
                                 ? LocaleKeys.hourly.tr()
                                 : LocaleKeys.salon.tr(),
                           ),
-                          if(state.model.canShowPhone)
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 18.w).copyWith(bottom: 16.h),
-                            child: Row(
-                              children: [
-                                Icon(Icons.phone,size: 16.h,color: AppTheme.primary,),
-                                SizedBox(width: 8.w),
-                                Expanded(
-                                  child: Text(
-                                    state.model.user.phone,
-                                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400),
+                          if (state.model.canShowPhone)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 18.w,
+                              ).copyWith(bottom: 16.h),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.phone,
+                                    size: 16.h,
+                                    color: AppTheme.primary,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(width: 8.w),
+                                  Expanded(
+                                    child: Text(
+                                      state.model.user.phone,
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
 
                           Padding(
                             padding: EdgeInsets.symmetric(
@@ -300,12 +313,12 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                               ),
                             ),
                           ),
-                          if(state.model.canShowPhone)
-                          _InfoItem(
-                            img: 'marker_fill.png',
-                            title: state.model.address.address,
-                          ),
-                          if (state.model.isHourly&&state.model.canShowPhone)
+                          if (state.model.canShowPhone)
+                            _InfoItem(
+                              img: 'marker_fill.png',
+                              title: state.model.address.address,
+                            ),
+                          if (state.model.isHourly && state.model.canShowPhone)
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 28.w,
@@ -313,6 +326,8 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                               child: GestureDetector(
                                 onTap: () => navigateTo(
                                   LocationView(
+                                    canEdit: false,
+                                    withButton: false,
                                     initialLocation: LatLng(
                                       double.parse(state.model.address.lat),
                                       double.parse(state.model.address.lng),
@@ -325,29 +340,37 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                                     Container(
                                       clipBehavior: Clip.antiAlias,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15.r),
+                                        borderRadius: BorderRadius.circular(
+                                          15.r,
+                                        ),
                                       ),
                                       child: AppImage(
                                         'map.png',
                                         height: 166.h,
                                         fit: BoxFit.cover,
-                                        width: MediaQuery.of(context).size.width,
+                                        width: MediaQuery.of(
+                                          context,
+                                        ).size.width,
                                       ),
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(16.r),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadiusDirectional.only(
-                                          bottomStart: Radius.circular(15.r),
-                                          bottomEnd: Radius.circular(15.r),
-                                        ),
+                                        borderRadius:
+                                            BorderRadiusDirectional.only(
+                                              bottomStart: Radius.circular(
+                                                15.r,
+                                              ),
+                                              bottomEnd: Radius.circular(15.r),
+                                            ),
                                         color: Theme.of(
                                           context,
                                         ).scaffoldBackgroundColor,
                                         boxShadow: [AppTheme.mainShadow],
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             LocaleKeys.viewLocation.tr(),
@@ -363,14 +386,14 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                                 ),
                               ),
                             ),
-                                
+
                           if (!state.model.isHourly) ...[
                             _InfoItem(
                               img: 'customers.png',
                               title:
                                   "${_getUniqueCustomerCount(state.model.appointmentServices)} ${LocaleKeys.customers.tr()}",
                             ),
-                                
+
                             _buildPersonServicesBreakdown(
                               state.model.appointmentServices,
                             ),
@@ -389,7 +412,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                                 ),
                               ),
                             ),
-                                
+
                             Container(
                               padding: EdgeInsets.all(8.r),
                               margin: EdgeInsets.symmetric(horizontal: 18.w),
@@ -403,7 +426,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                             ),
                             SizedBox(height: 16.h),
                           ],
-                                
+
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: 18.w,
@@ -438,7 +461,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                                 withJod: false,
                               ),
                             ),
-                                
+
                           if (state.model.totalDiscounts > 0)
                             Padding(
                               padding: EdgeInsets.symmetric(
@@ -461,14 +484,18 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                                 withJod: false,
                               ),
                             ),
-                                
+
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 18.w),
                             child: ItemSummary(
                               title: LocaleKeys.total.tr(),
                               value:
-                                  ((state.model.totalPrices) - (state.model.totalDiscounts) - (state.model.couponDiscount) + (state.model.deliveryFee)).toStringAsFixed(2),
-                                
+                                  ((state.model.totalPrices) -
+                                          (state.model.totalDiscounts) -
+                                          (state.model.couponDiscount) +
+                                          (state.model.deliveryFee))
+                                      .toStringAsFixed(2),
+
                               isTotal: true,
                             ),
                           ),
@@ -479,7 +506,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                             child: ItemSummary(
                               title: LocaleKeys.paymentMethod.tr(),
                               value: state.model.paymentType,
-                                
+
                               withJod: false,
                             ),
                           ),
@@ -492,8 +519,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
               },
             ),
           ),
-          bottomNavigationBar:
-              SafeArea(child: _buildStatusButtons(context)),
+          bottomNavigationBar: SafeArea(child: _buildStatusButtons(context)),
         );
       },
     );
@@ -509,26 +535,24 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
         StatusAction(text: LocaleKeys.accept.tr(), status: 2),
         StatusAction(text: LocaleKeys.reject.tr(), status: 5),
       ];
-    } else if (currentStatus == 2&&widget.model.isHourly) {
+    } else if (currentStatus == 2 && widget.model.isHourly) {
       // Accepted
       actions = [
         StatusAction(text: LocaleKeys.onTheWay.tr(), status: 3),
         StatusAction(text: LocaleKeys.cancel.tr(), status: 5),
       ];
-    }else if((currentStatus==2 && !widget.model.isHourly)){
-      actions = [StatusAction(text:LocaleKeys.userArrive.tr(), status: 7),
+    } else if ((currentStatus == 2 && !widget.model.isHourly)) {
+      actions = [
+        StatusAction(text: LocaleKeys.userArrive.tr(), status: 7),
         StatusAction(text: LocaleKeys.cancel.tr(), status: 5),
       ];
-    }
-
-    else if((currentStatus==7 && !widget.model.isHourly)||( currentStatus==3&&widget.model.isHourly )){
-      actions = [StatusAction(text:LocaleKeys.startWork.tr(), status: 6)];
-    }
-
-    else if (currentStatus == 6) {
+    } else if ((currentStatus == 7 && !widget.model.isHourly) ||
+        (currentStatus == 3 && widget.model.isHourly)) {
+      actions = [StatusAction(text: LocaleKeys.startWork.tr(), status: 6)];
+    } else if (currentStatus == 6) {
       // Accepted
       actions = [StatusAction(text: LocaleKeys.completed.tr(), status: 4)];
-    }  else {
+    } else {
       // No actions for completed or cancelled appointments
       return const SizedBox.shrink();
     }
@@ -546,7 +570,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                 onPress: () => _updateStatus(
                   context,
                   action.status,
-                  onDone: () {
+                  onDone: () async {
                     bloc.add(GetAppointmentDetailsEvent(id: widget.model.id));
                   },
                 ),
@@ -574,9 +598,10 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
             .tr(); //"confirm_accept_message".tr();
         break;
       case 3: // On the way
-        dialogTitle = LocaleKeys.confirmOnWayTitle.tr(); //"confirm_on_way_title".tr();
-        dialogContent =
-            LocaleKeys.confirmOnWayMessage.tr(); //"confirm_on_way_message".tr();
+        dialogTitle = LocaleKeys.confirmOnWayTitle
+            .tr(); //"confirm_on_way_title".tr();
+        dialogContent = LocaleKeys.confirmOnWayMessage
+            .tr(); //"confirm_on_way_message".tr();
         break;
       case 4: // Mark completed
         dialogTitle = LocaleKeys.confirmCompleteTitle
@@ -592,13 +617,11 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
       case 6:
         dialogTitle = LocaleKeys.confirmStartWorkTitle
             .tr(); // "confirm_cancel_title".tr();
-        dialogContent = LocaleKeys.confirmStartWorkMessage
-            .tr();
+        dialogContent = LocaleKeys.confirmStartWorkMessage.tr();
       case 7:
         dialogTitle = LocaleKeys.confirmUserArriveTitle
             .tr(); // "confirm_cancel_title".tr();
-        dialogContent = LocaleKeys.confirmUserArriveMessage
-            .tr();
+        dialogContent = LocaleKeys.confirmUserArriveMessage.tr();
         break;
       default:
         dialogTitle = LocaleKeys.confirmStatusChange.tr();
@@ -644,9 +667,15 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
               Expanded(
                 child: BlocConsumer(
                   bloc: updateStatusBloc,
-                  listener: (context, updateState) {
+                  listener: (context, updateState) async {
                     if (updateState is UpdateStatusSuccessState) {
-                      onDone!();
+                      if (status == 4 || status == 5) {
+                        await _deactivateRooms(
+                          widget.model.user.id.toString(),
+                          CacheHelper.id.toString(),
+                        );
+                      }
+                      onDone?.call();
                       Navigator.pop(context);
                     } else if (updateState is UpdateStatusFailedState) {
                       Navigator.pop(context);
@@ -791,4 +820,26 @@ class StatusAction {
   final int status;
 
   StatusAction({required this.text, required this.status});
+}
+
+Future<void> _deactivateRooms(String userId, String providerId) async {
+  try {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('rooms')
+        .where('user_id', isEqualTo: userId)
+        .where('provider_id', isEqualTo: providerId)
+        .get();
+
+    if (snapshot.docs.isEmpty) {
+      print("No rooms found for $userId / $providerId");
+      return;
+    }
+
+    for (var doc in snapshot.docs) {
+      await doc.reference.update({'is_active': false});
+      print('Room ${doc.id} is_active updated to false');
+    }
+  } catch (e) {
+    print("Error deactivating rooms: $e");
+  }
 }

@@ -1,7 +1,5 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../../../core/app_theme.dart';
 import '../../../../core/logic/cache_helper.dart';
 import 'models/message_model.dart';
@@ -15,12 +13,13 @@ class ChatUtils {
 
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  /// إضافة أو تحديث روم
+  /// إذا كانت موجودة مسبقًا سيتم تحديثها، إذا لا سيتم إنشاؤها
   static Future<Room> addRoom({Room? room}) async {
     if (room == null || room.userId == null || room.providerId == null) {
       throw ArgumentError('Room, userId, and providerId cannot be null');
     }
 
-    // Check if a room already exists with this user-provider combination
     final querySnapshot = await firestore
         .collection('rooms')
         .where('user_id', isEqualTo: room.userId)
@@ -30,39 +29,42 @@ class ChatUtils {
 
     String roomId;
     if (querySnapshot.docs.isNotEmpty) {
-      // Room already exists - update it
+      // روم موجودة مسبقًا → تحديثها
       roomId = querySnapshot.docs.first.id;
       await firestore.collection('rooms').doc(roomId).update(room.toJson());
     } else {
-      // Room doesn't exist - create a new one
+      // روم جديدة → إنشاءها
       final docRef = await firestore.collection('rooms').add(room.toJson());
       roomId = docRef.id;
     }
 
-    // Fetch the complete room document
     final docSnapshot = await firestore.collection('rooms').doc(roomId).get();
-
     if (!docSnapshot.exists) {
       throw Exception('Failed to create/update room');
     }
 
-    // Convert document to Room object and return it
-    // Assuming you have a fromJson factory method in your Room class
-    return Room.fromJson(docSnapshot.data()!);
+    return Room.fromJson(docSnapshot.data()!, docId: docSnapshot.id);
   }
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getRooms(String userId) {
-    return firestore
+  /// جلب كل الرومات للبروفايدر
+  /// يمكن فلترتهم حسب isActive لو عايز تظهر الرومات النشطة فقط
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getRooms(String providerId, {bool onlyActive = false}) {
+    var query = firestore
         .collection('rooms')
-        .where('provider_id', isEqualTo: userId)
-        //  .orderBy('last_message_date', descending: true)
-        .snapshots();
+        .where('provider_id', isEqualTo: providerId);
+
+    if (onlyActive) {
+      query = query.where('is_active', isEqualTo: true);
+    }
+
+    return query.snapshots();
   }
 
+  /// جلب رسائل روم محدد
   static Stream<QuerySnapshot<Map<String, dynamic>>> getRoomMessages(
-    String userId,
-    String providerId,
-  ) {
+      String userId,
+      String providerId,
+      ) {
     return firestore
         .collection('messages')
         .where('provider_id', isEqualTo: providerId)
@@ -71,8 +73,9 @@ class ChatUtils {
         .snapshots();
   }
 
-  static Future addMessage(Message message) async {
-    firestore.collection('messages').add(message.toJson());
+  /// إضافة رسالة (كـ بروفايدر أو يوزر)
+  static Future addMessage(Message message, {bool fromProvider = true}) async {
+    await firestore.collection('messages').add(message.toJson());
 
     final querySnapshot = await firestore
         .collection('rooms')
@@ -82,21 +85,55 @@ class ChatUtils {
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      // Room already exists - return the existing room ID
-      await firestore
-          .collection('rooms')
-          .doc(querySnapshot.docs.first.id)
-          .update(
-            Room(
-              lastMessage: message.content,
-              lastMessageDate: message.sentAt,
-              lastMessageType: message.type,
-              lastMessageUserId: message.userId,
-              userImageUrl: '${AppTheme.imageUrl}${CacheHelper.photo}',
-              isReadUser: true,
-              isReadProvider: false,
-            ).toJson(),
-          );
+      final docRef = firestore.collection('rooms').doc(querySnapshot.docs.first.id);
+
+      if (fromProvider) {
+        // انت البروفايدر → الرسائل غير مقروءة عند اليوزر
+        await docRef.update({
+          'last_message': message.content,
+          'last_message_date': message.sentAt,
+          'last_message_type': message.type,
+          'last_message_user_id': message.userId,
+          'is_read_user': false,
+          'unread_count_user': FieldValue.increment(1),
+          'is_active': true, // أي رسالة جديدة تجعل الشات نشط
+        });
+      } else {
+        // من اليوزر → الرسائل غير مقروءة عند البروفايدر
+        await docRef.update({
+          'last_message': message.content,
+          'last_message_date': message.sentAt,
+          'last_message_type': message.type,
+          'last_message_user_id': message.userId,
+          'is_read_provider': false,
+          'unread_count_provider': FieldValue.increment(1),
+          'is_active': true, // أي رسالة جديدة تجعل الشات نشط
+        });
+      }
+    }
+  }
+
+  /// تحديد الرسائل كمقروءة للبروفايدر
+  static Future<void> markMessagesAsRead({required String roomId}) async {
+    try {
+      await firestore.collection('rooms').doc(roomId).update({
+        'is_read_provider': true,
+        'unread_count_provider': 0,
+      });
+    } catch (e) {
+      log('Failed to mark messages as read: $e');
+    }
+  }
+
+  /// إنهاء الشات (اجعل isActive false)
+  static Future<void> endChat({required String roomId}) async {
+    try {
+      await firestore.collection('rooms').doc(roomId).update({
+        'is_active': false,
+      });
+      log('Room $roomId is now inactive');
+    } catch (e) {
+      log('Failed to end chat: $e');
     }
   }
 }

@@ -39,6 +39,7 @@ class _DiscountsViewState extends State<DiscountsView> {
   final discount = TextEditingController();
   String? startDate, endDate;
   int? providerId;
+  bool isService=true;
 
   Future<void> selectDateRange() async {
     final DateTime now = DateTime.now();
@@ -72,8 +73,13 @@ class _DiscountsViewState extends State<DiscountsView> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: MainAppBar(title: LocaleKeys.discounts.tr()),
-          body: BlocBuilder(
+          body: BlocConsumer(
             bloc: getProviderProfileBloc,
+            listener: (context, state) {
+              if (state is GetProviderProfileSuccessState){
+                isService=state.model.providerTypes.first.type.bookingType=='service';
+              }
+            },
             builder: (context, state) {
               if (state is GetProviderProfileFailedState) {
                 return AppFailed(
@@ -83,7 +89,7 @@ class _DiscountsViewState extends State<DiscountsView> {
                 );
               } else if (state is GetProviderProfileSuccessState) {
                 providerId = state.model.providerTypes.first.id;
-                if (state.model.providerTypes.isEmpty||(state.model.providerTypes.isNotEmpty&&state.model.providerTypes.first.providerServices.isEmpty)) {
+                if (state.model.providerTypes.isEmpty||(state.model.providerTypes.isNotEmpty&&state.model.providerTypes.first.providerServices.isEmpty&&isService)) {
                   return AppEmpty(title: LocaleKeys.providerType.tr());
                 }
                 return Form(
@@ -135,169 +141,172 @@ class _DiscountsViewState extends State<DiscountsView> {
                             borderSide: BorderSide(color: AppTheme.primary),
                           ),
                         ),
-
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                final allIds = state
-                                    .model
-                                    .providerTypes
-                                    .first
-                                    .providerServices
-                                    .map((e) => e.service.id)
-                                    .toList();
-
-                                if (selectedList.length == allIds.length) {
-                                  selectedList.clear();
-                                } else {
-                                  selectedList
-                                    ..clear()
-                                    ..addAll(allIds);
-                                }
-                              });
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 18.w,
-                                vertical: 2.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Theme
-                                    .of(context)
-                                    .secondaryHeaderColor,
-                                borderRadius: BorderRadius.circular(15.r),
-                                boxShadow: [AppTheme.mainShadow],
-                              ),
-                              child: Text(
-                                // selectedList.length ==
-                                //     state
-                                //         .model
-                                //         .providerTypes
-                                //         .first
-                                //         .providerServices
-                                //         .length
-                                //     ? LocaleKeys.unselectAll.tr()
-                                //     :
-                                LocaleKeys.selectAll.tr(),
-                                style: TextStyle(fontSize: 8.sp),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 12.h),
-                        AppGrid(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          spacing: 20.w,
-                          runSpacing: 25.h,
-                          itemCount: state
-                              .model
-                              .providerTypes
-                              .first
-                              .providerServices
-                              .length,
-                          crossCount: 2,
-                          itemBuilder: (context, index) {
-                            bool isSelected = selectedList.contains(
-                              state
-                                  .model
-                                  .providerTypes
-                                  .first
-                                  .providerServices[index]
-                                  .service
-                                  .id,
-                            );
-
-                            return GestureDetector(
+                        if (isService)...[
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  if (isSelected) {
-                                    selectedList.remove(
-                                      state
-                                          .model
-                                          .providerTypes
-                                          .first
-                                          .providerServices[index]
-                                          .service
-                                          .id,
-                                    );
+                                  final allIds = state
+                                      .model
+                                      .providerTypes
+                                      .first
+                                      .providerServices
+                                      .map((e) => e.service.id)
+                                      .toList();
+
+                                  if (selectedList.length == allIds.length) {
+                                    selectedList.clear();
                                   } else {
-                                    selectedList.add(
-                                      state
-                                          .model
-                                          .providerTypes
-                                          .first
-                                          .providerServices[index]
-                                          .service
-                                          .id,
-                                    );
+                                    selectedList
+                                      ..clear()
+                                      ..addAll(allIds);
                                   }
                                 });
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: 15.w,
-                                  vertical: 8.h,
+                                  horizontal: 18.w,
+                                  vertical: 2.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                  boxShadow: [AppTheme.mainShadow],
+                                  color: Theme
+                                      .of(context)
+                                      .secondaryHeaderColor,
                                   borderRadius: BorderRadius.circular(15.r),
+                                  boxShadow: [AppTheme.mainShadow],
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      state
-                                          .model
-                                          .providerTypes
-                                          .first
-                                          .providerServices[index]
-                                          .service
-                                          .name,
-                                      style: TextStyle(fontSize: 16.sp),
-                                    ),
-                                    Radio<bool>(
-                                      value: true,
-                                      groupValue: isSelected ? true : null,
-                                      onChanged: (_) {
-                                        setState(() {
-                                          if (isSelected) {
-                                            selectedList.remove(
-                                              state
-                                                  .model
-                                                  .providerTypes
-                                                  .first
-                                                  .providerServices[index]
-                                                  .service
-                                                  .id,
-                                            );
-                                          } else {
-                                            selectedList.add(
-                                              state
-                                                  .model
-                                                  .providerTypes
-                                                  .first
-                                                  .providerServices[index]
-                                                  .service
-                                                  .id,
-                                            );
-                                          }
-                                        });
-                                      },
-                                      visualDensity: VisualDensity.compact,
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                  ],
+                                child: Text(
+                                  // selectedList.length ==
+                                  //     state
+                                  //         .model
+                                  //         .providerTypes
+                                  //         .first
+                                  //         .providerServices
+                                  //         .length
+                                  //     ? LocaleKeys.unselectAll.tr()
+                                  //     :
+                                  LocaleKeys.selectAll.tr(),
+                                  style: TextStyle(fontSize: 8.sp),
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+
+                          AppGrid(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            spacing: 20.w,
+                            runSpacing: 25.h,
+                            itemCount: state
+                                .model
+                                .providerTypes
+                                .first
+                                .providerServices
+                                .length,
+                            crossCount: 2,
+                            itemBuilder: (context, index) {
+                              bool isSelected = selectedList.contains(
+                                state
+                                    .model
+                                    .providerTypes
+                                    .first
+                                    .providerServices[index]
+                                    .service
+                                    .id,
+                              );
+
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    if (isSelected) {
+                                      selectedList.remove(
+                                        state
+                                            .model
+                                            .providerTypes
+                                            .first
+                                            .providerServices[index]
+                                            .service
+                                            .id,
+                                      );
+                                    } else {
+                                      selectedList.add(
+                                        state
+                                            .model
+                                            .providerTypes
+                                            .first
+                                            .providerServices[index]
+                                            .service
+                                            .id,
+                                      );
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 15.w,
+                                    vertical: 8.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).secondaryHeaderColor,
+                                    boxShadow: [AppTheme.mainShadow],
+                                    borderRadius: BorderRadius.circular(15.r),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        state
+                                            .model
+                                            .providerTypes
+                                            .first
+                                            .providerServices[index]
+                                            .service
+                                            .name,
+                                        style: TextStyle(fontSize: 16.sp),
+                                      ),
+                                      Radio<bool>(
+                                        value: true,
+                                        groupValue: isSelected ? true : null,
+                                        onChanged: (_) {
+                                          setState(() {
+                                            if (isSelected) {
+                                              selectedList.remove(
+                                                state
+                                                    .model
+                                                    .providerTypes
+                                                    .first
+                                                    .providerServices[index]
+                                                    .service
+                                                    .id,
+                                              );
+                                            } else {
+                                              selectedList.add(
+                                                state
+                                                    .model
+                                                    .providerTypes
+                                                    .first
+                                                    .providerServices[index]
+                                                    .service
+                                                    .id,
+                                              );
+                                            }
+                                          });
+                                        },
+                                        visualDensity: VisualDensity.compact,
+                                        materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+
                         SizedBox(height: 22.h),
                         Row(
                           children: [
@@ -363,7 +372,7 @@ class _DiscountsViewState extends State<DiscountsView> {
                               onPress: () {
                                 if (addDiscountBloc.formKey.currentState!
                                     .validate()) {
-                                  if (selectedList.isEmpty) {
+                                  if (selectedList.isEmpty&&isService) {
                                     showMessage(
                                       LocaleKeys.pleaseSelectService,
                                       type: MessageType.warning,

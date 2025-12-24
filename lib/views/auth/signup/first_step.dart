@@ -10,6 +10,7 @@ import 'package:glovana_provider/core/logic/input_validator.dart';
 import 'package:glovana_provider/features/types/bloc.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/auth/signup/second_step.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kiwi/kiwi.dart';
 
 import '../../../core/app_theme.dart';
@@ -191,7 +192,10 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
               ),
               GestureDetector(
                 onTap: () {
-                  navigateTo(LocationView(withButton: true)).then((value) {
+                  navigateTo(LocationView(
+                    withButton: true,
+
+                  )).then((value) {
                     latitude = value.location.latitude;
                     longitude = value.location.longitude;
                     addressFromPicker = value.description;

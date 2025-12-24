@@ -257,8 +257,10 @@
   "passwordsNotMatched": "كلمتا المرور غير متطابقتين",
   "showHistory": "عرض السجل",
   "notifications": "الإشعارات",
-  "youHaveAMessage": "لديك رسالة"
-
+  "youHaveAMessage": "لديك رسالة",
+  "timeToAccept": "الوقت المتبقي للقبول",
+  "openInGoogleMaps": "افتح على خرائط جوجل",
+  "chatEndedMessage": "هذا الشات انتهى ولا يمكن إرسال رسائل"
 
 
 }

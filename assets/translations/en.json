@@ -263,5 +263,8 @@
   "confirmUserArriveTitle": "Confirm User Arrived",
   "confirmUserArriveMessage": "Are you sure you want user arrived status",
   "confirmStartWorkTitle": "Confirm Start Work",
-  "confirmStartWorkMessage": "Are you sure you want start work "
+  "confirmStartWorkMessage": "Are you sure you want start work ",
+  "timeToAccept": "time To Accept",
+  "openInGoogleMaps": "Open in Google Maps",
+  "chatEndedMessage": "This chat has ended and you cannot send messages"
 }

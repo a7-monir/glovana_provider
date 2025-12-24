@@ -1675,7 +1675,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                         name: nickNameController.text,
                         description: descriptionController.text,
                         workNumber: _workNumberController.text,
-                        lat: longitude ?? 0,
+                        lat: latitude ?? 0,
                         lng: longitude ?? 0,
                         address: addressFromPicker ?? '',
                         // widget.signUpData['address'],

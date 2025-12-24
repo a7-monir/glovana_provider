@@ -267,5 +267,8 @@ abstract class  LocaleKeys {
   static const confirmUserArriveMessage = 'confirmUserArriveMessage';
   static const confirmStartWorkTitle = 'confirmStartWorkTitle';
   static const confirmStartWorkMessage = 'confirmStartWorkMessage';
+  static const timeToAccept = 'timeToAccept';
+  static const openInGoogleMaps = 'openInGoogleMaps';
+  static const chatEndedMessage = 'chatEndedMessage';
 
 }

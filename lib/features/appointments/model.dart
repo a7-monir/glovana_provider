@@ -65,6 +65,25 @@ class Appointment {
 
   bool get canShowPhone => appointmentStatus != 5&&appointmentStatus!=1&&appointmentStatus!=4;
 
+  bool get hasPassedOneMinute {
+    final now = DateTime.now();
+    final difference = now.difference(DateTime.parse(createdAt));
+    return difference.inMinutes >= 1;
+  }
+  Duration get remainingFromOneMinute {
+    final created = DateTime.parse(createdAt);
+    final now = DateTime.now();
+    final diff = now.difference(created);
+
+    final remainingSeconds = 60 - diff.inSeconds;
+    return Duration(seconds: remainingSeconds.clamp(0, 60));
+  }
+
+  bool get isWithinFirstMinute {
+    final created = DateTime.parse(createdAt);
+    return DateTime.now().difference(created).inSeconds < 60;
+  }
+
   Appointment.fromJson(Map<String, dynamic> json) {
     id = json["id"] ?? 0;
     number = json["number"] ?? 0;

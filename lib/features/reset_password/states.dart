@@ -17,6 +17,6 @@ class ResetPasswordSuccessState extends ResetPasswordStates {
   final String msg;
 
   ResetPasswordSuccessState({required this.msg}){
-    showMessage(msg);
+    showMessage(msg,type: MessageType.success);
   }
 }

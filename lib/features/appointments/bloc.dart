@@ -9,7 +9,7 @@ part 'model.dart';
 
 part 'states.dart';
 
-enum AppointmentStatus {pending,confirmed,onTheWay,completed,canceled}
+enum AppointmentStatus {pending,confirmed,onTheWay,completed,canceled,arrivedUser,startWork}
 
 class GetAppointmentsBloc extends Bloc<GetAppointmentsEvents, GetAppointmentsStates> {
   final DioHelper _dio;
@@ -32,7 +32,11 @@ class GetAppointmentsBloc extends Bloc<GetAppointmentsEvents, GetAppointmentsSta
     case AppointmentStatus.completed:
     return  4;
     case AppointmentStatus.canceled:
-    return  5; // Assuming 5 is canceled
+    return  5;
+    case AppointmentStatus.startWork:
+      return  6;
+      case AppointmentStatus.arrivedUser:
+        return  7;
     }
   }
 

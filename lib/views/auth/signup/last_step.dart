@@ -476,10 +476,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                               .addressFromPicker,
                           // widget.signUpData['address'],
                           pricePerHour:
-                              widget.secondStepModel.firstStepModel.bookingType ==
-                                  "hourly"
-                              ? widget.secondStepModel.pricePerHour
-                              : 0.0,
+                          widget.secondStepModel.pricePerHour,
                           servicesWithPrices:
                               widget.secondStepModel.firstStepModel.bookingType ==
                                   "service"

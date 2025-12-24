@@ -1,23 +1,23 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
+import 'package:intl/intl.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
-
 
 import '../models/rooms_model.dart';
 
 class OnePersonChatItem extends StatelessWidget {
   final Room room;
   final Function()? onTap;
-  const OnePersonChatItem({super.key, required this.room, required this.onTap});
+
+  const OnePersonChatItem({
+    super.key,
+    required this.room,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    log(room.providerImageUrl.toString());
     return Padding(
       padding: EdgeInsets.only(bottom: 16.sp),
       child: InkWell(
@@ -27,53 +27,86 @@ class OnePersonChatItem extends StatelessWidget {
           children: [
             Row(
               children: [
+                // صورة اليوزر
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
                   child: AppImage(
-                    room.userImageUrl??'',
+                    room.userImageUrl ?? '',
                     height: 43.sp,
                     width: 43.sp,
                     fit: BoxFit.cover,
                   ),
                 ),
-                 SizedBox(width: 8.w),
+                SizedBox(width: 8.w),
+
+                // اسم اليوزر و آخر رسالة
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
                       width: 150.w,
                       child: Text(
                         room.userName ?? "",
-
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    room.lastMessage != null
-                        ? SizedBox(
-                            width: 150.w,
-                            child: Text(
-                              room.lastMessageType == "IMAGE"
-                                  ? "photo"
-                                  : room.lastMessageType == "VOICE"
-                                      ? "voice"
-                                      : room.lastMessage ?? "",
-                              style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          )
-                        : SizedBox.shrink(),
+                    if (room.lastMessage != null)
+                      SizedBox(
+                        width: 150.w,
+                        child: Text(
+                          room.lastMessageType == "image"
+                              ? "Photo"
+                              : room.lastMessageType == "voice"
+                              ? "Voice"
+                              : room.lastMessage ?? "",
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                   ],
                 ),
               ],
             ),
-            room.lastMessageDate == null
-                ? SizedBox.shrink()
-                : Text(
-                    DateFormat('yyyy-MM-dd – hh:mm a')
-                        .format(room.lastMessageDate!.toDate()),
+
+            // الوقت و عداد الرسائل الغير مقروءة للبروفايدر
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (room.lastMessageDate != null)
+                  Text(
+                    DateFormat('hh:mm a').format(room.lastMessageDate!.toDate()),
                     style: TextStyle(
-                        fontSize: 12.sp, fontWeight: FontWeight.normal),
-                  )
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                if (room.unreadCountProvider > 0)
+                  Container(
+                    margin: EdgeInsets.only(top: 4.h),
+                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary,
+                        shape: BoxShape.circle
+                    ),
+                    child: Text(
+                      (room.unreadCountProvider).toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_colors.dart';
+import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/constants.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/models/message_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,7 +34,7 @@ class SenderMsgItemWidget extends StatelessWidget {
               Container(
                 padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 8.sp),
                 width: Constants.getwidth(context),
-                decoration:  BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppTheme.primary,
                   borderRadius: BorderRadius.only(
                     bottomRight: Radius.circular(8),
@@ -43,50 +44,70 @@ class SenderMsgItemWidget extends StatelessWidget {
                 ),
                 child: message.type == "IMAGE"
                     ? ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: CachedNetworkImage(
-                    imageUrl: resolveMediaUrl(message.content.toString()),
-                    height: Constants.getHeight(context) * 0.2,
-                    width: 30.w,
-                    fit: BoxFit.cover,
-                  ),
-                )
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: CachedNetworkImage(
+                          imageUrl: resolveMediaUrl(message.content.toString()),
+                          height: Constants.getHeight(context) * 0.2,
+                          width: 30.w,
+                          fit: BoxFit.cover,
+                        ),
+                      )
                     : message.type == "FILE"
                     ? InkWell(
-                  onTap: () => launchUrl(Uri.parse(resolveMediaUrl(message.content.toString()))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.file_copy_outlined, size: 30, color: Colors.white),
-                      SizedBox(width: 10),
-                      Text("open_file", style: TextStyle(fontSize: 16, color: Colors.black)),
-                    ],
-                  ),
-                )
+                        onTap: () => launchUrl(
+                          Uri.parse(
+                            resolveMediaUrl(message.content.toString()),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.file_copy_outlined,
+                              size: 30,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "open_file",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     : message.type == "VOICE"
                     ? AudioPlayerWidget(
-                  backgroundColor: AppTheme.primary,
-                  progressBarColor: Colors.white,
-                  audioType: AudioType.url,
-                  playerStyle: PlayerStyle.style1,
-                  textDirection: Constants.lang == "ar" ? ui.TextDirection.ltr : ui.TextDirection.rtl,
-                  audioPath: resolveMediaUrl(message.content.toString()),
-                )
+                        backgroundColor: AppTheme.primary,
+                        progressBarColor: Colors.white,
+                        audioType: AudioType.url,
+                        playerStyle: PlayerStyle.style1,
+                        textDirection: Constants.lang == "ar"
+                            ? ui.TextDirection.ltr
+                            : ui.TextDirection.rtl,
+                        audioPath: resolveMediaUrl(message.content.toString()),
+                      )
                     : Text(
-                  message.content.toString(),
-                  style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w400),
-                ),
+                        message.content.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
               ),
-              const SizedBox(
-                height: 6,
-              ),
+              const SizedBox(height: 6),
               Text(
-                DateFormat('yyyy-MM-dd – hh:mm a')
-                    .format(message.sentAt!.toDate()),
+                DateFormat(
+                  'yyyy-MM-dd – hh:mm a',
+                ).format(message.sentAt!.toDate()),
                 style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400),
+                  fontSize: 14,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
               const SizedBox(height: 20),
             ],
@@ -95,12 +116,8 @@ class SenderMsgItemWidget extends StatelessWidget {
         const SizedBox(width: 8),
         ClipRRect(
           borderRadius: BorderRadius.circular(50.r),
-          child: CachedNetworkImage(
-            imageUrl: senderPhoto == null ||
-                    senderPhoto == "" ||
-                    senderPhoto == "null"
-                ? "https://www.greiner-gmbh.de/fileadmin/images/hairline/galerie/saloneinrichtung_berlin_blacklabel/bl_store_3_big.jpg"
-                : (senderPhoto!),
+          child: AppImage(
+            senderPhoto ?? '',
             height: 40.sp,
             width: 40.sp,
             fit: BoxFit.fill,
@@ -110,6 +127,7 @@ class SenderMsgItemWidget extends StatelessWidget {
     );
   }
 }
+
 String resolveMediaUrl(String content) {
   if (content.startsWith('http://') || content.startsWith('https://')) {
     return content;
