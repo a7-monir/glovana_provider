@@ -270,5 +270,7 @@ abstract class  LocaleKeys {
   static const timeToAccept = 'timeToAccept';
   static const openInGoogleMaps = 'openInGoogleMaps';
   static const chatEndedMessage = 'chatEndedMessage';
+  static const message = 'message';
+  static const youMustConfirmPayment = 'youMustConfirmPayment';
 
 }

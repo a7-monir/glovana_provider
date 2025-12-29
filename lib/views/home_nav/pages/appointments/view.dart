@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/app_refresh.dart';
+import 'package:glovana_provider/core/design/dialogs.dart';
 import 'package:glovana_provider/features/appointments/bloc.dart';
 import 'package:glovana_provider/views/notifications/view.dart';
 import 'package:kiwi/kiwi.dart';
@@ -16,6 +17,7 @@ import '../../../../core/design/app_empty.dart';
 import '../../../../core/design/app_failed.dart';
 import '../../../../core/design/app_shimmer.dart';
 import '../../../../core/logic/helper_methods.dart';
+import '../../../../features/pending_payment/bloc.dart';
 import '../../../../features/provider_profile/bloc.dart';
 import '../../../../features/provider_update_status/bloc.dart';
 import '../../../../generated/locale_keys.g.dart';
@@ -31,6 +33,7 @@ class AppointmentsView extends StatefulWidget {
 
 class _AppointmentsViewState extends State<AppointmentsView> {
   final bloc = KiwiContainer().resolve<GetAppointmentsBloc>();
+  final pendingPaymentBloc = KiwiContainer().resolve<GetPendingPaymentBloc>()..add(GetPendingPaymentEvent());
 
   Future<void> selectDateRange() async {
     final DateTime now = DateTime.now();
@@ -66,350 +69,366 @@ class _AppointmentsViewState extends State<AppointmentsView> {
 
   List<Appointment> selectedList = [];
   final updateStatusBloc = KiwiContainer().resolve<ProviderUpdateStatusBloc>();
-  int? status,providerId;
+  int? status, providerId;
   final profileBloc = KiwiContainer().resolve<GetProviderProfileBloc>()
     ..add(GetProviderProfileEvent());
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MainAppBar(
-        title: LocaleKeys.appointments.tr(),
-        withBack: false,
-        actions: [
-          Padding(
-            padding: EdgeInsetsDirectional.only(end: 16.w),
-            child: AppCircleIcon(
-              img: 'notification.png',
-              onTap: () => navigateTo(NotificationsView()),
-              radius: 20.h,
-              bgRadius: 36.h,
-              iconColor: Theme.of(context).primaryColor,
+    return BlocListener(
+      bloc: pendingPaymentBloc,
+      listener: (context, state) {
+        if (state is GetPendingPaymentSuccessState && state.list.isNotEmpty) {
+          showMyDialog(child: ConfirmPaymentDialog(model: state.list.first));
+        }
+      },
+      child: Scaffold(
+        appBar: MainAppBar(
+          title: LocaleKeys.appointments.tr(),
+          withBack: false,
+          actions: [
+            Padding(
+              padding: EdgeInsetsDirectional.only(end: 16.w),
+              child: AppCircleIcon(
+                img: 'notification.png',
+                onTap: () => navigateTo(NotificationsView()),
+                radius: 20.h,
+                bgRadius: 36.h,
+                iconColor: Theme.of(context).primaryColor,
+              ),
             ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          BlocListener(
-            bloc: profileBloc,
-            listener: (context, state) {
-              if (state is GetProviderProfileSuccessState) {
-                if (state.model.providerTypes.isNotEmpty) {
-                  status = state.model.providerTypes.first.status;
-                  providerId=state.model.providerTypes.first.id;
+          ],
+        ),
+        body: Column(
+          children: [
+            BlocListener(
+              bloc: profileBloc,
+              listener: (context, state) {
+                if (state is GetProviderProfileSuccessState) {
+                  if (state.model.providerTypes.isNotEmpty) {
+                    status = state.model.providerTypes.first.status;
+                    providerId = state.model.providerTypes.first.id;
 
-                  setState(() {});
+                    setState(() {});
+                  }
                 }
-              }
-            },
-            child: Padding(
-              padding: EdgeInsetsDirectional.symmetric(
+              },
+              child: Padding(
+                padding: EdgeInsetsDirectional.symmetric(
+                  horizontal: 14.w,
+                ).copyWith(bottom: 20.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      LocaleKeys.stopReceivingAllOrders.tr(),
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    BlocConsumer(
+                      bloc: updateStatusBloc,
+                      listener: (context, state) {
+                        if (state is ProviderUpdateStatusSuccessState) {
+                          status = state.status;
+                          setState(() {});
+                        }
+                      },
+                      builder: (context, state) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40.r),
+                            color: Theme.of(context).cardColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.25),
+                                blurRadius: 4.r,
+                                offset: const Offset(0, 4),
+                                //blurStyle: BlurStyle.
+                              ),
+                            ],
+                          ),
+                          child: state is ProviderUpdateStatusLoadingState
+                              ? Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 30.w,
+                                    vertical: 4.h,
+                                  ),
+                                  child: SizedBox(
+                                    height: 16.h,
+                                    width: 16.h,
+                                    child: CircularProgressIndicator(
+                                      color: AppTheme.primary,
+                                      strokeWidth: 2.w,
+                                    ),
+                                  ),
+                                )
+                              : Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    BuildToggleButton(
+                                      text: LocaleKeys.off.tr(),
+                                      isActive: status == 2,
+                                      onTap: () {
+                                        if (status != 2) {
+                                          updateStatusBloc.add(
+                                            ProviderUpdateStatusEvent(
+                                              typeId: providerId!,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                    BuildToggleButton(
+                                      text: LocaleKeys.on.tr(),
+                                      isActive: status == 1,
+                                      onTap: () {
+                                        if (status != 1) {
+                                          updateStatusBloc.add(
+                                            ProviderUpdateStatusEvent(
+                                              typeId: providerId!,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
                 horizontal: 14.w,
               ).copyWith(bottom: 20.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              scrollDirection: Axis.horizontal,
+
+              child: Row(
                 children: [
-                  Text(
-                    LocaleKeys.stopReceivingAllOrders.tr(),
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  BlocConsumer(
-                    bloc: updateStatusBloc,
-                    listener: (context, state) {
-                      if (state is ProviderUpdateStatusSuccessState) {
-                        status = state.status;
+                  ItemTap(
+                    title: LocaleKeys.pending.tr(),
+                    isSelected: bloc.status == AppointmentStatus.pending,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.pending) {
+                        bloc.status = AppointmentStatus.pending;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
                         setState(() {});
                       }
                     },
-                    builder: (context, state) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40.r),
-                          color: Theme.of(context).cardColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.25),
-                              blurRadius: 4.r,
-                              offset: const Offset(0, 4),
-                              //blurStyle: BlurStyle.
-                            ),
-                          ],
-                        ),
-                        child: state is ProviderUpdateStatusLoadingState
-                            ? Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 30.w,
-                            vertical: 4.h,
-                          ),
-                          child: SizedBox(
-                            height: 16.h,
-                            width: 16.h,
-                            child: CircularProgressIndicator(
-                              color: AppTheme.primary,
-                              strokeWidth: 2.w,
-                            ),
-                          ),
-                        )
-                            : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            BuildToggleButton(
-                              text: LocaleKeys.off.tr(),
-                              isActive: status == 2,
-                              onTap: () {
-                                if (status != 2) {
-                                  updateStatusBloc.add(
-                                    ProviderUpdateStatusEvent(typeId: providerId!),
-                                  );
-                                }
-                              },
-                            ),
-                            BuildToggleButton(
-                              text: LocaleKeys.on.tr(),
-                              isActive: status == 1,
-                              onTap: () {
-                                if (status != 1) {
-                                  updateStatusBloc.add(
-                                    ProviderUpdateStatusEvent(typeId: providerId!),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      );
+                  ),
+                  SizedBox(width: 16.w),
+                  ItemTap(
+                    title: LocaleKeys.inWay.tr(),
+                    isSelected: bloc.status == AppointmentStatus.onTheWay,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.onTheWay) {
+                        bloc.status = AppointmentStatus.onTheWay;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+                  ItemTap(
+                    title: LocaleKeys.accepted.tr(),
+                    isSelected: bloc.status == AppointmentStatus.confirmed,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.confirmed) {
+                        bloc.status = AppointmentStatus.confirmed;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+                  ItemTap(
+                    title: LocaleKeys.startWork.tr(),
+                    isSelected: bloc.status == AppointmentStatus.startWork,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.startWork) {
+                        bloc.status = AppointmentStatus.startWork;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+                  ItemTap(
+                    title: LocaleKeys.userArrive.tr(),
+                    isSelected: bloc.status == AppointmentStatus.arrivedUser,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.arrivedUser) {
+                        bloc.status = AppointmentStatus.arrivedUser;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        setState(() {});
+                      }
                     },
                   ),
                 ],
               ),
             ),
-          ),
-          SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 14.w).copyWith(bottom: 20.h),
-            scrollDirection: Axis.horizontal,
 
-            child: Row(
-              children: [
-                ItemTap(
-                  title: LocaleKeys.pending.tr(),
-                  isSelected: bloc.status == AppointmentStatus.pending,
-                  onTap: () {
-                    if (bloc.status != AppointmentStatus.pending) {
-                      bloc.status = AppointmentStatus.pending;
-                      bloc.startDate = null;
-                      bloc.endDate = null;
-                      bloc.add(GetAppointmentsEvent());
-                      setState(() {});
-                    }
-                  },
-                ),
-                SizedBox(width: 16.w),
-                ItemTap(
-                  title: LocaleKeys.inWay.tr(),
-                  isSelected: bloc.status == AppointmentStatus.onTheWay,
-                  onTap: () {
-                    if (bloc.status != AppointmentStatus.onTheWay) {
-                      bloc.status = AppointmentStatus.onTheWay;
-                      bloc.startDate = null;
-                      bloc.endDate = null;
-                      bloc.add(GetAppointmentsEvent());
-                      setState(() {});
-                    }
-                  },
-                ),
-                SizedBox(width: 16.w),
-                ItemTap(
-                  title: LocaleKeys.accepted.tr(),
-                  isSelected: bloc.status == AppointmentStatus.confirmed,
-                  onTap: () {
-                    if (bloc.status != AppointmentStatus.confirmed) {
-                      bloc.status = AppointmentStatus.confirmed;
-                      bloc.startDate = null;
-                      bloc.endDate = null;
-                      bloc.add(GetAppointmentsEvent());
-                      setState(() {});
-                    }
-                  },
-                ),
-                SizedBox(width: 16.w),
-                ItemTap(
-                  title: LocaleKeys.startWork.tr(),
-                  isSelected: bloc.status == AppointmentStatus.startWork,
-                  onTap: () {
-                    if (bloc.status != AppointmentStatus.startWork) {
-                      bloc.status = AppointmentStatus.startWork;
-                      bloc.startDate = null;
-                      bloc.endDate = null;
-                      bloc.add(GetAppointmentsEvent());
-                      setState(() {});
-                    }
-                  },
-                ),
-                SizedBox(width: 16.w),
-                ItemTap(
-                  title: LocaleKeys.userArrive.tr(),
-                  isSelected: bloc.status == AppointmentStatus.arrivedUser,
-                  onTap: () {
-                    if (bloc.status != AppointmentStatus.arrivedUser) {
-                      bloc.status = AppointmentStatus.arrivedUser;
-                      bloc.startDate = null;
-                      bloc.endDate = null;
-                      bloc.add(GetAppointmentsEvent());
-                      setState(() {});
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14.w),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (selectedList.isNotEmpty) {
-                      isAscending = !isAscending;
-                      selectedList.sort((a, b) {
-                        final dateA = DateTime.parse(a.date);
-                        final dateB = DateTime.parse(b.date);
-                        return isAscending
-                            ? dateA.compareTo(dateB)
-                            : dateB.compareTo(dateA);
-                      });
-                      setState(() {});
-                    }
-                  },
-                  child: Text(
-                    LocaleKeys.recently.tr(),
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                AppImage('arrow_down.png', height: 12.h, width: 12.h),
-                SizedBox(width: 16.w),
-                if (bloc.startDate != null && bloc.endDate != null) ...[
-                  Expanded(
-                    child: Text.rich(
-                      TextSpan(
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        children: [
-                          TextSpan(text: LocaleKeys.date.tr()),
-                          TextSpan(
-                            text: " : ${bloc.startDate} ",
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 14.w),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (selectedList.isNotEmpty) {
+                        isAscending = !isAscending;
+                        selectedList.sort((a, b) {
+                          final dateA = DateTime.parse(a.date);
+                          final dateB = DateTime.parse(b.date);
+                          return isAscending
+                              ? dateA.compareTo(dateB)
+                              : dateB.compareTo(dateA);
+                        });
+                        setState(() {});
+                      }
+                    },
+                    child: Text(
+                      LocaleKeys.recently.tr(),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                ] else ...[
-                  SizedBox.shrink(),
-                  Spacer(),
-                ],
+                  AppImage('arrow_down.png', height: 12.h, width: 12.h),
+                  SizedBox(width: 16.w),
+                  if (bloc.startDate != null && bloc.endDate != null) ...[
+                    Expanded(
+                      child: Text.rich(
+                        TextSpan(
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          children: [
+                            TextSpan(text: LocaleKeys.date.tr()),
+                            TextSpan(
+                              text: " : ${bloc.startDate} ",
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    SizedBox.shrink(),
+                    Spacer(),
+                  ],
 
-                GestureDetector(
-                  onTap: () async {
-                    final result = await showDatePicker(
-                      context: context,
-                      locale: Locale("en"),
-                      firstDate: DateTime(1800),
-                      lastDate: DateTime.now(),
-                    );
-                    if (result != null) {
-                      bloc.startDate = DateFormat(
-                        "yyyy-MM-dd",
-                        "en",
-                      ).format(result);
-                      bloc.endDate = DateFormat(
-                        "yyyy-MM-dd",
-                        "en",
-                      ).format(result);
-                      bloc.add(GetAppointmentsEvent());
-                    }
-                  },
-                  child: AppCircleIcon(
-                    img: 'calender.png',
-                    bgRadius: 36.r,
-                    radius: 22.r,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 4.h),
-          Expanded(
-            child: BlocConsumer(
-              bloc: bloc,
-              listener: (context, state) {
-                if (state is GetAppointmentsSuccessState) {
-                  selectedList = state.list;
-                }
-              },
-              builder: (context, state) {
-                if (state is GetAppointmentsFailedState) {
-                  return AppFailed(
-                    response: state.response,
-                    onPress: () {
-                      bloc.add(GetAppointmentsEvent());
+                  GestureDetector(
+                    onTap: () async {
+                      final result = await showDatePicker(
+                        context: context,
+                        locale: Locale("en"),
+                        firstDate: DateTime(1800),
+                        lastDate: DateTime.now(),
+                      );
+                      if (result != null) {
+                        bloc.startDate = DateFormat(
+                          "yyyy-MM-dd",
+                          "en",
+                        ).format(result);
+                        bloc.endDate = DateFormat(
+                          "yyyy-MM-dd",
+                          "en",
+                        ).format(result);
+                        bloc.add(GetAppointmentsEvent());
+                      }
                     },
-                  );
-                } else if (state is GetAppointmentsSuccessState) {
-                  if (state.list.isEmpty) {
+                    child: AppCircleIcon(
+                      img: 'calender.png',
+                      bgRadius: 36.r,
+                      radius: 22.r,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 4.h),
+            Expanded(
+              child: BlocConsumer(
+                bloc: bloc,
+                listener: (context, state) {
+                  if (state is GetAppointmentsSuccessState) {
+                    selectedList = state.list;
+                  }
+                },
+                builder: (context, state) {
+                  if (state is GetAppointmentsFailedState) {
+                    return AppFailed(
+                      response: state.response,
+                      onPress: () {
+                        bloc.add(GetAppointmentsEvent());
+                      },
+                    );
+                  } else if (state is GetAppointmentsSuccessState) {
+                    if (state.list.isEmpty) {
+                      return AppRefresh(
+                        event: () async {
+                          bloc.add(GetAppointmentsEvent());
+                        },
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height / 3,
+                            ),
+                            child: AppEmpty(
+                              title: LocaleKeys.appointments.tr(),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                     return AppRefresh(
                       event: () async {
                         bloc.add(GetAppointmentsEvent());
                       },
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height / 3,
-                          ),
-                          child: AppEmpty(title: LocaleKeys.appointments.tr()),
-                        ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return ListView.separated(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 16.h,
+                              horizontal: 40.w,
+                            ),
+                            itemBuilder: (context, index) =>
+                                _Item(model: selectedList[index]),
+                            separatorBuilder: (context, index) =>
+                                SizedBox(height: 23.h),
+                            itemCount: selectedList.length,
+                          );
+                        },
                       ),
                     );
+                    ;
                   }
-                  return AppRefresh(
-                    event: () async {
-                      bloc.add(GetAppointmentsEvent());
-                    },
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return ListView.separated(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: EdgeInsets.symmetric(
-                            vertical: 16.h,
-                            horizontal: 40.w,
-                          ),
-                          itemBuilder: (context, index) =>
-                              _Item(model: selectedList[index]),
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 23.h),
-                          itemCount: selectedList.length,
-                        );
-                      },
-                    ),
-                  );
-                  ;
-                }
-                return _Loading();
-              },
+                  return _Loading();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -456,7 +475,9 @@ class _Item extends StatelessWidget {
                         children: [
                           Center(
                             child: Text(
-                              DateFormat.MMM().format(DateTime.parse(model.date)),
+                              DateFormat.MMM().format(
+                                DateTime.parse(model.date),
+                              ),
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 14.sp,
@@ -476,7 +497,9 @@ class _Item extends StatelessWidget {
                           ),
                           SizedBox(height: 2.h),
                           Text(
-                            DateFormat.EEEE().format(DateTime.parse(model.date)),
+                            DateFormat.EEEE().format(
+                              DateTime.parse(model.date),
+                            ),
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
                               fontSize: 14.sp,
@@ -599,8 +622,8 @@ class _Item extends StatelessWidget {
                 ],
               ),
             ),
-            if(model.appointmentStatus==1)
-            MinuteCountdownText(appointment: model,)
+            if (model.appointmentStatus == 1)
+              MinuteCountdownText(appointment: model),
           ],
         ),
       ),
@@ -668,6 +691,7 @@ class ItemTap extends StatelessWidget {
     );
   }
 }
+
 class MinuteCountdownText extends StatefulWidget {
   final Appointment appointment;
 
@@ -709,10 +733,7 @@ class _MinuteCountdownTextState extends State<MinuteCountdownText> {
 
     return Text(
       '${LocaleKeys.timeToAccept.tr()} 00:$secondsLeft',
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-      ),
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
     );
   }
 }

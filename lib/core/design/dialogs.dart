@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/features/appointments/bloc.dart';
+import 'package:kiwi/kiwi.dart';
+import '../../features/confirm_payment/bloc.dart';
 import '../../generated/locale_keys.g.dart';
 import '../app_theme.dart';
 import '../logic/helper_methods.dart';
@@ -98,3 +102,92 @@ Future showMyDialog({required Widget child, bool isDismissible = true}) async {
 //   );
 // }
 
+
+class ConfirmPaymentDialog extends StatefulWidget {
+  final Appointment model;
+
+  const ConfirmPaymentDialog({super.key, required this.model,});
+
+  @override
+  State<ConfirmPaymentDialog> createState() => _ConfirmPaymentDialogState();
+}
+
+class _ConfirmPaymentDialogState extends State<ConfirmPaymentDialog> {
+
+  final bloc =KiwiContainer().resolve<ConfirmPaymentBloc>();
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          LocaleKeys.youMustConfirmPayment.tr(),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
+        ),
+        SizedBox(height: 16.h),
+        Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(8.r),
+              child: AppImage(widget.model.user.photoUrl,
+              height: 60.h,
+                width: 60.h,
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.model.user.name),
+                  Text(widget.model.user.phone,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12.sp,
+                      color: Theme.of(context).hintColor,
+                      fontFamily: getFontFamily(FontFamilyType.inter),
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+            Text(widget.model.paymentType),
+          ],
+        ),
+        SizedBox(height: 16.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(LocaleKeys.total.tr()),
+            Text("${widget.model.totalPrices} ${LocaleKeys.jod.tr()}",
+              style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w400),)
+          ],
+        ),
+
+
+        SizedBox(height: 16.h),
+        BlocConsumer(
+          bloc: bloc,
+          listener: (context, state) {
+            if (state is ConfirmPaymentSuccessState) {
+              showMessage(state.msg,type: MessageType.success);
+              Navigator.pop(context);
+            }
+          },
+          builder: (context, state) {
+            return AppButton(
+              text: LocaleKeys.confirm.tr(),
+
+              isLoading: state is ConfirmPaymentLoadingState,
+              onPress: () {
+                bloc.add(ConfirmPaymentEvent(id: widget.model.id));
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+}

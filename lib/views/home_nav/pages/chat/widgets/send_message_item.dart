@@ -245,7 +245,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
               children: [
                 Expanded(
                   child: AppInput(
-                    hint: "${'message'.tr()} ..",
+                    hint: "${LocaleKeys.message.tr()} ..",
                     controller: messageController,
                     onChanged: (_) => setState(() => isTyping = true),
                     onFieldSubmitted: (val) {

@@ -260,7 +260,7 @@
   "youHaveAMessage": "لديك رسالة",
   "timeToAccept": "الوقت المتبقي للقبول",
   "openInGoogleMaps": "افتح على خرائط جوجل",
-  "chatEndedMessage": "هذا الشات انتهى ولا يمكن إرسال رسائل"
-
-
+  "chatEndedMessage": "هذا الشات انتهى ولا يمكن إرسال رسائل",
+  "message": "رسالة",
+  "youMustConfirmPayment": "يجب تأكيد الدفع"
 }

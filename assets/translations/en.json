@@ -266,5 +266,7 @@
   "confirmStartWorkMessage": "Are you sure you want start work ",
   "timeToAccept": "time To Accept",
   "openInGoogleMaps": "Open in Google Maps",
-  "chatEndedMessage": "This chat has ended and you cannot send messages"
+  "chatEndedMessage": "This chat has ended and you cannot send messages",
+  "message": "message",
+  "youMustConfirmPayment": "You must confirm the payment"
 }
