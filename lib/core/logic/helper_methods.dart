@@ -116,7 +116,7 @@ class SignInResultApple {
 //   }
 // }
 
-enum FontFamilyType { aboreto, lateef, inter, abhayaLibre }
+enum FontFamilyType { aboreto, lateef, inter, abhayaLibre, poppins }
 
 String getFontFamily(FontFamilyType fontFamilyType) {
   return fontFamilyType == FontFamilyType.lateef
@@ -125,6 +125,8 @@ String getFontFamily(FontFamilyType fontFamilyType) {
       ? "Inter"
       : fontFamilyType == FontFamilyType.abhayaLibre
       ? "AbhayaLibre"
+      : fontFamilyType == FontFamilyType.poppins
+      ? "Poppins"
       : 'Aboreto';
 }
 

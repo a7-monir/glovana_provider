@@ -1606,7 +1606,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                 },
                 builder: (context, state) {
                   return AppButton(
-                    text: CacheHelper.lang == 'en' ? 'edit' : 'تعديل',
+                    text: CacheHelper.lang == 'en' ? 'Save' : 'حفظ',
                     isLoading: state is CompleteDataUpdateLoadingState,
                     type: ButtonType.bottomNav,
                     onPress: () {

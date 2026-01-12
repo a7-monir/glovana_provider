@@ -101,7 +101,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
         ),
         body: Column(
           children: [
-            BlocListener(
+            BlocConsumer(
               bloc: profileBloc,
               listener: (context, state) {
                 if (state is GetProviderProfileSuccessState) {
@@ -113,95 +113,101 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   }
                 }
               },
-              child: Padding(
-                padding: EdgeInsetsDirectional.symmetric(
-                  horizontal: 14.w,
-                ).copyWith(bottom: 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocaleKeys.stopReceivingAllOrders.tr(),
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                    BlocConsumer(
-                      bloc: updateStatusBloc,
-                      listener: (context, state) {
-                        if (state is ProviderUpdateStatusSuccessState) {
-                          status = state.status;
-                          setState(() {});
-                        }
-                      },
-                      builder: (context, state) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(40.r),
-                            color: Theme.of(context).cardColor,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.25),
-                                blurRadius: 4.r,
-                                offset: const Offset(0, 4),
-                                //blurStyle: BlurStyle.
-                              ),
-                            ],
+              builder: (context, state) {
+                if(state is GetProviderProfileSuccessState && state.model.providerTypes.isNotEmpty&&state.model.providerTypes.first.type.bookingType!='service'){
+                  return   Padding(
+                    padding: EdgeInsetsDirectional.symmetric(
+                      horizontal: 14.w,
+                    ).copyWith(bottom: 20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          LocaleKeys.stopReceivingAllOrders.tr(),
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w400,
                           ),
-                          child: state is ProviderUpdateStatusLoadingState
-                              ? Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 30.w,
-                                    vertical: 4.h,
+                        ),
+                        SizedBox(height: 12.h),
+                        BlocConsumer(
+                          bloc: updateStatusBloc,
+                          listener: (context, state) {
+                            if (state is ProviderUpdateStatusSuccessState) {
+                              status = state.status;
+                              setState(() {});
+                            }
+                          },
+                          builder: (context, state) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(40.r),
+                                color: Theme.of(context).cardColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.25),
+                                    blurRadius: 4.r,
+                                    offset: const Offset(0, 4),
+                                    //blurStyle: BlurStyle.
                                   ),
-                                  child: SizedBox(
-                                    height: 16.h,
-                                    width: 16.h,
-                                    child: CircularProgressIndicator(
-                                      color: AppTheme.primary,
-                                      strokeWidth: 2.w,
-                                    ),
-                                  ),
-                                )
-                              : Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    BuildToggleButton(
-                                      text: LocaleKeys.off.tr(),
-                                      isActive: status == 2,
-                                      onTap: () {
-                                        if (status != 2) {
-                                          updateStatusBloc.add(
-                                            ProviderUpdateStatusEvent(
-                                              typeId: providerId!,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    BuildToggleButton(
-                                      text: LocaleKeys.on.tr(),
-                                      isActive: status == 1,
-                                      onTap: () {
-                                        if (status != 1) {
-                                          updateStatusBloc.add(
-                                            ProviderUpdateStatusEvent(
-                                              typeId: providerId!,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ],
+                                ],
+                              ),
+                              child: state is ProviderUpdateStatusLoadingState
+                                  ? Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 30.w,
+                                  vertical: 4.h,
                                 ),
-                        );
-                      },
+                                child: SizedBox(
+                                  height: 16.h,
+                                  width: 16.h,
+                                  child: CircularProgressIndicator(
+                                    color: AppTheme.primary,
+                                    strokeWidth: 2.w,
+                                  ),
+                                ),
+                              )
+                                  : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  BuildToggleButton(
+                                    text: LocaleKeys.off.tr(),
+                                    isActive: status == 2,
+                                    onTap: () {
+                                      if (status != 2) {
+                                        updateStatusBloc.add(
+                                          ProviderUpdateStatusEvent(
+                                            typeId: providerId!,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  BuildToggleButton(
+                                    text: LocaleKeys.on.tr(),
+                                    isActive: status == 1,
+                                    onTap: () {
+                                      if (status != 1) {
+                                        updateStatusBloc.add(
+                                          ProviderUpdateStatusEvent(
+                                            typeId: providerId!,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  );
+                }
+                return SizedBox.shrink();
+
+              },
             ),
             SingleChildScrollView(
               padding: EdgeInsets.symmetric(
@@ -226,20 +232,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   ),
                   SizedBox(width: 16.w),
                   ItemTap(
-                    title: LocaleKeys.inWay.tr(),
-                    isSelected: bloc.status == AppointmentStatus.onTheWay,
-                    onTap: () {
-                      if (bloc.status != AppointmentStatus.onTheWay) {
-                        bloc.status = AppointmentStatus.onTheWay;
-                        bloc.startDate = null;
-                        bloc.endDate = null;
-                        bloc.add(GetAppointmentsEvent());
-                        setState(() {});
-                      }
-                    },
-                  ),
-                  SizedBox(width: 16.w),
-                  ItemTap(
                     title: LocaleKeys.accepted.tr(),
                     isSelected: bloc.status == AppointmentStatus.confirmed,
                     onTap: () {
@@ -252,13 +244,29 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                       }
                     },
                   ),
+
                   SizedBox(width: 16.w),
+
                   ItemTap(
                     title: LocaleKeys.startWork.tr(),
                     isSelected: bloc.status == AppointmentStatus.startWork,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.startWork) {
                         bloc.status = AppointmentStatus.startWork;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+                  ItemTap(
+                    title: LocaleKeys.inWay.tr(),
+                    isSelected: bloc.status == AppointmentStatus.onTheWay,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.onTheWay) {
+                        bloc.status = AppointmentStatus.onTheWay;
                         bloc.startDate = null;
                         bloc.endDate = null;
                         bloc.add(GetAppointmentsEvent());

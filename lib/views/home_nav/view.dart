@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glovana_provider/core/logic/cache_helper.dart';
 
 import 'package:glovana_provider/views/home_nav/pages/appointments/view.dart';
+import 'package:glovana_provider/views/home_nav/pages/chat/chat_utils.dart';
+import 'package:glovana_provider/views/home_nav/pages/chat/models/rooms_model.dart';
 import 'package:glovana_provider/views/home_nav/pages/chats/view.dart';
 import 'package:glovana_provider/views/home_nav/pages/profile/view.dart';
 
@@ -53,6 +56,8 @@ class _HomeNavViewState extends State<HomeNavView> {
     'user.png',
   ];
 
+  List<Room> allRooms = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,27 +76,36 @@ class _HomeNavViewState extends State<HomeNavView> {
             ),
           ],
         ),
-        child: SafeArea(
-          child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 24.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(
-                title.length,
-                    (index) => InkWell(
-                  onTap: () {
-                    _selectedIndex = index;
-                    setState(() {});
-                  },
-                  child: NavBarItem(
-                    title: title[index].tr(),
-                    icon: icons[index],
-                    isActive: _selectedIndex == index,
+        child: StreamBuilder(
+            stream: ChatUtils.getRooms(CacheHelper.id.toString()),
+          builder: (context, snapshot) {
+            allRooms = snapshot.data!.docs
+                .map((d) => Room.fromJson(d.data(), docId: d.id))
+                .toList();
+            return SafeArea(
+              child: Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 24.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    title.length,
+                        (index) => InkWell(
+                      onTap: () {
+                        _selectedIndex = index;
+                        setState(() {});
+                      },
+                      child: NavBarItem(
+                        title: title[index].tr(),
+                        icon: icons[index],
+                        isActive: _selectedIndex == index,
+                        isLabelVisible: index==1&&allRooms.any((element) => element.unreadCountProvider>0,),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          }
         ),
       ),
       body: pages[_selectedIndex],
@@ -105,10 +119,12 @@ class NavBarItem extends StatelessWidget {
     required this.title,
     required this.icon,
     required this.isActive,
+
+    required this.isLabelVisible,
   });
 
   final String title, icon;
-  final bool isActive;
+  final bool isActive,isLabelVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -129,14 +145,22 @@ class NavBarItem extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AppImage(
-            icon,
-            height: 24.r,
-            width: 24.r,
-            color:
-            isActive
-                ? Theme.of(context).secondaryHeaderColor
-                : Theme.of(context).primaryColor,
+          Badge(
+            smallSize: 8.r,
+            isLabelVisible: isLabelVisible,
+           // backgroundColor: withBadge?:t,
+            child: SizedBox(
+              width: 35.w,
+              child: AppImage(
+                icon,
+                height: 24.r,
+                width: 24.r,
+                color:
+                isActive
+                    ? Theme.of(context).secondaryHeaderColor
+                    : Theme.of(context).primaryColor,
+              ),
+            ),
           ),
           if (isActive) ...[
             SizedBox(width: 8.w),

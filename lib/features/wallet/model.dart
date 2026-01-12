@@ -1,7 +1,7 @@
 part of 'bloc.dart';
 
 class WalletModel {
-  late final int balance;
+  late final num balance;
   late final WalletTransactions transactions;
 
   WalletModel.fromJson(Map<String, dynamic> json) {

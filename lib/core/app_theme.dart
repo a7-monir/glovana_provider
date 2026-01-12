@@ -6,7 +6,7 @@ class AppTheme {
   static const secondaryHeaderColor = Color(0xffFEDCD3);
   static const greyColor = Color(0xff8D8D8D);
   static const hintText2Color = Color(0xffB2B2B2);
-  static const fontFamily = "Aboreto";
+  static const fontFamily = "Poppins";
   static const imageUrl = "https://glovana.net/assets/admin/uploads/";
 
   static final mainShadow = BoxShadow(

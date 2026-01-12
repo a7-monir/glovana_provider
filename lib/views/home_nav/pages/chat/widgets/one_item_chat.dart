@@ -27,7 +27,6 @@ class OnePersonChatItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                // صورة اليوزر
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50.r),
                   child: AppImage(
@@ -39,7 +38,7 @@ class OnePersonChatItem extends StatelessWidget {
                 ),
                 SizedBox(width: 8.w),
 
-                // اسم اليوزر و آخر رسالة
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -76,7 +75,7 @@ class OnePersonChatItem extends StatelessWidget {
               ],
             ),
 
-            // الوقت و عداد الرسائل الغير مقروءة للبروفايدر
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [

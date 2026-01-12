@@ -105,4 +105,6 @@ flutter:
     - family: AbhayaLibre
       fonts:
         - asset: assets/fonts/AbhayaLibre-Regular.ttf
-
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
