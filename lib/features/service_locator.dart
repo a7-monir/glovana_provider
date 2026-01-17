@@ -8,6 +8,7 @@ import 'package:glovana_provider/features/reset_password/bloc.dart';
 import 'package:glovana_provider/features/send_notification/bloc.dart';
 import 'package:glovana_provider/features/send_otp/bloc.dart';
 import 'package:glovana_provider/features/services/bloc.dart';
+import 'package:glovana_provider/features/settings/bloc.dart';
 import 'package:glovana_provider/features/signup/bloc.dart';
 import 'package:glovana_provider/features/static_page/bloc.dart';
 import 'package:glovana_provider/features/toggle_lang/bloc.dart';
@@ -76,6 +77,7 @@ void initKiwi() {
   con.registerFactory((c) => SendNotificationsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => ConfirmPaymentBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetPendingPaymentBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => GetSettingsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => SendOtpBloc());
   con.registerFactory((c) => VerifyOtpBloc());
 }

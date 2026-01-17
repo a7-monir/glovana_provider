@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_refresh.dart';
 import 'package:glovana_provider/views/Appointment_history/view.dart';
@@ -9,10 +10,12 @@ import 'package:glovana_provider/views/payment_report/view.dart';
 import 'package:glovana_provider/views/provider_type/view.dart';
 import 'package:glovana_provider/views/ratings/view.dart';
 import 'package:glovana_provider/views/setting/view.dart';
+import 'package:kiwi/kiwi.dart';
 
 import '../../../../core/design/app_image.dart';
 import '../../../../core/logic/cache_helper.dart';
 import '../../../../core/logic/helper_methods.dart';
+import '../../../../features/settings/bloc.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../sheets/logout.dart';
 import '../../../discounts/view.dart';
@@ -21,8 +24,6 @@ import '../../../static_page/view.dart';
 import '../../../wallet/view.dart';
 import 'components/photo.dart';
 
-
-
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
@@ -30,7 +31,11 @@ class ProfileView extends StatefulWidget {
   State<ProfileView> createState() => _ProfileViewState();
 }
 
+
+
 class _ProfileViewState extends State<ProfileView> {
+  final settingBloc = KiwiContainer().resolve<GetSettingsBloc>()
+    ..add(GetSettingsEvent());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +43,6 @@ class _ProfileViewState extends State<ProfileView> {
         child: AppRefresh(
           event: () {
             setState(() {});
-
           },
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -56,10 +60,12 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
 
-
-                if(CacheHelper.email.isNotEmpty)
+                if (CacheHelper.email.isNotEmpty)
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.h,
+                      horizontal: 12.w,
+                    ),
                     margin: EdgeInsets.only(top: 20.h),
                     decoration: BoxDecoration(
                       color: Theme.of(context).canvasColor,
@@ -120,46 +126,53 @@ class _ProfileViewState extends State<ProfileView> {
                 _ItemProfile(
                   image: 'about_us.png',
                   title: LocaleKeys.aboutUs.tr(),
-                  onTap:
-                      () => navigateTo(
+                  onTap: () => navigateTo(
                     StaticPageView(id: 1, title: LocaleKeys.aboutUs.tr()),
                   ),
                 ),
                 _ItemProfile(
                   image: 'terms.png',
                   title: LocaleKeys.termsCondition.tr(),
-                  onTap:
-                      () => navigateTo(
-                    StaticPageView(id: 2, title: LocaleKeys.termsCondition.tr()),
+                  onTap: () => navigateTo(
+                    StaticPageView(
+                      id: 2,
+                      title: LocaleKeys.termsCondition.tr(),
+                    ),
                   ),
                 ),
                 _ItemProfile(
                   image: 'privacy.png',
                   title: LocaleKeys.privacyPolicy.tr(),
-                  onTap:
-                      () => navigateTo(
+                  onTap: () => navigateTo(
                     StaticPageView(id: 3, title: LocaleKeys.privacyPolicy.tr()),
                   ),
                 ),
-                _ItemProfile(
-                  image: 'support.png',
-                  title: LocaleKeys.support.tr(),
-                  onTap:
-                      () => navigateTo(
-                    StaticPageView(id: 4, title: LocaleKeys.support.tr()),
-                  ),
+                BlocBuilder(
+                  bloc: settingBloc,
+                  builder: (context, state) {
+                    if (state is GetSettingsSuccessState) {
+                      return _ItemProfile(
+                        image: 'support.png',
+                        title: LocaleKeys.support.tr(),
+                        onTap: () {
+                          openWhatsApp(settingBloc.whatsAppNumber.toString());
+                        },
+                      );
+                    } else {
+                      return SizedBox.shrink();
+                    }
+                  },
                 ),
+
                 _ItemProfile(
                   image: 'settings.png',
                   title: LocaleKeys.settings.tr(),
-                  onTap:
-                      () => navigateTo(SettingsView()),
+                  onTap: () => navigateTo(SettingsView()),
                 ),
                 _ItemProfile(
                   image: 'logout.png',
                   title: LocaleKeys.logout.tr(),
-                  onTap:
-                      () => showModalBottomSheet(
+                  onTap: () => showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
                     builder: (context) => LogoutSheet(),

@@ -484,11 +484,11 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                                   widget.secondStepModel.serviceWithPrice,
                                 )
                               : null,
-                          serviceIds:
-                              widget.secondStepModel.firstStepModel.bookingType ==
-                                  "hourly"
-                              ? List<int>.from(widget.secondStepModel.service)
-                              : List<int>.from(widget.secondStepModel.service),
+                            serviceIds:
+                            widget.secondStepModel.firstStepModel.bookingType ==
+                                "hourly"
+                                ? null
+                                : List<int>.from(widget.secondStepModel.service),
                           images: _images,
                           gallery: _gallery,
                           availability: availabilityData,

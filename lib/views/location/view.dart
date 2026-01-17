@@ -9,6 +9,7 @@ import 'package:glovana_provider/core/app_theme.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/design/app_bar.dart';
 import '../../core/design/app_button.dart';
 import '../../core/logic/helper_methods.dart';
 import '../../generated/locale_keys.g.dart';
@@ -159,23 +160,36 @@ class _LocationViewState extends State<LocationView> {
               ),
 
             Positioned(
-              top: 50,
-              left: 20,
-              right: 20,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: const [
-                    BoxShadow(color: Colors.black26, blurRadius: 4),
-                  ],
-                ),
-                child: Text(
-                  currentAddressText ?? '',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14.sp),
-                ),
+              top: 40.h,
+              left: 0.w,
+              right: 20.w,
+              child: Row(
+                children: [
+                  CustomBackIcon(),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(10.r),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.r),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        currentAddressText ?? '',
+                        textAlign: TextAlign.center,
+
+                        style: TextStyle(fontSize: 14.sp),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
 

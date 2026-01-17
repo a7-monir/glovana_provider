@@ -15,3 +15,13 @@ class GetAppointmentsSuccessState extends GetAppointmentsStates {
 
   GetAppointmentsSuccessState({required this.list});
 }
+
+class GetAllAppointmentsLoadingState extends GetAppointmentsStates {}
+
+class GetAllAppointmentsFailedState extends GetAppointmentsStates {
+  final CustomResponse response;
+
+  GetAllAppointmentsFailedState({required this.response});
+}
+
+class GetAllAppointmentsSuccessState extends GetAppointmentsStates {}

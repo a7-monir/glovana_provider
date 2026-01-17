@@ -276,20 +276,21 @@ print("|||||||||||||||||||${resp.data["status"]}");
             resp.data["status"] == false) {
           return CustomResponse(
             data: resp.data,
-            msg: resp.data?["message"],
+            msg: resp.data?["message"]??'',
             isSuccess: false,
           );
         }
         return CustomResponse(
           data: resp.data,
           isSuccess: NetworkExceptions.handleResponse(resp) == null,
-          msg: NetworkExceptions.handleResponse(resp) ?? resp.data["message"],
+          msg: NetworkExceptions.handleResponse(resp) ?? resp.data["message"]??'',
         );
       } on DioException catch (ex) {
         return handleServerError(ex);
       }
     }
   }
+
 
   CustomResponse handleServerError(DioException err) {
     String msg;

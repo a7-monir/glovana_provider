@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/app_refresh.dart';
-import 'package:glovana_provider/core/design/dialogs.dart';
 import 'package:glovana_provider/features/appointments/bloc.dart';
 import 'package:glovana_provider/views/notifications/view.dart';
 import 'package:kiwi/kiwi.dart';
@@ -17,7 +16,6 @@ import '../../../../core/design/app_empty.dart';
 import '../../../../core/design/app_failed.dart';
 import '../../../../core/design/app_shimmer.dart';
 import '../../../../core/logic/helper_methods.dart';
-import '../../../../features/pending_payment/bloc.dart';
 import '../../../../features/provider_profile/bloc.dart';
 import '../../../../features/provider_update_status/bloc.dart';
 import '../../../../generated/locale_keys.g.dart';
@@ -33,7 +31,6 @@ class AppointmentsView extends StatefulWidget {
 
 class _AppointmentsViewState extends State<AppointmentsView> {
   final bloc = KiwiContainer().resolve<GetAppointmentsBloc>();
-  final pendingPaymentBloc = KiwiContainer().resolve<GetPendingPaymentBloc>()..add(GetPendingPaymentEvent());
 
   Future<void> selectDateRange() async {
     final DateTime now = DateTime.now();
@@ -60,11 +57,14 @@ class _AppointmentsViewState extends State<AppointmentsView> {
 
   bool isAscending = false;
 
+
+
   @override
   void initState() {
     super.initState();
     bloc.status = AppointmentStatus.pending;
     bloc.add(GetAppointmentsEvent());
+    bloc.add(GetAllAppointmentsEvent());
   }
 
   List<Appointment> selectedList = [];
@@ -76,10 +76,11 @@ class _AppointmentsViewState extends State<AppointmentsView> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      bloc: pendingPaymentBloc,
+      bloc: bloc,
+
       listener: (context, state) {
-        if (state is GetPendingPaymentSuccessState && state.list.isNotEmpty) {
-          showMyDialog(child: ConfirmPaymentDialog(model: state.list.first));
+        if(state is GetAllAppointmentsSuccessState){
+          setState(() {});
         }
       },
       child: Scaffold(
@@ -108,14 +109,16 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   if (state.model.providerTypes.isNotEmpty) {
                     status = state.model.providerTypes.first.status;
                     providerId = state.model.providerTypes.first.id;
-
                     setState(() {});
                   }
                 }
               },
               builder: (context, state) {
-                if(state is GetProviderProfileSuccessState && state.model.providerTypes.isNotEmpty&&state.model.providerTypes.first.type.bookingType!='service'){
-                  return   Padding(
+                if (state is GetProviderProfileSuccessState &&
+                    state.model.providerTypes.isNotEmpty &&
+                    state.model.providerTypes.first.type.bookingType !=
+                        'service') {
+                  return Padding(
                     padding: EdgeInsetsDirectional.symmetric(
                       horizontal: 14.w,
                     ).copyWith(bottom: 20.h),
@@ -154,50 +157,50 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                               ),
                               child: state is ProviderUpdateStatusLoadingState
                                   ? Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 30.w,
-                                  vertical: 4.h,
-                                ),
-                                child: SizedBox(
-                                  height: 16.h,
-                                  width: 16.h,
-                                  child: CircularProgressIndicator(
-                                    color: AppTheme.primary,
-                                    strokeWidth: 2.w,
-                                  ),
-                                ),
-                              )
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 30.w,
+                                        vertical: 4.h,
+                                      ),
+                                      child: SizedBox(
+                                        height: 16.h,
+                                        width: 16.h,
+                                        child: CircularProgressIndicator(
+                                          color: AppTheme.primary,
+                                          strokeWidth: 2.w,
+                                        ),
+                                      ),
+                                    )
                                   : Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  BuildToggleButton(
-                                    text: LocaleKeys.off.tr(),
-                                    isActive: status == 2,
-                                    onTap: () {
-                                      if (status != 2) {
-                                        updateStatusBloc.add(
-                                          ProviderUpdateStatusEvent(
-                                            typeId: providerId!,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  BuildToggleButton(
-                                    text: LocaleKeys.on.tr(),
-                                    isActive: status == 1,
-                                    onTap: () {
-                                      if (status != 1) {
-                                        updateStatusBloc.add(
-                                          ProviderUpdateStatusEvent(
-                                            typeId: providerId!,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        BuildToggleButton(
+                                          text: LocaleKeys.off.tr(),
+                                          isActive: status == 2,
+                                          onTap: () {
+                                            if (status != 2) {
+                                              updateStatusBloc.add(
+                                                ProviderUpdateStatusEvent(
+                                                  typeId: providerId!,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        BuildToggleButton(
+                                          text: LocaleKeys.on.tr(),
+                                          isActive: status == 1,
+                                          onTap: () {
+                                            if (status != 1) {
+                                              updateStatusBloc.add(
+                                                ProviderUpdateStatusEvent(
+                                                  typeId: providerId!,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
                             );
                           },
                         ),
@@ -206,7 +209,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   );
                 }
                 return SizedBox.shrink();
-
               },
             ),
             SingleChildScrollView(
@@ -214,11 +216,11 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                 horizontal: 14.w,
               ).copyWith(bottom: 20.h),
               scrollDirection: Axis.horizontal,
-
               child: Row(
                 children: [
                   ItemTap(
-                    title: LocaleKeys.pending.tr(),
+                    title:
+                        "${LocaleKeys.pending.tr()} ${bloc.pendingLength}",
                     isSelected: bloc.status == AppointmentStatus.pending,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.pending) {
@@ -226,13 +228,15 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                         bloc.startDate = null;
                         bloc.endDate = null;
                         bloc.add(GetAppointmentsEvent());
+                        bloc.add(GetAllAppointmentsEvent());
                         setState(() {});
                       }
                     },
                   ),
                   SizedBox(width: 16.w),
                   ItemTap(
-                    title: LocaleKeys.accepted.tr(),
+                    title:
+                        "${LocaleKeys.accepted.tr()} ${bloc.acceptLength}",
                     isSelected: bloc.status == AppointmentStatus.confirmed,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.confirmed) {
@@ -240,43 +244,16 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                         bloc.startDate = null;
                         bloc.endDate = null;
                         bloc.add(GetAppointmentsEvent());
-                        setState(() {});
-                      }
-                    },
-                  ),
+                        bloc.add(GetAllAppointmentsEvent());
 
-                  SizedBox(width: 16.w),
-
-                  ItemTap(
-                    title: LocaleKeys.startWork.tr(),
-                    isSelected: bloc.status == AppointmentStatus.startWork,
-                    onTap: () {
-                      if (bloc.status != AppointmentStatus.startWork) {
-                        bloc.status = AppointmentStatus.startWork;
-                        bloc.startDate = null;
-                        bloc.endDate = null;
-                        bloc.add(GetAppointmentsEvent());
                         setState(() {});
                       }
                     },
                   ),
                   SizedBox(width: 16.w),
                   ItemTap(
-                    title: LocaleKeys.inWay.tr(),
-                    isSelected: bloc.status == AppointmentStatus.onTheWay,
-                    onTap: () {
-                      if (bloc.status != AppointmentStatus.onTheWay) {
-                        bloc.status = AppointmentStatus.onTheWay;
-                        bloc.startDate = null;
-                        bloc.endDate = null;
-                        bloc.add(GetAppointmentsEvent());
-                        setState(() {});
-                      }
-                    },
-                  ),
-                  SizedBox(width: 16.w),
-                  ItemTap(
-                    title: LocaleKeys.userArrive.tr(),
+                    title:
+                        "${LocaleKeys.userArrive.tr()} ${bloc.userArriveLength}",
                     isSelected: bloc.status == AppointmentStatus.arrivedUser,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.arrivedUser) {
@@ -284,6 +261,41 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                         bloc.startDate = null;
                         bloc.endDate = null;
                         bloc.add(GetAppointmentsEvent());
+                        bloc.add(GetAllAppointmentsEvent());
+
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+
+                  ItemTap(
+                    title:
+                        "${LocaleKeys.startWork.tr()} ${bloc.startWorkLength}",
+                    isSelected: bloc.status == AppointmentStatus.startWork,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.startWork) {
+                        bloc.status = AppointmentStatus.startWork;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        bloc.add(GetAllAppointmentsEvent());
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+                  ItemTap(
+                    title:
+                        "${LocaleKeys.inWay.tr()} ${bloc.inWayLength}",
+                    isSelected: bloc.status == AppointmentStatus.onTheWay,
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.onTheWay) {
+                        bloc.status = AppointmentStatus.onTheWay;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        bloc.add(GetAllAppointmentsEvent());
                         setState(() {});
                       }
                     },
@@ -376,6 +388,10 @@ class _AppointmentsViewState extends State<AppointmentsView> {
             Expanded(
               child: BlocConsumer(
                 bloc: bloc,
+                buildWhen: (previous, current) =>
+                    current is GetAppointmentsSuccessState ||
+                    current is GetAppointmentsFailedState ||
+                    current is GetAppointmentsLoadingState,
                 listener: (context, state) {
                   if (state is GetAppointmentsSuccessState) {
                     selectedList = state.list;
@@ -392,7 +408,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   } else if (state is GetAppointmentsSuccessState) {
                     if (state.list.isEmpty) {
                       return AppRefresh(
-                        event: () async {
+                        event: () {
+                          bloc.add(GetAllAppointmentsEvent());
                           bloc.add(GetAppointmentsEvent());
                         },
                         child: SingleChildScrollView(
@@ -411,6 +428,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                     return AppRefresh(
                       event: () async {
                         bloc.add(GetAppointmentsEvent());
+                        bloc.add(GetAllAppointmentsEvent());
                       },
                       child: LayoutBuilder(
                         builder: (context, constraints) {
@@ -429,7 +447,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                         },
                       ),
                     );
-                    ;
                   }
                   return _Loading();
                 },
@@ -716,7 +733,7 @@ class _MinuteCountdownTextState extends State<MinuteCountdownText> {
   @override
   void initState() {
     super.initState();
-    secondsLeft = widget.appointment.remainingFromOneMinute.inSeconds;
+    secondsLeft = widget.appointment.remainingFromTwoMinutes.inSeconds;
 
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (secondsLeft <= 0) {
