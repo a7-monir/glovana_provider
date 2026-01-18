@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/design/app_button.dart';
 import 'package:glovana_provider/core/design/app_input.dart';
+import 'package:glovana_provider/core/design/app_refresh.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/core/logic/input_validator.dart';
 import 'package:glovana_provider/features/types/bloc.dart';
@@ -97,215 +98,220 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
       body: Form(
         key: formKey,
         autovalidateMode: validateMode,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 14.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    width: 65.sp,
-                    height: 8.sp,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primary,
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                  Container(
-                    width: 65.sp,
-                    height: 8.sp,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primary.withValues(alpha: 0.33),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-
-                  Container(
-                    width: 65.sp,
-                    height: 8.sp,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primary.withValues(alpha: 0.33),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 30.h),
-              if(!widget.fromRegister)
-              BlocBuilder(
-                bloc: typesBloc,
-                builder: (context, state) {
-                  if (state is GetServicesFailedState) {
-                    return AppFailed(
-                      isSmallShape: true,
-                      response: state.response,
-                      onPress: () {
-                        typesBloc.add(GetTypesEvent());
-                      },
-                    );
-                  }
-                  return AppDropDown(
-                    title: LocaleKeys.workType.tr(),
-                    list: typesBloc.list.map((e) => e.name).toList(),
-                    isLoading: state is GetTypesLoadingState,
-                    validator: (v) => InputValidator.requiredValidator(
-                      value: v!,
-                      itemName: LocaleKeys.workType.tr(),
-                    ),
-                    hint: '',
-                    onChoose: (value) {
-                      widget.typeModel = TypeModel(
-                        id: typesBloc.list[value].id,
-                        name: typesBloc.list[value].name,
-                        bookingType: typesBloc.list[value].bookingType,
-                      );
-                      //bloc.deliveryId = deliveryBloc.list[value].id;
-                    },
-                  );
-                },
-              ),
-              SizedBox(height: 10.h),
-              AppInput(
-                fixedPositionedLabel: LocaleKeys.yourWorkName.tr(),
-                controller: nickNameController,
-                validator: (v) => InputValidator.requiredValidator(
-                  value: v!,
-                  itemName: LocaleKeys.yourWorkName.tr(),
-                ),
-
-                marginBottom: 32.h,
-              ),
-              AppInput(
-                fixedPositionedLabel: LocaleKeys.addYorJobDescription.tr(),
-                controller: descriptionController,
-                maxLines: 4,
-                validator: (v) => InputValidator.requiredValidator(
-                  value: v!,
-                  itemName: LocaleKeys.description.tr(),
-                ),
-              ),
-              Text(
-                LocaleKeys.address.tr(),
-                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.sp),
-              ),
-              GestureDetector(
-                onTap: () {
-                  navigateTo(LocationView(
-                    withButton: true,
-
-                  )).then((value) {
-                    latitude = value.location.latitude;
-                    longitude = value.location.longitude;
-                    addressFromPicker = value.description;
-                    setState(() {});
-                  });
-                },
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomCenter,
+        child: AppRefresh(
+          event: () {
+            deliveryBloc.add(GetDeliveryEvent());
+          },
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    AppImage(
-                      'map.png',
-                      height: 166.h,
-                      width: MediaQuery.of(context).size.width,
+                    Container(
+                      width: 65.sp,
+                      height: 8.sp,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(16.r),
+                      width: 65.sp,
+                      height: 8.sp,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadiusDirectional.only(
-                          bottomStart: Radius.circular(15.r),
-                          bottomEnd: Radius.circular(15.r),
-                        ),
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        boxShadow: [AppTheme.mainShadow],
+                        color: AppTheme.primary.withValues(alpha: 0.33),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
-                      child: addressFromPicker != null
-                          ? Row(
-                              children: [
-                                AppImage(
-                                  'marker_fill.png',
-                                  height: 12.h,
-                                  width: 12.h,
-                                ),
-                                SizedBox(width: 2.w),
-                                Expanded(
-                                  child: Text(
-                                    addressFromPicker!,
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  LocaleKeys.change.tr(),
-                                  style: TextStyle(
-                                    fontSize: 10.sp,
-                                    fontWeight: FontWeight.w400,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  LocaleKeys.addLocation.tr(),
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                AppImage('add.png', height: 22.h, width: 22.h),
-                              ],
-                            ),
+                    ),
+
+                    Container(
+                      width: 65.sp,
+                      height: 8.sp,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withValues(alpha: 0.33),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(height: 30.h),
-              AppInput(
-                fixedPositionedLabel: LocaleKeys.city.tr(),
-                controller: cityController,
-                validator: (v) => InputValidator.requiredValidator(
-                  value: v!,
-                  itemName: LocaleKeys.city.tr(),
-                ),
-
-                marginBottom: 32.h,
-              ),
-              BlocBuilder(
-                bloc: deliveryBloc,
-                builder: (context, state) {
-                  if (state is GetDeliveryFailedState) {
-                    return AppFailed(
-                      isSmallShape: true,
-                      response: state.response,
-                      onPress: () {
-                        deliveryBloc.add(GetDeliveryEvent());
+                SizedBox(height: 30.h),
+                if(!widget.fromRegister)
+                BlocBuilder(
+                  bloc: typesBloc,
+                  builder: (context, state) {
+                    if (state is GetServicesFailedState) {
+                      return AppFailed(
+                        isSmallShape: true,
+                        response: state.response,
+                        onPress: () {
+                          typesBloc.add(GetTypesEvent());
+                        },
+                      );
+                    }
+                    return AppDropDown(
+                      title: LocaleKeys.workType.tr(),
+                      list: typesBloc.list.map((e) => e.name).toList(),
+                      isLoading: state is GetTypesLoadingState,
+                      validator: (v) => InputValidator.requiredValidator(
+                        value: v!,
+                        itemName: LocaleKeys.workType.tr(),
+                      ),
+                      hint: '',
+                      onChoose: (value) {
+                        widget.typeModel = TypeModel(
+                          id: typesBloc.list[value].id,
+                          name: typesBloc.list[value].name,
+                          bookingType: typesBloc.list[value].bookingType,
+                        );
+                        //bloc.deliveryId = deliveryBloc.list[value].id;
                       },
                     );
-                  }
-                  return AppDropDown(
-                    title: LocaleKeys.deliveryArea.tr(),
-                    list: deliveryBloc.list.map((e) => e.place).toList(),
-                    isLoading: state is GetDeliveryLoadingState,
-                    validator: (v) => InputValidator.requiredValidator(
-                      value: v!,
-                      itemName: LocaleKeys.deliveryArea.tr(),
-                    ),
-                    hint: '',
-                    onChoose: (value) {
-                      deliveryId = deliveryBloc.list[value].id;
-                    },
-                  );
-                },
-              ),
+                  },
+                ),
+                SizedBox(height: 10.h),
+                AppInput(
+                  fixedPositionedLabel: LocaleKeys.yourWorkName.tr(),
+                  controller: nickNameController,
+                  validator: (v) => InputValidator.requiredValidator(
+                    value: v!,
+                    itemName: LocaleKeys.yourWorkName.tr(),
+                  ),
+
+                  marginBottom: 32.h,
+                ),
+                AppInput(
+                  fixedPositionedLabel: LocaleKeys.addYorJobDescription.tr(),
+                  controller: descriptionController,
+                  maxLines: 4,
+                  validator: (v) => InputValidator.requiredValidator(
+                    value: v!,
+                    itemName: LocaleKeys.description.tr(),
+                  ),
+                ),
+                Text(
+                  LocaleKeys.address.tr(),
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.sp),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    navigateTo(LocationView(
+                      withButton: true,
+
+                    )).then((value) {
+                      latitude = value.location.latitude;
+                      longitude = value.location.longitude;
+                      addressFromPicker = value.description;
+                      setState(() {});
+                    });
+                  },
+                  child: Stack(
+                    alignment: AlignmentDirectional.bottomCenter,
+                    children: [
+                      AppImage(
+                        'map.png',
+                        height: 166.h,
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(16.r),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadiusDirectional.only(
+                            bottomStart: Radius.circular(15.r),
+                            bottomEnd: Radius.circular(15.r),
+                          ),
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          boxShadow: [AppTheme.mainShadow],
+                        ),
+                        child: addressFromPicker != null
+                            ? Row(
+                                children: [
+                                  AppImage(
+                                    'marker_fill.png',
+                                    height: 12.h,
+                                    width: 12.h,
+                                  ),
+                                  SizedBox(width: 2.w),
+                                  Expanded(
+                                    child: Text(
+                                      addressFromPicker!,
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    LocaleKeys.change.tr(),
+                                    style: TextStyle(
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w400,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    LocaleKeys.addLocation.tr(),
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  AppImage('add.png', height: 22.h, width: 22.h),
+                                ],
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 30.h),
+                AppInput(
+                  fixedPositionedLabel: LocaleKeys.city.tr(),
+                  controller: cityController,
+                  validator: (v) => InputValidator.requiredValidator(
+                    value: v!,
+                    itemName: LocaleKeys.city.tr(),
+                  ),
+
+                  marginBottom: 32.h,
+                ),
+                BlocBuilder(
+                  bloc: deliveryBloc,
+                  builder: (context, state) {
+                    if (state is GetDeliveryFailedState) {
+                      return AppFailed(
+                        isSmallShape: true,
+                        response: state.response,
+                        onPress: () {
+                          deliveryBloc.add(GetDeliveryEvent());
+                        },
+                      );
+                    }
+                    return AppDropDown(
+                      title: LocaleKeys.deliveryArea.tr(),
+                      list: deliveryBloc.list.map((e) => e.place).toList(),
+                      isLoading: state is GetDeliveryLoadingState,
+                      validator: (v) => InputValidator.requiredValidator(
+                        value: v!,
+                        itemName: LocaleKeys.deliveryArea.tr(),
+                      ),
+                      hint: '',
+                      onChoose: (value) {
+                        deliveryId = deliveryBloc.list[value].id;
+                      },
+                    );
+                  },
+                ),
 
 
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -275,7 +275,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                                 ? LocaleKeys.hourly.tr()
                                 : LocaleKeys.salon.tr(),
                           ),
-                          if (state.model.canShowPhone)
+                          if (state.model.canShowUserDetails)
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 18.w,
@@ -313,12 +313,11 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                               ),
                             ),
                           ),
-                          if (state.model.canShowPhone)
                             _InfoItem(
                               img: 'marker_fill.png',
                               title: state.model.address.address,
                             ),
-                          if (state.model.isHourly && state.model.canShowPhone)
+                          if (state.model.isHourly && state.model.canShowUserDetails)
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 28.w,

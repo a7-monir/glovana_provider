@@ -272,5 +272,6 @@ abstract class  LocaleKeys {
   static const chatEndedMessage = 'chatEndedMessage';
   static const message = 'message';
   static const youMustConfirmPayment = 'youMustConfirmPayment';
+  static const stopsInstantRequestsOnly = 'stopsInstantRequestsOnly';
 
 }

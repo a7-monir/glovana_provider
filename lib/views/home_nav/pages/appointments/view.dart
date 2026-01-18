@@ -57,8 +57,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
 
   bool isAscending = false;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -79,7 +77,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
       bloc: bloc,
 
       listener: (context, state) {
-        if(state is GetAllAppointmentsSuccessState){
+        if (state is GetAllAppointmentsSuccessState) {
           setState(() {});
         }
       },
@@ -101,6 +99,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
           ],
         ),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             BlocConsumer(
               bloc: profileBloc,
@@ -114,10 +113,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                 }
               },
               builder: (context, state) {
-                if (state is GetProviderProfileSuccessState &&
-                    state.model.providerTypes.isNotEmpty &&
-                    state.model.providerTypes.first.type.bookingType !=
-                        'service') {
+                if (state is GetProviderProfileSuccessState) {
                   return Padding(
                     padding: EdgeInsetsDirectional.symmetric(
                       horizontal: 14.w,
@@ -126,7 +122,16 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          LocaleKeys.stopReceivingAllOrders.tr(),
+                          (state.model.providerTypes.isNotEmpty &&
+                                  state
+                                          .model
+                                          .providerTypes
+                                          .first
+                                          .type
+                                          .bookingType ==
+                                      'service')
+                              ? LocaleKeys.stopReceivingAllOrders.tr()
+                              : LocaleKeys.stopsInstantRequestsOnly.tr(),
                           style: TextStyle(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w400,
@@ -207,8 +212,9 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                       ],
                     ),
                   );
+                } else {
+                  return SizedBox.shrink();
                 }
-                return SizedBox.shrink();
               },
             ),
             SingleChildScrollView(
@@ -219,8 +225,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
               child: Row(
                 children: [
                   ItemTap(
-                    title:
-                        "${LocaleKeys.pending.tr()} ${bloc.pendingLength}",
+                    title: "${LocaleKeys.pending.tr()} ${bloc.pendingLength}",
                     isSelected: bloc.status == AppointmentStatus.pending,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.pending) {
@@ -235,8 +240,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   ),
                   SizedBox(width: 16.w),
                   ItemTap(
-                    title:
-                        "${LocaleKeys.accepted.tr()} ${bloc.acceptLength}",
+                    title: "${LocaleKeys.accepted.tr()} ${bloc.acceptLength}",
                     isSelected: bloc.status == AppointmentStatus.confirmed,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.confirmed) {
@@ -286,8 +290,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   ),
                   SizedBox(width: 16.w),
                   ItemTap(
-                    title:
-                        "${LocaleKeys.inWay.tr()} ${bloc.inWayLength}",
+                    title: "${LocaleKeys.inWay.tr()} ${bloc.inWayLength}",
                     isSelected: bloc.status == AppointmentStatus.onTheWay,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.onTheWay) {

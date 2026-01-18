@@ -267,5 +267,6 @@
   "openInGoogleMaps": "Open in google maps",
   "chatEndedMessage": "This chat has ended and you cannot send messages",
   "message": "Message",
-  "youMustConfirmPayment": "You must confirm the payment"
+  "youMustConfirmPayment": "You must confirm the payment",
+  "stopsInstantRequestsOnly": "Stops instant requests only. Scheduled requests remain active."
 }

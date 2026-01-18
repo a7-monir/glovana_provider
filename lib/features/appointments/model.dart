@@ -63,7 +63,7 @@ class Appointment {
   late final List<AppointmentService> appointmentServices;
   bool get isHourly => bookingType == 'hourly';
 
-  bool get canShowPhone => appointmentStatus != 5&&appointmentStatus!=1&&appointmentStatus!=4;
+  bool get canShowUserDetails => appointmentStatus != 5 &&appointmentStatus!=1 &&appointmentStatus!=4;
 
   bool get hasPassedTwoMinutes {
     final now = DateTime.now();
