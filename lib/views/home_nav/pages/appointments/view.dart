@@ -757,10 +757,14 @@ class _MinuteCountdownTextState extends State<MinuteCountdownText> {
 
   @override
   Widget build(BuildContext context) {
-    if (secondsLeft <= 0) return const SizedBox();
 
+    if (secondsLeft <= 0) return const SizedBox();
+    final minutes = secondsLeft ~/ 60;
+    final seconds = secondsLeft % 60;
+    final formattedTime =
+        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
     return Text(
-      '${LocaleKeys.timeToAccept.tr()} 00:$secondsLeft',
+      '${LocaleKeys.timeToAccept.tr()} 00:$formattedTime',
       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
     );
   }
