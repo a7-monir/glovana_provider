@@ -668,7 +668,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                   bloc: updateStatusBloc,
                   listener: (context, updateState) async {
                     if (updateState is UpdateStatusSuccessState) {
-                      if (status == 4 || status == 5) {
+                      if (status == 3 || status == 5) {
                         await _deactivateRooms(
                           widget.model.user.id.toString(),
                           CacheHelper.id.toString(),

@@ -197,7 +197,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                                 final message = Message.fromJson(docs[i].data());
                                 final senderId = (message.senderId ?? '').toString();
 
-                                final isMe = senderId == currentProviderId;
+                                final isMe = (senderId == currentProviderId && message.userType=='provider');
                                 return isMe
                                     ? SenderMsgItemWidget(
                                   message: message,

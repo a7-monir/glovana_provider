@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Message {
   String? content;
-  String? type;
+  String? type,userType;
   Timestamp? sentAt;
   String? userId;
 
@@ -15,6 +15,7 @@ class Message {
   Message({
     this.content,
     this.type,
+    this.userType,
     this.sentAt,
     this.userId,
     this.providerId,
@@ -27,6 +28,7 @@ class Message {
   Message.fromJson(Map<String, dynamic> json) {
     content = json['content'];
     type = json['type'];
+    type = json['user_type'];
     sentAt = json['sent_at'] ?? Timestamp.fromDate(DateTime.now());
     userId = json['user_id'];
     providerId = json['provider_id'];
@@ -40,6 +42,7 @@ class Message {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['content'] = this.content;
     data['type'] = this.type;
+    data['user_type'] = this.userType;
     data['sent_at'] = this.sentAt;
     data['user_id'] = this.userId;
     data['provider_id'] = this.providerId;

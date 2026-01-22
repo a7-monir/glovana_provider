@@ -51,12 +51,13 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
 
   void _sendTextMessage(String text) {
     ChatUtils.addMessage(
-      fromProvider: true, // <- من البروفايدر
+      fromProvider: true,
       Message(
         content: text,
         createdAt: Timestamp.now(),
         providerId: widget.id.toString(),
         sentAt: Timestamp.now(),
+        userType: 'provider',
         type: "TEXT",
         userId: widget.userId,
         senderId: widget.id.toString(),
@@ -87,6 +88,7 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
                 content: state.uploadFileModel.data!.photo!,
                 createdAt: Timestamp.now(),
                 providerId: widget.id.toString(),
+                userType: 'provider',
                 sentAt: Timestamp.now(),
                 type: "IMAGE",
                 userId: widget.userId,
@@ -99,12 +101,13 @@ class _SendMessageWidgetState extends State<SendMessageWidget> {
 
           if (state.uploadFileModel.data?.voice != null) {
             ChatUtils.addMessage(
-              fromProvider: true, // <- من البروفايدر
+              fromProvider: true,
               Message(
                 content: state.uploadFileModel.data!.voice!,
                 createdAt: Timestamp.now(),
                 providerId: widget.id.toString(),
                 sentAt: Timestamp.now(),
+                userType: 'provider',
                 type: "VOICE",
                 userId: widget.userId,
                 senderId: widget.id.toString(),
