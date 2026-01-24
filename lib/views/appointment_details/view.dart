@@ -56,7 +56,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
   double _calculatePersonTotal(List<AppointmentService> services) {
     double total = 0;
     for (var service in services) {
-      total += double.tryParse(service.totalPrice ?? "0") ?? 0;
+      total += double.tryParse(service.totalPrice) ?? 0;
     }
     return total;
   }

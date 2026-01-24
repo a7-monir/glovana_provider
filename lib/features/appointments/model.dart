@@ -53,7 +53,7 @@ class Appointment {
   late final String updatedAt;
   late final String statusText;
   late final String paymentStatusText;
-  late final String bookingType;
+  late final String bookingType,appointmentType;
   late final int totalCustomers;
   late final bool canFinish;
   late final bool requiresPaymentConfirmation;
@@ -62,6 +62,7 @@ class Appointment {
   late final ProviderType providerType;
   late final List<AppointmentService> appointmentServices;
   bool get isHourly => bookingType == 'hourly';
+  bool get isInstant => appointmentType != 'scheduled';
 
   bool get canShowUserDetails => appointmentStatus != 5 &&appointmentStatus!=1 &&appointmentStatus!=4;
 
@@ -103,6 +104,7 @@ class Appointment {
     createdAt = json["created_at"] ?? '';
     updatedAt = json["updated_at"] ?? '';
     statusText = json["status_text"] ?? '';
+    appointmentType = json["appointment_type"] ?? '';
     paymentStatusText = json["payment_status_text"] ?? '';
     bookingType = json["booking_type"] ?? '';
     totalCustomers = json["total_customers"] ?? 0;

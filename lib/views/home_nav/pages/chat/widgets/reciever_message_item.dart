@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
+import 'package:glovana_provider/core/design/app_button.dart';
 import 'package:glovana_provider/core/design/app_colors.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/constants.dart';
@@ -31,12 +32,14 @@ class ReceiverMsgItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(100.r),
           child:
           AppImage(recieverPhoto,
+            withBaseImageUrl: !recieverPhoto.toLowerCase().startsWith('http'),
             height: 40.sp,
             width: 40.sp,
             fit: BoxFit.fill,
 
           ),
         ),
+
         const SizedBox(width: 8),
         Expanded(
           child: Column(

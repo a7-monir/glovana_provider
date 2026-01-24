@@ -467,11 +467,127 @@ class _Item extends StatelessWidget {
 
   const _Item({required this.model});
 
+
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => navigateTo(AppointmentDetailsView(model: model)),
-      child: Container(
+      child:
+      model.isInstant?
+          Container(
+            padding: EdgeInsets.all(4.r),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16.r),
+              gradient: LinearGradient(colors: [
+                Color(0xffFFDAD4),
+                Color(0xffFFFFFF),
+                Color(0xffFFDAD4),
+              ])
+            ),
+            child: Column(
+              children: [
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '#${model.id}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14.sp,
+                          color: Theme.of(context).hintColor,
+                          fontFamily: getFontFamily(FontFamilyType.inter),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              LocaleKeys.For.tr(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14.sp,
+                                color: Theme.of(context).hintColor,
+                                fontFamily: getFontFamily(
+                                  FontFamilyType.inter,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              model.user.name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      VerticalDivider(width: 4.w),
+                      SizedBox(width: 8.w),
+                      Expanded(
+
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              LocaleKeys.appointmentType.tr(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14.sp,
+                                color: Theme.of(context).hintColor,
+                                fontFamily: getFontFamily(FontFamilyType.inter),
+                              ),
+                            ),
+                            Text(
+                              model.providerType.name,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 55.w),
+                  child: Divider(height: 20.h,
+                     thickness: 2,
+                  ),
+                ),
+                Text(LocaleKeys.instant.tr().toUpperCase(),style: TextStyle(
+                  fontSize: 36.sp
+                ),),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 18.w,
+                    vertical: 4.h,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.r),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  child: Text(
+                    LocaleKeys.view.tr(),
+                    style: TextStyle(
+                      fontSize: 12.r,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+          :
+      Container(
         padding: EdgeInsets.all(8.r),
         decoration: BoxDecoration(
           color: Theme.of(context).canvasColor,

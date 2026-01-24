@@ -84,9 +84,12 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         .limit(1)
         .snapshots()
         .map((snapshot) {
-      if (snapshot.docs.isEmpty) return null;
-      return Room.fromJson(snapshot.docs.first.data(), docId: snapshot.docs.first.id);
-    });
+          if (snapshot.docs.isEmpty) return null;
+          return Room.fromJson(
+            snapshot.docs.first.data(),
+            docId: snapshot.docs.first.id,
+          );
+        });
   }
 
   @override
@@ -100,28 +103,29 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(50.r),
-              child: (widget.userImage != null &&
-                  widget.userImage!.isNotEmpty &&
-                  widget.userImage != 'null')
+              child:
+                  (widget.userImage != null &&
+                      widget.userImage!.isNotEmpty &&
+                      widget.userImage != 'null')
                   ? CachedNetworkImage(
-                imageUrl: widget.userImage!,
-                height: 50.sp,
-                width: 50.sp,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, color: Colors.white),
-                ),
-                errorWidget: (context, url, error) => const CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, color: Colors.white),
-                ),
-              )
+                      imageUrl: widget.userImage!,
+                      height: 50.sp,
+                      width: 50.sp,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                      errorWidget: (context, url, error) => const CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                    )
                   : const CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.grey,
-                child: Icon(Icons.person, color: Colors.white),
-              ),
+                      radius: 25,
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.person, color: Colors.white),
+                    ),
             ),
             const WidthSpace(8),
             Flexible(
@@ -161,66 +165,88 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                   return Column(
                     children: [
                       Expanded(
-                        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                          stream: ChatUtils.getRoomMessages(
-                              widget.userId, widget.providerId),
-                          builder: (context, snapshot) {
-                            final docs = snapshot.data?.docs ?? [];
+                        child:
+                            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                              stream: ChatUtils.getRoomMessages(
+                                widget.userId,
+                                widget.providerId,
+                              ),
+                              builder: (context, snapshot) {
+                                final docs = snapshot.data?.docs ?? [];
 
-                            if (docs.isNotEmpty) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (scrollController.hasClients) {
-                                  scrollController.animateTo(
-                                    scrollController.position.maxScrollExtent,
-                                    duration: const Duration(milliseconds: 200),
-                                    curve: Curves.easeOut,
+                                if (docs.isNotEmpty) {
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    if (scrollController.hasClients) {
+                                      scrollController.animateTo(
+                                        scrollController
+                                            .position
+                                            .maxScrollExtent,
+                                        duration: const Duration(
+                                          milliseconds: 200,
+                                        ),
+                                        curve: Curves.easeOut,
+                                      );
+                                    }
+                                  });
+                                }
+
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
                                   );
                                 }
-                              });
-                            }
+                                if (snapshot.hasError || docs.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
 
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            if (snapshot.hasError || docs.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
+                                return ListView.builder(
+                                  controller: scrollController,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                    horizontal: 30,
+                                  ),
+                                  itemCount: docs.length,
+                                  itemBuilder: (context, i) {
+                                    final message = Message.fromJson(
+                                      docs[i].data(),
+                                    );
+                                    final senderId = (message.senderId ?? '')
+                                        .toString();
 
-                            return ListView.builder(
-                              controller: scrollController,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 16, horizontal: 30),
-                              itemCount: docs.length,
-                              itemBuilder: (context, i) {
-                                final message = Message.fromJson(docs[i].data());
-                                final senderId = (message.senderId ?? '').toString();
-
-                                final isMe = (senderId == currentProviderId && message.userType=='provider');
-                                return isMe
-                                    ? SenderMsgItemWidget(
-                                  message: message,
-                                  senderPhoto:
-                                  widget.providerImage ?? '',
-                                )
-                                    : ReceiverMsgItemWidget(
-                                  message: message,
-                                  recieverPhoto: widget.userImage ?? '',
+                                    final isMe =
+                                        (senderId == currentProviderId &&
+                                        message.userType == 'provider');
+                                    return isMe
+                                        ? SenderMsgItemWidget(
+                                            message: message,
+                                            senderPhoto:
+                                                widget.providerImage ?? '',
+                                          )
+                                        : ReceiverMsgItemWidget(
+                                          message: message,
+                                          recieverPhoto:
+                                              widget.userImage ?? '',
+                                        );
+                                  },
                                 );
                               },
-                            );
-                          },
-                        ),
+                            ),
                       ),
+
                       if (roomData.isActive == false)
                         Padding(
                           padding: EdgeInsets.all(16.sp),
                           child: Center(
                             child: Text(
                               LocaleKeys.chatEndedMessage.tr(),
+                              textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontSize: 14.sp, color: Colors.grey),
+                                fontSize: 14.sp,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                         ),

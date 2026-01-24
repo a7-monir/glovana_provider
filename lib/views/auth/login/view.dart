@@ -79,7 +79,7 @@ class _LoginViewState extends State<LoginView> {
                 Stack(
                   children: [
                     Center(child: AuthHeader(isLogin: true)),
-                    ChooseLangItem(),
+                    ChooseLangItem(onChange: () => navigateTo(LoginView(),keepHistory: false),),
                   ],
                 ),
                 SizedBox(height: 60.h),

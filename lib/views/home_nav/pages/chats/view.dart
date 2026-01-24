@@ -135,8 +135,6 @@ class _ChatsViewState extends State<ChatsView> {
                             navigateTo(const LoginView(), keepHistory: false);
                             return;
                           }
-
-                          // Mark messages as read for provider
                           await ChatUtils.markMessagesAsRead(roomId: room.id!);
 
                           navigateTo(

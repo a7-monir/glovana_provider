@@ -31,6 +31,7 @@ class Message {
     type = json['user_type'];
     sentAt = json['sent_at'] ?? Timestamp.fromDate(DateTime.now());
     userId = json['user_id'];
+    userType = json['user_type'];
     providerId = json['provider_id'];
     senderId = json['sender_id'];
     createdAt = json['created_at'] ?? Timestamp.fromDate(DateTime.now());

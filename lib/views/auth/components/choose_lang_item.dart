@@ -8,7 +8,8 @@ import '../../../core/logic/cache_helper.dart';
 import '../../../features/toggle_lang/bloc.dart';
 
 class ChooseLangItem extends StatefulWidget {
-  const ChooseLangItem({super.key});
+  final VoidCallback onChange;
+  const ChooseLangItem({super.key, required this.onChange});
 
   @override
   State<ChooseLangItem> createState() => _ChooseLangItemState();
@@ -48,6 +49,7 @@ class _ChooseLangItemState extends State<ChooseLangItem> {
                         ? () {
                           selectedLang = list[index];
                           langBloc.add(ToggleLangEvent(selectedLang));
+                          widget.onChange();
                           setState(() {});
                         }
                         : null,
