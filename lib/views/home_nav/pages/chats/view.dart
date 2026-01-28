@@ -114,10 +114,8 @@ class _ChatsViewState extends State<ChatsView> {
                   if (filteredRooms.isEmpty) {
                     return Center(
                       child: Text(
-                        'no_data'.tr(),
-                        style: AppStyles.black15BoldStyle.copyWith(
-                          color: AppTheme.primary,
-                        ),
+                        LocaleKeys.noData.tr(),
+                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                       ),
                     );
                   }
