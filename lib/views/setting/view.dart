@@ -30,8 +30,8 @@ class _SettingsViewState extends State<SettingsView> {
 
   final List<String> list = ['en', 'ar'];
   final List<String> textList = [
-    LocaleKeys.english.tr(),
-    LocaleKeys.arabic.tr(),
+    "English",
+    "العربية",
   ];
 
 

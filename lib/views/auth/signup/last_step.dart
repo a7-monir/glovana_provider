@@ -23,7 +23,11 @@ class LastStepSingUpView extends StatefulWidget {
   final SecondStepModel secondStepModel;
   final bool isSalon;
 
-  const LastStepSingUpView({super.key, required this.secondStepModel, required this.isSalon});
+  const LastStepSingUpView({
+    super.key,
+    required this.secondStepModel,
+    required this.isSalon,
+  });
 
   @override
   State<LastStepSingUpView> createState() => _LastStepSingUpViewState();
@@ -62,7 +66,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   Future<void> _takePhoto() async {
     try {
       final pickedFile = await _picker.pickMultiImage(
-        requestFullMetadata:  false,
+        requestFullMetadata: false,
         maxWidth: 1000,
         maxHeight: 1000,
         imageQuality: 85,
@@ -71,7 +75,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
       setState(() {
         _gallery.addAll(pickedFile.map((file) => File(file.path)).toList());
       });
-        } catch (e) {
+    } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("failed_to_take_photo".tr())));
@@ -127,7 +131,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   Future<void> _pickPracticePhoto() async {
     try {
       final pickedFile = await _picker.pickImage(
-        requestFullMetadata:  false,
+        requestFullMetadata: false,
         source: ImageSource.gallery,
         maxWidth: 1000,
         maxHeight: 1000,
@@ -173,6 +177,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
     super.initState();
     print("!!!!!!!!!!!${widget.secondStepModel.pricePerHour}");
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,7 +202,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-        
+
                   Container(
                     width: 65.sp,
                     height: 8.sp,
@@ -313,7 +318,9 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                                       children: List.generate(
                                         _gallery.length,
                                         (index) => Padding(
-                                          padding: EdgeInsets.only(bottom: 12.h),
+                                          padding: EdgeInsets.only(
+                                            bottom: 12.h,
+                                          ),
                                           child: Stack(
                                             children: [
                                               ClipRRect(
@@ -347,7 +354,8 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                                                         const BoxDecoration(
                                                           color: AppTheme
                                                               .canvasColor,
-                                                          shape: BoxShape.circle,
+                                                          shape:
+                                                              BoxShape.circle,
                                                         ),
                                                     child: Icon(
                                                       Icons.close,
@@ -372,7 +380,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                   ],
                 ),
               ),
-        
+
               SizedBox(height: 20.h),
               Text(
                 LocaleKeys.nationalID.tr(),
@@ -398,12 +406,15 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                     ],
                   ),
                 ),
-        
+
               SizedBox(height: 20.h),
-              if(widget.isSalon)...[
+              if (widget.isSalon) ...[
                 Text(
                   LocaleKeys.commercialRegistration.tr(),
-                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
                 SizedBox(height: 10.h),
                 if (_practicePhoto != null)
@@ -426,8 +437,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                     ),
                   ),
               ],
-        
-        
+
               BlocConsumer(
                 bloc: bloc,
                 listener: (context, state) {
@@ -442,7 +452,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                       type: ButtonType.outlined,
                       bgColor: Color(0xffFDF2E3),
                       textColor: Color(0xffCBA976),
-                      padding: EdgeInsets.only(bottom: 40.h,top: 20.h),
+                      padding: EdgeInsets.only(bottom: 40.h, top: 20.h),
                       isLoading: state is CompleteDataLoadingState,
                       onPress: () {
                         final availabilityData =
@@ -455,12 +465,13 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                                   ),
                                 )
                                 .toList();
-        
+
                         // Create ProviderType object
                         final providerType = ProviderType(
                           typeId: widget.secondStepModel.firstStepModel.typeId,
                           name: widget.secondStepModel.firstStepModel.nickName,
-                          bookingType: widget.secondStepModel.firstStepModel.bookingType,
+                          bookingType:
+                              widget.secondStepModel.firstStepModel.bookingType,
                           // widget.signUpData['nickName'],
                           workNumber: widget.secondStepModel.workNumber,
                           description:
@@ -475,20 +486,25 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                               .firstStepModel
                               .addressFromPicker,
                           // widget.signUpData['address'],
-                          pricePerHour:
-                          widget.secondStepModel.pricePerHour,
+                          pricePerHour: widget.secondStepModel.pricePerHour,
                           servicesWithPrices:
-                              widget.secondStepModel.firstStepModel.bookingType ==
+                              widget
+                                      .secondStepModel
+                                      .firstStepModel
+                                      .bookingType ==
                                   "service"
                               ? List<Map<String, dynamic>>.from(
                                   widget.secondStepModel.serviceWithPrice,
                                 )
                               : null,
-                            serviceIds:
-                            widget.secondStepModel.firstStepModel.bookingType ==
-                                "hourly"
-                                ? null
-                                : List<int>.from(widget.secondStepModel.service),
+                          serviceIds:
+                              widget
+                                      .secondStepModel
+                                      .firstStepModel
+                                      .bookingType ==
+                                  "hourly"
+                              ? null
+                              : List<int>.from(widget.secondStepModel.service),
                           images: _images,
                           gallery: _gallery,
                           availability: availabilityData,
@@ -496,8 +512,10 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
                           identityPhoto: _identityPhoto,
                           practicePhoto: _practicePhoto,
                         );
-        
-                         bloc.add(CompleteDataEvent(providerTypes: [providerType]));
+
+                        bloc.add(
+                          CompleteDataEvent(providerTypes: [providerType]),
+                        );
                         // if (bloc.formKey.currentState!.validate() &&
                         //     (bloc.lat != null || bloc.lng != null)) {
                         //   bloc.add(AddAddressEvent());
@@ -625,7 +643,12 @@ class ItemImage extends StatelessWidget {
   final bool withBaseImageUrl;
   final VoidCallback onRemove;
 
-  const ItemImage({super.key, required this.image, required this.onRemove,  this.withBaseImageUrl=false});
+  const ItemImage({
+    super.key,
+    required this.image,
+    required this.onRemove,
+    this.withBaseImageUrl = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -635,7 +658,7 @@ class ItemImage extends StatelessWidget {
           borderRadius: BorderRadiusGeometry.circular(15.r),
           child: AppImage(
             image,
-            withBaseImageUrl:withBaseImageUrl ,
+            withBaseImageUrl: withBaseImageUrl,
             height: 160.h,
             fit: BoxFit.cover,
             width: MediaQuery.of(context).size.width,

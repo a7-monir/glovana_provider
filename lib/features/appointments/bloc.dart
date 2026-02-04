@@ -92,7 +92,7 @@ class GetAppointmentsBloc
     GetAppointmentsEvent event,
     Emitter<GetAppointmentsStates> emit,
   ) async {
-    emit(GetAppointmentsLoadingState());
+    if(event.withLoading)emit(GetAppointmentsLoadingState());
     final response = await _dio.get(
       "provider/appointments",
       params: {
@@ -115,7 +115,7 @@ class GetAppointmentsBloc
     GetAllAppointmentsEvent event,
     Emitter<GetAppointmentsStates> emit,
   ) async {
-    emit(GetAllAppointmentsLoadingState());
+    if(event.withLoading)emit(GetAllAppointmentsLoadingState());
     final response = await _dio.get(
       "provider/appointments",
       params: {'date_from': startDate, "date_to": endDate},

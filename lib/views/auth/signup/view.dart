@@ -180,7 +180,8 @@ class _SignupViewState extends State<SignupView> {
                   padding: EdgeInsets.symmetric(horizontal: 14.w),
                   child: AppInput(
                     fixedPositionedLabel: LocaleKeys.createPassword.tr(),
-                    isPassword: true,
+
+                    inputType: InputType.password,
                     marginBottom: 32.h,
                     controller: bloc.passwordController,
                     isValid: bloc.passwordValid,

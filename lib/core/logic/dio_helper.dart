@@ -339,7 +339,7 @@ class CustomApiInterceptor extends Interceptor {
 
     log.info("*" * 40);
     log.info("onRequest");
-    options.headers.addAll({"Accept-Language": CacheHelper.lang});
+    options.headers.addAll({"lang": CacheHelper.lang});
     if (!["api/Authorization/PatientAuthentication"].contains(options.path)) {
       options.headers.addAll({"Authorization": 'Bearer ${CacheHelper.token}'});
     }

@@ -53,6 +53,7 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
                       child: ItemTap(
                         title: LocaleKeys.completed.tr(),
                         isSelected: bloc.status == AppointmentStatus.completed,
+                        haveDate: false,
                         onTap: () {
                           if (bloc.status != AppointmentStatus.completed) {
                             bloc.status = AppointmentStatus.completed;
@@ -67,6 +68,7 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
                       child: ItemTap(
                         title: LocaleKeys.canceled.tr(),
                         isSelected: bloc.status == AppointmentStatus.canceled,
+                        haveDate: false,
                         onTap: () {
                           if (bloc.status != AppointmentStatus.canceled) {
                             bloc.status = AppointmentStatus.canceled;

@@ -1685,7 +1685,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                   .map((service) => service.toMap())
                                   .toList()
                             : null,
-                        serviceIds: bookingType == "hourly"
+                        serviceIds: bookingType == "service"
                             ? null
                             : _selectedServicesWithPrices
                                   .map((service) => service.service.id)

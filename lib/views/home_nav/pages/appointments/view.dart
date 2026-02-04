@@ -227,6 +227,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   ItemTap(
                     title: "${LocaleKeys.pending.tr()} ${bloc.pendingLength}",
                     isSelected: bloc.status == AppointmentStatus.pending,
+                    haveDate: bloc.pendingLength!="0",
+
                     onTap: () {
                       if (bloc.status != AppointmentStatus.pending) {
                         bloc.status = AppointmentStatus.pending;
@@ -241,6 +243,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   SizedBox(width: 16.w),
                   ItemTap(
                     title: "${LocaleKeys.accepted.tr()} ${bloc.acceptLength}",
+                    haveDate: bloc.acceptLength!="0",
                     isSelected: bloc.status == AppointmentStatus.confirmed,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.confirmed) {
@@ -256,9 +259,28 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   ),
                   SizedBox(width: 16.w),
                   ItemTap(
+                    title: "${LocaleKeys.inWay.tr()} ${bloc.inWayLength}",
+                    isSelected: bloc.status == AppointmentStatus.onTheWay,
+                    haveDate: bloc.inWayLength!="0",
+
+                    onTap: () {
+                      if (bloc.status != AppointmentStatus.onTheWay) {
+                        bloc.status = AppointmentStatus.onTheWay;
+                        bloc.startDate = null;
+                        bloc.endDate = null;
+                        bloc.add(GetAppointmentsEvent());
+                        bloc.add(GetAllAppointmentsEvent());
+                        setState(() {});
+                      }
+                    },
+                  ),
+                  SizedBox(width: 16.w),
+                  ItemTap(
                     title:
                         "${LocaleKeys.userArrive.tr()} ${bloc.userArriveLength}",
                     isSelected: bloc.status == AppointmentStatus.arrivedUser,
+                    haveDate: bloc.userArriveLength!="0",
+
                     onTap: () {
                       if (bloc.status != AppointmentStatus.arrivedUser) {
                         bloc.status = AppointmentStatus.arrivedUser;
@@ -277,6 +299,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                     title:
                         "${LocaleKeys.startWork.tr()} ${bloc.startWorkLength}",
                     isSelected: bloc.status == AppointmentStatus.startWork,
+                    haveDate: bloc.startWorkLength!="0",
+
                     onTap: () {
                       if (bloc.status != AppointmentStatus.startWork) {
                         bloc.status = AppointmentStatus.startWork;
@@ -288,21 +312,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                       }
                     },
                   ),
-                  SizedBox(width: 16.w),
-                  ItemTap(
-                    title: "${LocaleKeys.inWay.tr()} ${bloc.inWayLength}",
-                    isSelected: bloc.status == AppointmentStatus.onTheWay,
-                    onTap: () {
-                      if (bloc.status != AppointmentStatus.onTheWay) {
-                        bloc.status = AppointmentStatus.onTheWay;
-                        bloc.startDate = null;
-                        bloc.endDate = null;
-                        bloc.add(GetAppointmentsEvent());
-                        bloc.add(GetAllAppointmentsEvent());
-                        setState(() {});
-                      }
-                    },
-                  ),
+
                 ],
               ),
             ),
@@ -442,7 +452,12 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                               horizontal: 40.w,
                             ),
                             itemBuilder: (context, index) =>
-                                _Item(model: selectedList[index]),
+                                _Item(model: selectedList[index],
+                                onSuccess: () {
+                                  bloc.add(GetAppointmentsEvent(withLoading: false));
+                                  bloc.add(GetAllAppointmentsEvent(withLoading: false));
+                                },
+                                ),
                             separatorBuilder: (context, index) =>
                                 SizedBox(height: 23.h),
                             itemCount: selectedList.length,
@@ -464,15 +479,19 @@ class _AppointmentsViewState extends State<AppointmentsView> {
 
 class _Item extends StatelessWidget {
   final Appointment model;
+  final VoidCallback onSuccess;
 
-  const _Item({required this.model});
+  const _Item({required this.model, required this.onSuccess});
 
 
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => navigateTo(AppointmentDetailsView(model: model)),
+      onTap: () => navigateTo(AppointmentDetailsView(model: model)).then((value) {
+        onSuccess();
+
+      },),
       child:
       model.isInstant?
           Container(
@@ -529,7 +548,6 @@ class _Item extends StatelessWidget {
                       VerticalDivider(width: 4.w),
                       SizedBox(width: 8.w),
                       Expanded(
-
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -551,7 +569,8 @@ class _Item extends StatelessWidget {
                             ),
                           ],
                         ),
-                      )
+                      ),
+
 
                     ],
                   ),
@@ -566,6 +585,7 @@ class _Item extends StatelessWidget {
                   fontSize: 36.sp
                 ),),
                 Container(
+                  margin: EdgeInsets.symmetric(vertical: 4.h),
                   padding: EdgeInsets.symmetric(
                     horizontal: 18.w,
                     vertical: 4.h,
@@ -801,13 +821,14 @@ class _Loading extends StatelessWidget {
 
 class ItemTap extends StatelessWidget {
   final String title;
-  final bool isSelected;
+  final bool isSelected,haveDate;
   final VoidCallback onTap;
 
   const ItemTap({
     super.key,
     required this.title,
     required this.isSelected,
+    required this.haveDate,
     required this.onTap,
   });
 
@@ -822,12 +843,17 @@ class ItemTap extends StatelessWidget {
           decoration: BoxDecoration(
             boxShadow: [AppTheme.mainShadow, AppTheme.whiteShadow],
             borderRadius: BorderRadius.circular(10.r),
-            color: AppTheme.hoverColor,
+            color:isSelected?AppTheme.hoverColor:
+            haveDate?
+            Theme.of(context).primaryColor:AppTheme.hoverColor,
           ),
           child: Center(
             child: Text(
               title,
-              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400),
+              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400,
+              color: isSelected||!haveDate?null:
+              AppTheme.hoverColor
+              ),
             ),
           ),
         ),
