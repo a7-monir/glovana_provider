@@ -22,7 +22,7 @@ class CheckPhoneBloc extends Bloc<CheckPhoneEvents, CheckPhoneStates> {
     on<CheckPhoneEvent>(_sendData);
   }
 
-  final phoneController = TextEditingController(text: kDebugMode ? '799008912' : null);
+  final phoneController = TextEditingController();
   
 
   Future<void> _sendData(CheckPhoneEvent event, Emitter<CheckPhoneStates> emit) async {
