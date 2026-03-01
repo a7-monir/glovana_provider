@@ -71,6 +71,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
   final profileBloc = KiwiContainer().resolve<GetProviderProfileBloc>()
     ..add(GetProviderProfileEvent());
 
+  bool isSalon = true;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener(
@@ -108,6 +110,15 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   if (state.model.providerTypes.isNotEmpty) {
                     status = state.model.providerTypes.first.status;
                     providerId = state.model.providerTypes.first.id;
+                    isSalon =
+                        (state.model.providerTypes.isNotEmpty &&
+                        state.model.providerTypes.first.type.bookingType ==
+                            'service');
+                    if(!isSalon){
+                      bloc.status = AppointmentStatus.confirmed;
+                      bloc.add(GetAppointmentsEvent());
+                      bloc.add(GetAllAppointmentsEvent());
+                    }
                     setState(() {});
                   }
                 }
@@ -224,10 +235,11 @@ class _AppointmentsViewState extends State<AppointmentsView> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  if(!isSalon)
                   ItemTap(
                     title: "${LocaleKeys.pending.tr()} ${bloc.pendingLength}",
                     isSelected: bloc.status == AppointmentStatus.pending,
-                    haveDate: bloc.pendingLength!="0",
+                    haveDate: bloc.pendingLength != "0",
 
                     onTap: () {
                       if (bloc.status != AppointmentStatus.pending) {
@@ -243,7 +255,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   SizedBox(width: 16.w),
                   ItemTap(
                     title: "${LocaleKeys.accepted.tr()} ${bloc.acceptLength}",
-                    haveDate: bloc.acceptLength!="0",
+                    haveDate: bloc.acceptLength != "0",
                     isSelected: bloc.status == AppointmentStatus.confirmed,
                     onTap: () {
                       if (bloc.status != AppointmentStatus.confirmed) {
@@ -261,8 +273,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                   ItemTap(
                     title: "${LocaleKeys.inWay.tr()} ${bloc.inWayLength}",
                     isSelected: bloc.status == AppointmentStatus.onTheWay,
-                    haveDate: bloc.inWayLength!="0",
-
+                    haveDate: bloc.inWayLength != "0",
                     onTap: () {
                       if (bloc.status != AppointmentStatus.onTheWay) {
                         bloc.status = AppointmentStatus.onTheWay;
@@ -279,7 +290,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                     title:
                         "${LocaleKeys.userArrive.tr()} ${bloc.userArriveLength}",
                     isSelected: bloc.status == AppointmentStatus.arrivedUser,
-                    haveDate: bloc.userArriveLength!="0",
+                    haveDate: bloc.userArriveLength != "0",
 
                     onTap: () {
                       if (bloc.status != AppointmentStatus.arrivedUser) {
@@ -299,7 +310,7 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                     title:
                         "${LocaleKeys.startWork.tr()} ${bloc.startWorkLength}",
                     isSelected: bloc.status == AppointmentStatus.startWork,
-                    haveDate: bloc.startWorkLength!="0",
+                    haveDate: bloc.startWorkLength != "0",
 
                     onTap: () {
                       if (bloc.status != AppointmentStatus.startWork) {
@@ -312,7 +323,6 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                       }
                     },
                   ),
-
                 ],
               ),
             ),
@@ -451,13 +461,17 @@ class _AppointmentsViewState extends State<AppointmentsView> {
                               vertical: 16.h,
                               horizontal: 40.w,
                             ),
-                            itemBuilder: (context, index) =>
-                                _Item(model: selectedList[index],
-                                onSuccess: () {
-                                  bloc.add(GetAppointmentsEvent(withLoading: false));
-                                  bloc.add(GetAllAppointmentsEvent(withLoading: false));
-                                },
-                                ),
+                            itemBuilder: (context, index) => _Item(
+                              model: selectedList[index],
+                              onSuccess: () {
+                                bloc.add(
+                                  GetAppointmentsEvent(withLoading: false),
+                                );
+                                bloc.add(
+                                  GetAllAppointmentsEvent(withLoading: false),
+                                );
+                              },
+                            ),
                             separatorBuilder: (context, index) =>
                                 SizedBox(height: 23.h),
                             itemCount: selectedList.length,
@@ -483,266 +497,34 @@ class _Item extends StatelessWidget {
 
   const _Item({required this.model, required this.onSuccess});
 
-
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => navigateTo(AppointmentDetailsView(model: model)).then((value) {
-        onSuccess();
-
-      },),
-      child:
-      model.isInstant?
-          Container(
-            padding: EdgeInsets.all(4.r),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16.r),
-              gradient: LinearGradient(colors: [
-                Color(0xffFFDAD4),
-                Color(0xffFFFFFF),
-                Color(0xffFFDAD4),
-              ])
-            ),
-            child: Column(
-              children: [
-                IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '#${model.id}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14.sp,
-                          color: Theme.of(context).hintColor,
-                          fontFamily: getFontFamily(FontFamilyType.inter),
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              LocaleKeys.For.tr(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp,
-                                color: Theme.of(context).hintColor,
-                                fontFamily: getFontFamily(
-                                  FontFamilyType.inter,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              model.user.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      VerticalDivider(width: 4.w),
-                      SizedBox(width: 8.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              LocaleKeys.appointmentType.tr(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp,
-                                color: Theme.of(context).hintColor,
-                                fontFamily: getFontFamily(FontFamilyType.inter),
-                              ),
-                            ),
-                            Text(
-                              model.providerType.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-
-                    ],
-                  ),
+      onTap: () =>
+          navigateTo(AppointmentDetailsView(model: model)).then((value) {
+            onSuccess();
+          }),
+      child: model.isInstant
+          ? Container(
+              padding: EdgeInsets.all(4.r),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.r),
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xffFFDAD4),
+                    Color(0xffFFFFFF),
+                    Color(0xffFFDAD4),
+                  ],
                 ),
-                Padding(
-                  padding:  EdgeInsets.symmetric(horizontal: 55.w),
-                  child: Divider(height: 20.h,
-                     thickness: 2,
-                  ),
-                ),
-                Text(LocaleKeys.instant.tr().toUpperCase(),style: TextStyle(
-                  fontSize: 36.sp
-                ),),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 4.h),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 18.w,
-                    vertical: 4.h,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5.r),
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  child: Text(
-                    LocaleKeys.view.tr(),
-                    style: TextStyle(
-                      fontSize: 12.r,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          )
-          :
-      Container(
-        padding: EdgeInsets.all(8.r),
-        decoration: BoxDecoration(
-          color: Theme.of(context).canvasColor,
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: [AppTheme.mainShadow],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisSize: MainAxisSize.min,
+              ),
+              child: Column(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '#${model.id}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14.sp,
-                          color: Theme.of(context).hintColor,
-                          fontFamily: getFontFamily(FontFamilyType.inter),
-                        ),
-                      ),
-                      Spacer(),
-                      Column(
-                        children: [
-                          Center(
-                            child: Text(
-                              DateFormat.MMM().format(
-                                DateTime.parse(model.date),
-                              ),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp,
-                                color: Theme.of(context).hintColor,
-                                fontFamily: getFontFamily(FontFamilyType.inter),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            DateFormat.d().format(DateTime.parse(model.date)),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 48.sp,
-                              height: .8.h,
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            DateFormat.EEEE().format(
-                              DateTime.parse(model.date),
-                            ),
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14.sp,
-                              color: Theme.of(context).hintColor,
-                              fontFamily: getFontFamily(FontFamilyType.inter),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Column(
+                  IntrinsicHeight(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    LocaleKeys.timing.tr(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14.sp,
-                                      color: Theme.of(context).hintColor,
-                                      fontFamily: getFontFamily(
-                                        FontFamilyType.inter,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 6.h),
-                                  Text(
-                                    DateFormat.jm().format(
-                                      DateTime.parse(model.date),
-                                    ),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    LocaleKeys.For.tr(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14.sp,
-                                      color: Theme.of(context).hintColor,
-                                      fontFamily: getFontFamily(
-                                        FontFamilyType.inter,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 6.h),
-                                  Text(
-                                    model.user.name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Divider(height: 10.h),
                         Text(
-                          LocaleKeys.appointmentType.tr(),
+                          '#${model.id}',
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 14.sp,
@@ -750,47 +532,289 @@ class _Item extends StatelessWidget {
                             fontFamily: getFontFamily(FontFamilyType.inter),
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              model.providerType.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                                vertical: 4.h,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5.r),
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              child: Text(
-                                LocaleKeys.view.tr(),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                LocaleKeys.For.tr(),
                                 style: TextStyle(
-                                  fontSize: 12.r,
                                   fontWeight: FontWeight.w400,
-                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 14.sp,
+                                  color: Theme.of(context).hintColor,
+                                  fontFamily: getFontFamily(
+                                    FontFamilyType.inter,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                              Text(
+                                model.user.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        VerticalDivider(width: 4.w),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                LocaleKeys.appointmentType.tr(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14.sp,
+                                  color: Theme.of(context).hintColor,
+                                  fontFamily: getFontFamily(
+                                    FontFamilyType.inter,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                model.providerType.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 55.w),
+                    child: Divider(height: 20.h, thickness: 2),
+                  ),
+                  Text(
+                    LocaleKeys.instant.tr().toUpperCase(),
+                    style: TextStyle(fontSize: 36.sp),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 4.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 18.w,
+                      vertical: 4.h,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5.r),
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    child: Text(
+                      LocaleKeys.view.tr(),
+                      style: TextStyle(
+                        fontSize: 12.r,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Container(
+              padding: EdgeInsets.all(8.r),
+              decoration: BoxDecoration(
+                color: Theme.of(context).canvasColor,
+                borderRadius: BorderRadius.circular(16.r),
+                boxShadow: [AppTheme.mainShadow],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      // mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '#${model.id}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14.sp,
+                                color: Theme.of(context).hintColor,
+                                fontFamily: getFontFamily(FontFamilyType.inter),
+                              ),
+                            ),
+                            Spacer(),
+                            Column(
+                              children: [
+                                Center(
+                                  child: Text(
+                                    DateFormat.MMM().format(
+                                      DateTime.parse(model.date),
+                                    ),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14.sp,
+                                      color: Theme.of(context).hintColor,
+                                      fontFamily: getFontFamily(
+                                        FontFamilyType.inter,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  DateFormat.d().format(
+                                    DateTime.parse(model.date),
+                                  ),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 48.sp,
+                                    height: .8.h,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  DateFormat.EEEE().format(
+                                    DateTime.parse(model.date),
+                                  ),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14.sp,
+                                    color: Theme.of(context).hintColor,
+                                    fontFamily: getFontFamily(
+                                      FontFamilyType.inter,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Spacer(),
+                          ],
+                        ),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          LocaleKeys.timing.tr(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14.sp,
+                                            color: Theme.of(context).hintColor,
+                                            fontFamily: getFontFamily(
+                                              FontFamilyType.inter,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 6.h),
+                                        Text(
+                                          DateFormat.jm().format(
+                                            DateTime.parse(model.date),
+                                          ),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          LocaleKeys.For.tr(),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14.sp,
+                                            color: Theme.of(context).hintColor,
+                                            fontFamily: getFontFamily(
+                                              FontFamilyType.inter,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 6.h),
+                                        Text(
+                                          model.user.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14.sp,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Divider(height: 10.h),
+                              Text(
+                                LocaleKeys.appointmentType.tr(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14.sp,
+                                  color: Theme.of(context).hintColor,
+                                  fontFamily: getFontFamily(
+                                    FontFamilyType.inter,
+                                  ),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    model.providerType.name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 14.sp,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10.w,
+                                      vertical: 4.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5.r),
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    child: Text(
+                                      LocaleKeys.view.tr(),
+                                      style: TextStyle(
+                                        fontSize: 12.r,
+                                        fontWeight: FontWeight.w400,
+                                        color: Theme.of(
+                                          context,
+                                        ).secondaryHeaderColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (model.appointmentStatus == 1)
+                    MinuteCountdownText(appointment: model),
                 ],
               ),
             ),
-            if (model.appointmentStatus == 1)
-              MinuteCountdownText(appointment: model),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -821,7 +845,7 @@ class _Loading extends StatelessWidget {
 
 class ItemTap extends StatelessWidget {
   final String title;
-  final bool isSelected,haveDate;
+  final bool isSelected, haveDate;
   final VoidCallback onTap;
 
   const ItemTap({
@@ -843,16 +867,19 @@ class ItemTap extends StatelessWidget {
           decoration: BoxDecoration(
             boxShadow: [AppTheme.mainShadow, AppTheme.whiteShadow],
             borderRadius: BorderRadius.circular(10.r),
-            color:isSelected?AppTheme.hoverColor:
-            haveDate?
-            Theme.of(context).primaryColor:AppTheme.hoverColor,
+            color: isSelected
+                ? AppTheme.hoverColor
+                : haveDate
+                ? Theme.of(context).primaryColor
+                : AppTheme.hoverColor,
           ),
           child: Center(
             child: Text(
               title,
-              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400,
-              color: isSelected||!haveDate?null:
-              AppTheme.hoverColor
+              style: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w400,
+                color: isSelected || !haveDate ? null : AppTheme.hoverColor,
               ),
             ),
           ),
@@ -899,7 +926,6 @@ class _MinuteCountdownTextState extends State<MinuteCountdownText> {
 
   @override
   Widget build(BuildContext context) {
-
     if (secondsLeft <= 0) return const SizedBox();
     final minutes = secondsLeft ~/ 60;
     final seconds = secondsLeft % 60;
