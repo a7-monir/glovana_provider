@@ -7,6 +7,7 @@ import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/design/app_failed.dart';
 import 'package:glovana_provider/core/design/app_loading.dart';
+import 'package:glovana_provider/core/logic/app_logger.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
 import 'package:glovana_provider/features/delete_gallary/bloc.dart';
@@ -688,7 +689,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                     final url = item.photoUrl;
                     if (url.isNotEmpty) {
                       _galleryFromApi.add(item);
-                      print('_galleryFromApi${item.photoUrl}');
+                      AppLogger.debug(
+                        'Gallery item loaded from API',
+                        tag: 'PROFILE',
+                        data: {'photoUrl': item.photoUrl},
+                      );
                     }
                   }
                 }
@@ -1106,9 +1111,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               if (serviceState
                                                   is GetServicesSuccessState) {
                                                 allServices = servicesBloc.list;
-                                                print('+++++++++++++++');
-                                                print(allServices.length);
-                                                print('+++++++++++++++');
+                                                AppLogger.debug(
+                                                  'Provider services loaded',
+                                                  tag: 'PROFILE',
+                                                  data: {
+                                                    'count': allServices.length,
+                                                  },
+                                                );
                                               }
                                             },
                                             builder: (context, serviceState) {
@@ -1596,7 +1605,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       ),
       bottomNavigationBar: canEdit
           ? SafeArea(
-            child: BlocConsumer(
+              child: BlocConsumer(
                 bloc: updateBloc,
                 listener: (context, state) {
                   if (state is CompleteDataUpdateSuccessState) {
@@ -1613,7 +1622,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                       final hasEnabledDays = days.entries
                           .where((entry) => entry.key != "All")
                           .any((entry) => entry.value["enabled"] == true);
-            
+
                       if (!hasEnabledDays) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1623,7 +1632,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                         return;
                       }
                       List<Map<String, String>> availability = [];
-            
+
                       final alwaysData = days["Always"];
                       final weekDays = [
                         "Sunday",
@@ -1648,7 +1657,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                         for (var entry in days.entries) {
                           final key = entry.key;
                           final value = entry.value;
-            
+
                           if (key != "Always" && value["enabled"] == true) {
                             for (var time in value["times"]) {
                               availability.add({
@@ -1679,7 +1688,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                         lng: longitude ?? 0,
                         address: addressFromPicker ?? '',
                         // widget.signUpData['address'],
-                        pricePerHour: double.parse(_pricePerHourController.text),
+                        pricePerHour: double.parse(
+                          _pricePerHourController.text,
+                        ),
                         servicesWithPrices: bookingType == "service"
                             ? _selectedServicesWithPrices
                                   .map((service) => service.toMap())
@@ -1706,7 +1717,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                   );
                 },
               ),
-          )
+            )
           : SizedBox.shrink(),
     );
   }
@@ -1743,7 +1754,7 @@ class _SheetState extends State<_Sheet> {
             widget.gallery.isNotEmpty
                 ? widget.gallery.length
                 : widget.galleryFromApi.length,
-                (index) {
+            (index) {
               final item = widget.gallery.isNotEmpty
                   ? widget.gallery[index]
                   : widget.galleryFromApi[index];
@@ -1755,8 +1766,9 @@ class _SheetState extends State<_Sheet> {
                       selectedId == (item is Galleries ? item.id : null)) {
                     // ✅ بعد نجاح delete
                     if (!widget.gallery.isNotEmpty) {
-                      widget.galleryFromApi
-                          .removeWhere((e) => e.id == selectedId);
+                      widget.galleryFromApi.removeWhere(
+                        (e) => e.id == selectedId,
+                      );
                     } else {
                       widget.gallery.removeAt(index);
                     }
@@ -1772,7 +1784,8 @@ class _SheetState extends State<_Sheet> {
                   }
                 },
                 builder: (context, deleteState) {
-                  final loading = deleteState is DeleteGallaryLoadingState &&
+                  final loading =
+                      deleteState is DeleteGallaryLoadingState &&
                       selectedId == (item is Galleries ? item.id : null);
 
                   return Padding(
@@ -1797,19 +1810,19 @@ class _SheetState extends State<_Sheet> {
                             onTap: loading
                                 ? null
                                 : () {
-                              if (widget.gallery.isNotEmpty) {
-                                widget.gallery.removeAt(index);
-                                setState(() {});
-                              } else {
-                                selectedId = (item as Galleries).id;
-                                isDeleting = true;
-                                deleteGalleryBloc.add(
-                                  DeleteGallaryEvent(
-                                    galleryId: selectedId!,
-                                  ),
-                                );
-                              }
-                            },
+                                    if (widget.gallery.isNotEmpty) {
+                                      widget.gallery.removeAt(index);
+                                      setState(() {});
+                                    } else {
+                                      selectedId = (item as Galleries).id;
+                                      isDeleting = true;
+                                      deleteGalleryBloc.add(
+                                        DeleteGallaryEvent(
+                                          galleryId: selectedId!,
+                                        ),
+                                      );
+                                    }
+                                  },
                             child: Container(
                               decoration: const BoxDecoration(
                                 color: AppTheme.canvasColor,
@@ -1824,9 +1837,7 @@ class _SheetState extends State<_Sheet> {
                           ),
                         ),
                         if (loading)
-                          Positioned.fill(
-                            child: Center(child: AppLoading()),
-                          ),
+                          Positioned.fill(child: Center(child: AppLoading())),
                       ],
                     ),
                   );

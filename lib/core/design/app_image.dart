@@ -98,9 +98,9 @@ class _AppImageState extends State<AppImage> {
             ),
           ),
         );
-      } else if (widget.url.contains("com.")&&widget.url.contains("cache")) {
+      } else if (_isLocalFilePath(widget.url)) {
         return Image.file(
-          File(widget.url),
+          File(_localFilePath(widget.url)),
           color: widget.color,
           errorBuilder: (context, error, stackTrace) => errWidget,
           width: widget.width,
@@ -122,6 +122,23 @@ class _AppImageState extends State<AppImage> {
       }
     }
 
+  }
+
+  bool _isLocalFilePath(String value) {
+    return value.startsWith('file://') ||
+        value.startsWith('/data/') ||
+        value.startsWith('/storage/') ||
+        value.startsWith('/sdcard/') ||
+        value.startsWith('/var/') ||
+        value.startsWith('/private/') ||
+        value.startsWith('/Users/');
+  }
+
+  String _localFilePath(String value) {
+    if (value.startsWith('file://')) {
+      return Uri.parse(value).toFilePath();
+    }
+    return value;
   }
 
   void showImage(context) {

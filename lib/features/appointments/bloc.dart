@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/logic/cache_helper.dart';
+import '../../../core/logic/app_logger.dart';
 import '../../../core/logic/dio_helper.dart';
 
 part 'events.dart';
@@ -19,7 +19,6 @@ enum AppointmentStatus {
   startWork,
 }
 
-
 class GetAppointmentsBloc
     extends Bloc<GetAppointmentsEvents, GetAppointmentsStates> {
   final DioHelper _dio;
@@ -32,11 +31,11 @@ class GetAppointmentsBloc
   String? startDate, endDate;
 
   AppointmentStatus? status;
-  String pendingLength='0';
-  String acceptLength='0';
-  String userArriveLength='0';
-  String startWorkLength='0';
-  String inWayLength='0';
+  String pendingLength = '0';
+  String acceptLength = '0';
+  String userArriveLength = '0';
+  String startWorkLength = '0';
+  String inWayLength = '0';
 
   int? getStatus(AppointmentStatus status) {
     switch (status) {
@@ -92,7 +91,7 @@ class GetAppointmentsBloc
     GetAppointmentsEvent event,
     Emitter<GetAppointmentsStates> emit,
   ) async {
-    if(event.withLoading)emit(GetAppointmentsLoadingState());
+    if (event.withLoading) emit(GetAppointmentsLoadingState());
     final response = await _dio.get(
       "provider/appointments",
       params: {
@@ -115,22 +114,45 @@ class GetAppointmentsBloc
     GetAllAppointmentsEvent event,
     Emitter<GetAppointmentsStates> emit,
   ) async {
-    if(event.withLoading)emit(GetAllAppointmentsLoadingState());
+    if (event.withLoading) emit(GetAllAppointmentsLoadingState());
     final response = await _dio.get(
       "provider/appointments",
       params: {'date_from': startDate, "date_to": endDate},
     );
     if (response.isSuccess) {
       allList = AppointmentData.fromJson(response.data).data.appointments.list;
-      print("{{{{{{{{{{{object}}}}}}}}}}}");
-      print("${allList.length}");
-      pendingLength= getAppointmentsCountByStatus(AppointmentStatus.pending, allList);
-      acceptLength= getAppointmentsCountByStatus(AppointmentStatus.confirmed, allList);
-      userArriveLength= getAppointmentsCountByStatus(AppointmentStatus.arrivedUser, allList);
-      startWorkLength= getAppointmentsCountByStatus(AppointmentStatus.startWork, allList);
-      inWayLength= getAppointmentsCountByStatus(AppointmentStatus.onTheWay, allList);
-      print("|||||$startWorkLength++++");
-      print("{{{{{{{{{{{object}}}}}}}}}}}");
+      pendingLength = getAppointmentsCountByStatus(
+        AppointmentStatus.pending,
+        allList,
+      );
+      acceptLength = getAppointmentsCountByStatus(
+        AppointmentStatus.confirmed,
+        allList,
+      );
+      userArriveLength = getAppointmentsCountByStatus(
+        AppointmentStatus.arrivedUser,
+        allList,
+      );
+      startWorkLength = getAppointmentsCountByStatus(
+        AppointmentStatus.startWork,
+        allList,
+      );
+      inWayLength = getAppointmentsCountByStatus(
+        AppointmentStatus.onTheWay,
+        allList,
+      );
+      AppLogger.debug(
+        'Appointments summary updated',
+        tag: 'APPOINTMENT',
+        data: {
+          'count': allList.length,
+          'pending': pendingLength,
+          'confirmed': acceptLength,
+          'arrivedUser': userArriveLength,
+          'startWork': startWorkLength,
+          'onTheWay': inWayLength,
+        },
+      );
       emit(GetAllAppointmentsSuccessState());
     } else {
       emit(GetAllAppointmentsFailedState(response: response));

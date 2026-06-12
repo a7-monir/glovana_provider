@@ -1,11 +1,9 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:glovana_provider/views/auth/login/view.dart';
-import 'package:quick_log/quick_log.dart';
 
+import 'app_logger.dart';
 import 'cache_helper.dart';
 import 'helper_methods.dart';
 
@@ -15,15 +13,14 @@ class DioHelper {
   final _dio = Dio(
     BaseOptions(
       receiveDataWhenStatusError: true,
-
       baseUrl: 'https://glovana.net/api/v1/',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       sendTimeout: const Duration(seconds: 30),
       headers: {
-        "Accept": "application/json",
+        'Accept': 'application/json',
         if (CacheHelper.token.isNotEmpty)
-          "Authorization": "Bearer ${CacheHelper.token}",
+          'Authorization': 'Bearer ${CacheHelper.token}',
       },
     ),
   );
@@ -34,133 +31,64 @@ class DioHelper {
 
   Future<CustomResponse> fakeCase() async {
     await Future.delayed(const Duration(seconds: 1));
-    return CustomResponse(isSuccess: true, msg: "status");
+    return CustomResponse(isSuccess: true, msg: 'status');
   }
 
   Future<Response> getResponse(
     String path,
-    Map<String, dynamic>? data,
+    dynamic data,
     Map<String, dynamic>? headers,
     APIMethods method,
     Map<String, dynamic>? params,
   ) async {
-    late Response resp;
-    if (method == APIMethods.post) {
-      resp = await _dio.post(
-        path,
-        options: Options(headers: headers),
-        data: data,
-        queryParameters: params,
-      );
-    } else if (method == APIMethods.put) {
-      resp = await _dio.put(path, data: data, queryParameters: params);
-    } else if (method == APIMethods.delete) {
-      resp = await _dio.delete(path, data: data, queryParameters: params);
+    switch (method) {
+      case APIMethods.post:
+        return _dio.post(
+          path,
+          options: Options(headers: headers),
+          data: data,
+          queryParameters: params,
+        );
+      case APIMethods.put:
+        return _dio.put(
+          path,
+          options: Options(headers: headers),
+          data: data,
+          queryParameters: params,
+        );
+      case APIMethods.delete:
+        return _dio.delete(
+          path,
+          options: Options(headers: headers),
+          data: data,
+          queryParameters: params,
+        );
     }
-    return resp;
   }
 
-  // Future<CustomResponse> send(
-  //     String path, {
-  //       Map<String, dynamic>? data,
-  //       Map<String, dynamic>? params,
-  //       Map<String, dynamic>? rawData,
-  //       Map<String, dynamic>? headers,
-  //       APIMethods method = APIMethods.post,
-  //     }) async {
-  //   if (path.isEmpty) {
-  //     return fakeCase();
-  //   }
-  //
-  //   try {
-  //     headers ??= {
-  //       'Accept': 'application/json',
-  //     };
-  //
-  //     // ✅ DELETE لازم JSON
-  //     if (method == APIMethods.delete) {
-  //       headers['Content-Type'] = 'application/json';
-  //     }
-  //
-  //     /// ✅ body اللي هيتبعت فعليًا
-  //     final Map<String, dynamic>? body =
-  //     method == APIMethods.delete
-  //         ? (rawData ?? {})
-  //         : data;
-  //
-  //     final resp = await getResponse(
-  //       path,
-  //       body,
-  //       headers,
-  //       method,
-  //       params,
-  //     );
-  //
-  //     if (resp.data is Map &&
-  //         (resp.data["status"] == false ||
-  //             resp.data["code"] == 500)) {
-  //       return CustomResponse(
-  //         data: resp.data,
-  //         msg: resp.data["message"],
-  //         isSuccess: false,
-  //       );
-  //     }
-  //
-  //     return CustomResponse(
-  //       data: resp.data,
-  //       isSuccess: true,
-  //       msg: resp.data["message"] ?? "status",
-  //     );
-  //   } on DioException catch (ex) {
-  //     return handleServerError(ex);
-  //   }
-  // }
-
   Future<CustomResponse> send(
-      String path, {
-        Map<String, dynamic>? data,
-        Map<String, dynamic>? params,
-        Map<String, dynamic>? rawData,
-        Map<String, dynamic>? headers,
-        APIMethods method = APIMethods.post,
-      }) async {
+    String path, {
+    Map<String, dynamic>? data,
+    Map<String, dynamic>? params,
+    Map<String, dynamic>? rawData,
+    Map<String, dynamic>? headers,
+    APIMethods method = APIMethods.post,
+  }) async {
     if (path.isEmpty) {
       return fakeCase();
     }
 
     try {
-      final body =
-      method == APIMethods.delete && rawData != null
+      final body = method == APIMethods.delete && rawData != null
           ? rawData
           : data;
-
-      final resp = await getResponse(
-        path,
-        body,
-        headers,
-        method,
-        params,
-      );
-print("|||||||||||||||||||${resp.data["status"]}");
-
-      if ([500].contains(resp.data["code"]) ||
-          resp.data["status"] == false) {
-        return CustomResponse(
-          data: resp.data,
-          msg: resp.data["message"],
-          isSuccess: false,
-        );
-      }
-
-      return CustomResponse(
-        data: resp.data,
-        isSuccess: true,
-        msg: resp.data["message"] ?? "status",
-      );
-    } on DioException catch (ex) {
-      return handleServerError(ex);
+      final response = await getResponse(path, body, headers, method, params);
+      return _buildCustomResponse(response);
+    } on DioException catch (error) {
+      return handleServerError(error);
     }
   }
+
   Future<CustomResponse> deleteData({
     required String url,
     Map<String, dynamic>? query,
@@ -169,46 +97,39 @@ print("|||||||||||||||||||${resp.data["status"]}");
     String? token,
   }) async {
     try {
-      _dio.options.headers = {
-        'Authorization': "Bearer ${token ?? CacheHelper.token}",
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Accept-Language': lang ?? CacheHelper.lang,
-      };
+      _dio.options.headers = _headers(
+        lang: lang,
+        token: token,
+        contentType: 'application/json',
+      );
 
-      final res = await _dio.delete(
+      final response = await _dio.delete(
         url,
         data: data,
         queryParameters: query,
       );
 
-
-      if ([500].contains(res.data["code"]) ||
-          res.data["success"] == false) {
-        return CustomResponse(
-          data: res.data,
-          msg: res.data["message"] ?? "Failed",
-          isSuccess: false,
-        );
-      }
-
-      return CustomResponse(
-        data: res.data,
-        msg: res.data["message"] ?? "Success",
-        isSuccess: true,
+      return _buildCustomResponse(
+        response,
+        fallbackSuccess: 'Success',
+        fallbackError: 'Failed',
       );
-    } on DioException catch (ex) {
-      return handleServerError(ex);
-    } catch (e) {
-      // أي error غير dio
+    } on DioException catch (error) {
+      return handleServerError(error);
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Unexpected delete request failure',
+        tag: 'HTTP',
+        error: error,
+        stackTrace: stackTrace,
+      );
+
       return CustomResponse(
         data: null,
-        msg: e.toString(),
-        isSuccess: false,
+        msg: 'Unexpected error occurred. Please try again later.',
       );
     }
   }
-
 
   Future<Response> postData({
     required String url,
@@ -218,21 +139,15 @@ print("|||||||||||||||||||${resp.data["status"]}");
     Map<String, dynamic>? query,
     bool withFiles = false,
   }) async {
-    _dio.options.headers = {
-      'Accept-Language': lang ?? CacheHelper.lang,
-      'Accept': 'application/json',
-      'Content-Type': withFiles ? "multipart/form-data" : "application/json",
-      "Authorization": "Bearer ${CacheHelper.token}",
-    };
+    _dio.options.headers = _headers(
+      lang: lang,
+      token: token,
+      contentType: withFiles ? 'multipart/form-data' : 'application/json',
+    );
 
-    try {
-      var res = await _dio.post(url, data: data, queryParameters: query);
-
-      return res;
-    } on DioException catch (e) {
-      rethrow;
-    }
+    return _dio.post(url, data: data, queryParameters: query);
   }
+
   Future<Response> putData({
     required String url,
     dynamic data,
@@ -240,19 +155,13 @@ print("|||||||||||||||||||${resp.data["status"]}");
     String? token,
     Map<String, dynamic>? query,
   }) async {
-    _dio.options.headers = {
-      'Accept-Language': CacheHelper.lang,
-      'Accept': 'application/json',
-      'Content-Type': "multipart/form-data",
-      "Authorization": "Bearer ${CacheHelper.token}",
-    };
-    var res = await _dio.put(
-      url,
-      data: data,
-      queryParameters: query,
+    _dio.options.headers = _headers(
+      lang: lang,
+      token: token,
+      contentType: 'multipart/form-data',
     );
 
-    return res;
+    return _dio.put(url, data: data, queryParameters: query);
   }
 
   Future<CustomResponse> get(
@@ -261,49 +170,90 @@ print("|||||||||||||||||||${resp.data["status"]}");
   }) async {
     if (path.isEmpty) {
       return fakeCase();
-    } else {
-      try {
-        params?.removeWhere(
-          (key, value) => value == null || value.toString().isEmpty,
-        );
-        final resp = await _dio.get(path, queryParameters: params);
+    }
 
-        print(resp.data.runtimeType);
-
-        if (resp.data is String ||
-            resp.data is List ||
-            [500].contains(resp.data["code"]) ||
-            resp.data["status"] == false) {
-          return CustomResponse(
-            data: resp.data,
-            msg: resp.data?["message"]??'',
-            isSuccess: false,
-          );
-        }
-        return CustomResponse(
-          data: resp.data,
-          isSuccess: NetworkExceptions.handleResponse(resp) == null,
-          msg: NetworkExceptions.handleResponse(resp) ?? resp.data["message"]??'',
-        );
-      } on DioException catch (ex) {
-        return handleServerError(ex);
-      }
+    try {
+      params?.removeWhere(
+        (key, value) => value == null || value.toString().isEmpty,
+      );
+      final response = await _dio.get(path, queryParameters: params);
+      return _buildCustomResponse(response);
+    } on DioException catch (error) {
+      return handleServerError(error);
     }
   }
 
-
-  CustomResponse handleServerError(DioException err) {
-    String msg;
-    try {
-      msg = err.response?.data?["message"];
-    } catch (ex) {
-      msg = NetworkExceptions.getDioException(err);
-    }
+  CustomResponse handleServerError(DioException error) {
+    final message =
+        _extractMessage(error.response?.data) ??
+        NetworkExceptions.getDioException(error);
 
     return CustomResponse(
-      statusCode: err.response?.statusCode ?? 500,
-      msg: msg,
+      statusCode: error.response?.statusCode ?? 500,
+      msg: message,
+      data: error.response?.data,
     );
+  }
+
+  CustomResponse _buildCustomResponse(
+    Response response, {
+    String fallbackSuccess = 'status',
+    String fallbackError = 'Request failed.',
+  }) {
+    final responseMessage = NetworkExceptions.handleResponse(response);
+    final payloadFailed = _isFailurePayload(response.data);
+    final extractedMessage = _extractMessage(response.data);
+
+    return CustomResponse(
+      data: response.data,
+      statusCode: response.statusCode,
+      isSuccess: responseMessage == null && !payloadFailed,
+      msg:
+          extractedMessage ??
+          responseMessage ??
+          (payloadFailed ? fallbackError : fallbackSuccess),
+    );
+  }
+
+  Map<String, String> _headers({
+    String? lang,
+    String? token,
+    required String contentType,
+  }) {
+    return {
+      'Accept-Language': lang ?? CacheHelper.lang,
+      'Accept': 'application/json',
+      'Content-Type': contentType,
+      'Authorization': 'Bearer ${token ?? CacheHelper.token}',
+    };
+  }
+
+  static bool _isFailurePayload(dynamic data) {
+    if (data is String || data is List) {
+      return true;
+    }
+
+    if (data is Map) {
+      return data['status'] == false ||
+          data['success'] == false ||
+          data['code'] == 500;
+    }
+
+    return false;
+  }
+
+  static String? _extractMessage(dynamic data) {
+    if (data is! Map) {
+      return null;
+    }
+
+    final rawMessage = data['message'] ?? data['msg'] ?? data['error'];
+    if (rawMessage == null) {
+      return null;
+    }
+
+    final message = rawMessage.toString().trim();
+    return message.isEmpty ? null : message;
   }
 }
 
@@ -322,75 +272,38 @@ class CustomResponse {
 }
 
 class CustomApiInterceptor extends Interceptor {
-  final log = const Logger("");
-
-  // String username = 'TestEnvironments';
-  //
-  // String username = 'ALJSecretkey';
-  // String password = 'ZGF0YW9jZWFuQDIwMjI=';
+  static const _requestStartKey = 'request_started_at';
+  static bool _isHandlingUnauthorized = false;
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
-    super.onRequest(options, handler);
-    // bloc.add(GenerateTokenEvent());
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.extra[_requestStartKey] = DateTime.now().millisecondsSinceEpoch;
+    options.headers.addAll({'lang': CacheHelper.lang});
 
-    log.info("*" * 40);
-    log.info("onRequest");
-    options.headers.addAll({"lang": CacheHelper.lang});
-    if (!["api/Authorization/PatientAuthentication"].contains(options.path)) {
-      options.headers.addAll({"Authorization": 'Bearer ${CacheHelper.token}'});
+    if (CacheHelper.token.isNotEmpty && options.path != 'user/login') {
+      options.headers['Authorization'] = 'Bearer ${CacheHelper.token}';
     }
 
-    log.info("(${options.method}) ( ${options.baseUrl}${options.path} )");
-    if (options.data != null) {
-      final data = options.data;
+    AppLogger.info(
+      '--> ${options.method.toUpperCase()} ${options.uri}',
+      tag: 'HTTP',
+    );
 
-      if (data is FormData) {
-        if (data.fields.isNotEmpty || data.files.isNotEmpty) {
-          log.info("📦 FormData:");
-          for (var field in data.fields) {
-            log.info("${field.key}: ${field.value}");
-          }
-          for (var file in data.files) {
-            log.info("🖼️ File: ${file.key} -> ${file.value.filename}");
-          }
-        }
-      } else if (data is Map && data.isNotEmpty) {
-        log.info("🧾 Data:");
-        data.forEach((key, value) {
-          log.info("$key: $value");
-        });
-      } else {
-        log.info("📤 Data type: ${data.runtimeType}");
-      }
+    if (options.queryParameters.isNotEmpty) {
+      AppLogger.debug(
+        'Query parameters',
+        tag: 'HTTP',
+        data: options.queryParameters,
+      );
     }
 
-    if ((options.queryParameters).isNotEmpty) {
-      log.info("Query Parameters :");
-      options.queryParameters.forEach((key, value) {
-        log.info("$key : $value");
-      });
-      log.info("-" * 20);
+    final bodyPreview = _requestBodyPreview(options.data);
+    if (bodyPreview != null) {
+      AppLogger.debug('Request body', tag: 'HTTP', data: bodyPreview);
     }
-    log.info("Headers:");
-    options.headers.forEach((key, value) {
-      log.info("$key : $value");
-    });
-    log.info("*" * 40);
-  }
 
-  @override
-  void onError(DioException err, ErrorInterceptorHandler handler) async {
-    log.error("onError");
-    log.error(err);
-    if (err.response?.statusCode == 401) {
-      await CacheHelper.logOut();
-      navigateTo(LoginView(), keepHistory: false);
-    }
-    return super.onError(err, handler);
+    AppLogger.debug('Request headers', tag: 'HTTP', data: options.headers);
+    handler.next(options);
   }
 
   @override
@@ -398,108 +311,161 @@ class CustomApiInterceptor extends Interceptor {
     Response response,
     ResponseInterceptorHandler handler,
   ) async {
-    log.fine("onResponse");
-    var resp = jsonEncode(response.data);
-    log.fine(resp);
-    return super.onResponse(response, handler);
+    AppLogger.info(
+      '<-- ${response.statusCode} ${response.requestOptions.method.toUpperCase()} '
+      '${response.requestOptions.uri} (${_durationLabel(response.requestOptions)})',
+      tag: 'HTTP',
+    );
+    AppLogger.debug('Response body', tag: 'HTTP', data: response.data);
+    handler.next(response);
+  }
+
+  @override
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
+    AppLogger.error(
+      'xx ${err.response?.statusCode ?? '-'} '
+      '${err.requestOptions.method.toUpperCase()} ${err.requestOptions.uri} '
+      '(${_durationLabel(err.requestOptions)})',
+      tag: 'HTTP',
+      error: err,
+      data: {
+        'message':
+            DioHelper._extractMessage(err.response?.data) ??
+            NetworkExceptions.getDioException(err),
+        'response': err.response?.data,
+      },
+    );
+
+    if (_shouldHandleUnauthorized(err)) {
+      await _handleUnauthorized();
+    }
+
+    handler.next(err);
+  }
+
+  dynamic _requestBodyPreview(dynamic data) {
+    if (data == null) {
+      return null;
+    }
+
+    if (data is FormData) {
+      return {
+        'fields': {for (final field in data.fields) field.key: field.value},
+        'files': [
+          for (final file in data.files)
+            {'key': file.key, 'filename': file.value.filename},
+        ],
+      };
+    }
+
+    return data;
+  }
+
+  String _durationLabel(RequestOptions options) {
+    final startedAt = options.extra[_requestStartKey];
+    if (startedAt is! int) {
+      return 'n/a';
+    }
+
+    final duration = DateTime.now().millisecondsSinceEpoch - startedAt;
+    return '$duration ms';
+  }
+
+  bool _shouldHandleUnauthorized(DioException error) {
+    return error.response?.statusCode == 401 &&
+        CacheHelper.isAuthed &&
+        error.requestOptions.path != 'user/login';
+  }
+
+  Future<void> _handleUnauthorized() async {
+    if (_isHandlingUnauthorized) {
+      return;
+    }
+
+    _isHandlingUnauthorized = true;
+    try {
+      await CacheHelper.logOut();
+      showMessage(
+        'Your session expired. Please log in again.',
+        type: MessageType.warning,
+      );
+
+      if (navigatorKey.currentState != null) {
+        await navigateTo(const LoginView(), keepHistory: false);
+      }
+    } finally {
+      _isHandlingUnauthorized = false;
+    }
   }
 }
 
 abstract class NetworkExceptions {
   static String? handleResponse(Response response) {
-    int statusCode = response.statusCode ?? 0;
-    switch (statusCode) {
+    switch (response.statusCode ?? 0) {
       case 400:
+        return 'Bad request. Please check your input and try again.';
       case 401:
+        return 'Unauthorized request. Please log in again.';
       case 403:
-        CacheHelper.logOut();
-        navigateTo(LoginView(), keepHistory: false);
-        return "Unauthorized request. Please log in again.";
+        return 'You do not have permission to perform this action.';
       case 404:
-        return "Requested resource not found.";
+        return 'Requested resource not found.';
       case 204:
-        return response.data?["message"] ?? "No Data";
-      case 409:
-        return "Error due to a conflict. Please try again later.";
+        return DioHelper._extractMessage(response.data) ?? 'No data found.';
       case 408:
-        return "Connection request timeout. Please try again later.";
+        return 'Connection request timeout. Please try again later.';
+      case 409:
+        return 'Error due to a conflict. Please try again later.';
       case 500:
-        return "Internal server error. Please try again later.";
+        return 'Internal server error. Please try again later.';
       case 503:
-        return "Service unavailable. Please try again later.";
+        return 'Service unavailable. Please try again later.';
       default:
         return null;
     }
   }
 
-  static String getDioException(error) {
-    if (error is Exception) {
-      try {
-        var errorMessage = "";
-        if (error is DioException) {
-          switch (error.type) {
-            case DioExceptionType.cancel:
-              errorMessage = "Request cancelled.";
-              //errorMessage = "Contact Administrator";
-              break;
-            case DioExceptionType.badCertificate:
-              //errorMessage = "Contact Administrator";
-              errorMessage = "Bad Certificate";
-              break;
-            case DioExceptionType.connectionError:
-              errorMessage = "No internet connection";
-
-              /// todo: if have screen
-
-              //navigateTo(const NoInternetView(), keepHistory: false);
-              break;
-            case DioExceptionType.sendTimeout:
-              //errorMessage = "Contact Administrator";
-              errorMessage =
-                  "Send timeout in connection with API server. Please try again later.";
-              break;
-            case DioExceptionType.receiveTimeout:
-              //errorMessage = "Contact Administrator";
-              errorMessage =
-                  "Send timeout in connection with API server. Please try again later.";
-              break;
-            case DioExceptionType.connectionTimeout:
-              // errorMessage = "Contact Administrator";
-              errorMessage =
-                  "Connection request timeout. Please try again later.";
-              break;
-            case DioExceptionType.badResponse:
-              //errorMessage = "Contact Administrator";
-              errorMessage =
-                  NetworkExceptions.handleResponse(error.response!) ??
-                  "Bad Response";
-              break;
-
-            default:
-              errorMessage = "Un Known Error";
-            //errorMessage = "Contact Administrator";
+  static String getDioException(Object error) {
+    if (error is DioException) {
+      switch (error.type) {
+        case DioExceptionType.cancel:
+          return 'Request cancelled.';
+        case DioExceptionType.badCertificate:
+          return 'Bad certificate.';
+        case DioExceptionType.connectionError:
+          return 'No internet connection.';
+        case DioExceptionType.sendTimeout:
+          return 'Send timeout in connection with API server. Please try again later.';
+        case DioExceptionType.receiveTimeout:
+          return 'Receive timeout in connection with API server. Please try again later.';
+        case DioExceptionType.connectionTimeout:
+          return 'Connection request timeout. Please try again later.';
+        case DioExceptionType.badResponse:
+          if (error.response != null) {
+            return DioHelper._extractMessage(error.response?.data) ??
+                handleResponse(error.response!) ??
+                'Bad response from server.';
           }
-        } else if (error is SocketException) {
-          errorMessage = "No internet connection.";
-
-          /// todo: if have screen
-          // navigateTo(const NoInternetView());
-        } else {
-          // errorMessage = "Contact Administrator";
-          errorMessage = "Unexpected error occurred. Please try again later.";
-        }
-        return errorMessage;
-      } on FormatException {
-        return "Unexpected error occurred. Please try again later.";
-      } catch (_) {
-        return "Unexpected error occurred. Please try again later.";
-      }
-    } else {
-      if (error.toString().contains("is not a subtype of")) {
-        return "Unable to process the data. Please try again later.";
-      } else {
-        return "Unexpected error occurred. Please try again later.";
+          return 'Bad response from server.';
+        case DioExceptionType.unknown:
+          if (error.error is SocketException) {
+            return 'No internet connection.';
+          }
+          return 'Unexpected error occurred. Please try again later.';
       }
     }
+
+    if (error is SocketException) {
+      return 'No internet connection.';
+    }
+
+    if (error.toString().contains('is not a subtype of')) {
+      return 'Unable to process the data. Please try again later.';
+    }
+
+    return 'Unexpected error occurred. Please try again later.';
   }
 }

@@ -1,12 +1,12 @@
-import 'dart:async';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_button.dart';
 
 import 'package:glovana_provider/core/logic/cache_helper.dart';
+import 'package:glovana_provider/core/logic/provider_account_status.dart';
 import 'package:glovana_provider/views/auth/login/view.dart';
+import 'package:glovana_provider/views/home_nav/view.dart';
 import 'package:glovana_provider/views/provider_type/view.dart';
 
 import '../../core/design/app_image.dart';
@@ -21,6 +21,36 @@ class DoneCompleteProfileView extends StatefulWidget {
 }
 
 class _DoneCompleteProfileViewState extends State<DoneCompleteProfileView> {
+  bool _isRefreshing = false;
+
+  Future<void> _refreshStatus() async {
+    if (_isRefreshing) {
+      return;
+    }
+
+    setState(() => _isRefreshing = true);
+
+    final result = await ProviderAccountStatusHelper.refresh();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _isRefreshing = false);
+
+    if (!CacheHelper.isAuthed) {
+      return;
+    }
+
+    if (result.isActive) {
+      navigateTo(const HomeNavView(), keepHistory: false);
+      return;
+    }
+
+    if (!result.isSuccess && (result.errorMessage?.isNotEmpty ?? false)) {
+      showMessage(result.errorMessage!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,12 +132,24 @@ class _DoneCompleteProfileViewState extends State<DoneCompleteProfileView> {
            ]else...[
              Padding(
                padding:  EdgeInsets.symmetric(horizontal: 24.w),
-               child: Text(LocaleKeys.yourApplicationIsBeingProcessed.tr(),
-                 textAlign: TextAlign.center,
-                 style: TextStyle(
-                   fontSize: 25.sp,
-                   fontWeight: FontWeight.w400,
-                 ),
+               child: Column(
+                 mainAxisSize: MainAxisSize.min,
+                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                 children: [
+                   Text(LocaleKeys.yourApplicationIsBeingProcessed.tr(),
+                     textAlign: TextAlign.center,
+                     style: TextStyle(
+                       fontSize: 25.sp,
+                       fontWeight: FontWeight.w400,
+                     ),
+                   ),
+                   SizedBox(height: 24.h),
+                   AppButton(
+                     text: CacheHelper.lang == 'en' ? 'Refresh' : 'تحديث',
+                     isLoading: _isRefreshing,
+                     onPress: _refreshStatus,
+                   ),
+                 ],
                ),
              ),
              Align(

@@ -10,14 +10,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'app_logger.dart';
+
 Future openUrl(url) async {
   try {
     if (!await launchUrl(
       Uri.parse(url),
-      mode:
-          Platform.isAndroid
-              ? LaunchMode.externalNonBrowserApplication
-              : LaunchMode.inAppWebView,
+      mode: Platform.isAndroid
+          ? LaunchMode.externalNonBrowserApplication
+          : LaunchMode.inAppWebView,
       webViewConfiguration: const WebViewConfiguration(
         enableJavaScript: true,
         enableDomStorage: true,
@@ -29,6 +30,7 @@ Future openUrl(url) async {
     showMessage("LocaleKeys.someThingWrongWithUrl.tr()");
   }
 }
+
 void pop() {
   Navigator.pop(navigatorKey.currentContext!);
 }
@@ -38,7 +40,7 @@ Future<SignInResultGoogle?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) {
       showMessage('❗️User cancelled the sign-in');
-      print('❗️User cancelled the sign-in');
+      AppLogger.info('Google sign-in cancelled by user', tag: 'AUTH');
       return null;
     }
 
@@ -50,15 +52,17 @@ Future<SignInResultGoogle?> signInWithGoogle() async {
       idToken: googleAuth.idToken,
     );
 
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(
-      credential,
-    );
+    await FirebaseAuth.instance.signInWithCredential(credential);
 
     return SignInResultGoogle(googleUser: googleUser, googleAuth: googleAuth);
   } catch (e, stack) {
     showMessage('❌ Sign-in error: $e');
-    print('❌ Sign-in error: $e');
-    print(stack);
+    AppLogger.error(
+      'Google sign-in failed',
+      tag: 'AUTH',
+      error: e,
+      stackTrace: stack,
+    );
     return null;
   }
 }
@@ -86,8 +90,13 @@ Future<SignInResultApple?> signInWithApple() async {
       appleAuth: appleAuth,
     );
   } catch (e, stack) {
-    print('❌ Apple sign-in error: $e');
-    print(stack);
+    showUnexpectedError();
+    AppLogger.error(
+      'Apple sign-in failed',
+      tag: 'AUTH',
+      error: e,
+      stackTrace: stack,
+    );
     return null;
   }
 }
@@ -135,7 +144,11 @@ Future<CustomPosition> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    print("serviceEnabled $serviceEnabled");
+    AppLogger.debug(
+      'Location service status checked',
+      tag: 'LOCATION',
+      data: {'enabled': serviceEnabled},
+    );
     if (!serviceEnabled) {
       showMessage('Location services are disabled.');
       await Geolocator.openLocationSettings();
@@ -148,13 +161,11 @@ Future<CustomPosition> getCurrentLocation() async {
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      print('11111111111111');
       // permission = await Geolocator.checkPermission();
       // await Geolocator.openLocationSettings();
       // permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         showMessage('Location services are denied.');
-        print('2222222222222222222222');
         permission = await Geolocator.requestPermission();
         return CustomPosition(
           msg: 'Location permissions are denied.',
@@ -163,7 +174,6 @@ Future<CustomPosition> getCurrentLocation() async {
       }
     }
     if (permission == LocationPermission.deniedForever) {
-      print('33333333333333333333');
       showMessage(
         'Location permissions are permanently denied, we cannot request permissions.',
       );
@@ -175,11 +185,21 @@ Future<CustomPosition> getCurrentLocation() async {
       );
     }
     final position = await Geolocator.getCurrentPosition();
-    print(position.toJson().toString());
+    AppLogger.debug(
+      'Location fetched successfully',
+      tag: 'LOCATION',
+      data: position.toJson(),
+    );
 
     return CustomPosition(msg: '', success: true, position: position);
-  } catch (e) {
+  } catch (e, stackTrace) {
     showMessage(e.toString());
+    AppLogger.error(
+      'Location fetch failed',
+      tag: 'LOCATION',
+      error: e,
+      stackTrace: stackTrace,
+    );
     return CustomPosition(msg: e.toString(), success: false);
   }
 }
@@ -259,54 +279,65 @@ void showMessage(
   MessageType type = MessageType.fail,
   bool withPadding = true,
 }) async {
-  if (msg.isNotEmpty) {
-    ScaffoldMessenger.of(navigatorKey.currentContext!).clearSnackBars();
-    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.symmetric(
-          horizontal: withPadding ? 20.w : 0,
-          vertical: 20.h,
-        ),
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-        elevation: 0,
-        backgroundColor: getBgColor(type),
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.r)),
-        content: Row(
-          children: [
-            Expanded(
-              child: Text(
-                msg,
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.start,
-                softWrap: true,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: getFontFamily(FontFamilyType.inter),
-                ),
+  if (msg.isEmpty) {
+    return;
+  }
+
+  final context =
+      navigatorKey.currentContext ??
+      navigatorKey.currentState?.overlay?.context;
+  final messenger = context == null ? null : ScaffoldMessenger.maybeOf(context);
+
+  if (messenger == null) {
+    AppLogger.warning(
+      'Unable to show in-app message because no scaffold is ready',
+      tag: 'UI',
+      data: {'message': msg},
+    );
+    return;
+  }
+
+  messenger.clearSnackBars();
+  messenger.showSnackBar(
+    SnackBar(
+      duration: Duration(seconds: duration),
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.symmetric(
+        horizontal: withPadding ? 20.w : 0,
+        vertical: 20.h,
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      elevation: 0,
+      backgroundColor: getBgColor(type),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.r)),
+      content: Row(
+        children: [
+          Expanded(
+            child: Text(
+              msg,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.start,
+              softWrap: true,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+                fontFamily: getFontFamily(FontFamilyType.inter),
               ),
             ),
-            // Container(
-            //   height: 24.h,
-            //   width: 24.h,
-            //   padding: EdgeInsets.all(5.r),
-            //   decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-            //   child: AppImage(
-            //     getToastIcon(type),
-            //     height: 19.h,
-            //     width: 24.h,
-            //     color: getBgColor(type),
-            //   ),
-            // ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+void showUnexpectedError([
+  String message = 'Something went wrong. Please try again.',
+]) {
+  showMessage(message, type: MessageType.fail);
 }
 
 DateTime? currentBackPressTime;
@@ -355,43 +386,40 @@ Future showPermissions({
   required void Function()? onPressed,
 }) async {
   await showDialog(
-    builder:
-        (context) => AlertDialog(
-          title: Text("LocaleKeys.appName.tr()"),
-          content: Text(content!),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.r),
-          ),
-          actions: [
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: onPressed,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                      side: BorderSide.none,
-                    ),
-                    textStyle: TextStyle(fontSize: 17.sp),
-                  ),
-                  child: Text("LocaleKeys.accept.tr()"),
+    builder: (context) => AlertDialog(
+      title: Text("LocaleKeys.appName.tr()"),
+      content: Text(content!),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.r)),
+      actions: [
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: onPressed,
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  side: BorderSide.none,
                 ),
-                SizedBox(width: 10.w),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                  ),
-                  child: Text("LocaleKeys.cancel.tr()"),
+                textStyle: TextStyle(fontSize: 17.sp),
+              ),
+              child: Text("LocaleKeys.accept.tr()"),
+            ),
+            SizedBox(width: 10.w),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
-              ],
+              ),
+              child: Text("LocaleKeys.cancel.tr()"),
             ),
           ],
         ),
+      ],
+    ),
     context: navigatorKey.currentContext!,
   );
 }
@@ -403,8 +431,8 @@ List<double> saturationAdjustMatrix(double value) {
     return [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
   }
 
-  double x =
-      ((1 + ((value > 0) ? ((3 * value) / 100) : (value / 100)))).toDouble();
+  double x = ((1 + ((value > 0) ? ((3 * value) / 100) : (value / 100))))
+      .toDouble();
   double lumR = 0.3086;
   double lumG = 0.6094;
   double lumB = 0.082;

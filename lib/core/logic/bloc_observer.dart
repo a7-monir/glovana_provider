@@ -1,36 +1,51 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quick_log/quick_log.dart';
+
+import 'app_logger.dart';
+import 'helper_methods.dart';
 
 class MyBlocObserver extends BlocObserver {
-  Logger log = const Logger("");
   @override
   void onCreate(BlocBase bloc) {
     super.onCreate(bloc);
-    log.debug('${bloc.runtimeType} ( onCreate )');
+    AppLogger.debug('${bloc.runtimeType} created', tag: 'BLOC');
   }
 
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
-    if (change.nextState.runtimeType.toString().contains("Failed")) {
-      log.error(
-          '${bloc.runtimeType}  ( onChange ), ${change.currentState.runtimeType}==> ${change.nextState.runtimeType}',
-          includeStackTrace: false);
+    final transition =
+        '${change.currentState.runtimeType} -> ${change.nextState.runtimeType}';
+
+    if (change.nextState.runtimeType.toString().contains('Failed')) {
+      AppLogger.warning(
+        '${bloc.runtimeType} state changed to failure',
+        tag: 'BLOC',
+        data: {'transition': transition},
+      );
     } else {
-      log.fine(
-          '${bloc.runtimeType}  ( onChange ), ${change.currentState.runtimeType}==> ${change.nextState.runtimeType}');
+      AppLogger.debug(
+        '${bloc.runtimeType} state changed',
+        tag: 'BLOC',
+        data: {'transition': transition},
+      );
     }
   }
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    log.error('${bloc.runtimeType} ( onError ), $error');
+    AppLogger.error(
+      '${bloc.runtimeType} emitted an uncaught error',
+      tag: 'BLOC',
+      error: error,
+      stackTrace: stackTrace,
+    );
+    showUnexpectedError();
     super.onError(bloc, error, stackTrace);
   }
 
   @override
   void onClose(BlocBase bloc) {
     super.onClose(bloc);
-    log.warning('${bloc.runtimeType} ( onClose )');
+    AppLogger.debug('${bloc.runtimeType} closed', tag: 'BLOC');
   }
 }

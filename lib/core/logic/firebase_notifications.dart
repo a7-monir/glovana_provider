@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:quick_log/quick_log.dart';
+
+import 'app_logger.dart';
 
 /// Background handler for FCM (required for onBackgroundMessage)
 @pragma('vm:entry-point')
@@ -19,11 +19,11 @@ class GlobalNotification {
   static String _deviceToken = "";
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   Map<String, dynamic> _not = {};
   final _onMessageStreamController =
-  StreamController<Map<String, dynamic>>.broadcast();
+      StreamController<Map<String, dynamic>>.broadcast();
 
   /// Call this from initFirebase() in main.dart
   Future<void> setUpFirebase() async {
@@ -38,14 +38,17 @@ class GlobalNotification {
         sound: true,
       );
 
-      const Logger('GlobalNotification')
-          .i('Notification permission: ${settings.authorizationStatus}');
+      AppLogger.info(
+        'Notification permission updated',
+        tag: 'PUSH',
+        data: {'status': settings.authorizationStatus.name},
+      );
 
       // Try a few times to get APNs token (it can be null initially)
       for (var i = 0; i < 3; i++) {
         final apns = await _firebaseMessaging.getAPNSToken();
         if (apns != null) {
-          const Logger('GlobalNotification').i('APNS token: $apns');
+          AppLogger.debug('APNS token received', tag: 'PUSH');
           break;
         }
         await Future.delayed(const Duration(seconds: 2));
@@ -55,10 +58,10 @@ class GlobalNotification {
     // Foreground presentation options (for iOS; no effect on Android)
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+          alert: true,
+          badge: true,
+          sound: true,
+        );
 
     // FCM listeners (message, messageOpenedApp)
     await firebaseCloudMessagingListeners();
@@ -67,12 +70,14 @@ class GlobalNotification {
     if (Platform.isAndroid) {
       await _notificationsPlugin
           .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
     } else {
       await _notificationsPlugin
           .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin
+          >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
     }
 
@@ -93,7 +98,7 @@ class GlobalNotification {
     // Keep FCM token updated
     FirebaseMessaging.instance.onTokenRefresh.listen((token) {
       _deviceToken = token;
-      const Logger('GlobalNotification').i('FCM token refreshed: $token');
+      AppLogger.info('FCM token refreshed', tag: 'PUSH');
     });
   }
 
@@ -108,18 +113,24 @@ class GlobalNotification {
       if (Platform.isIOS || Platform.isMacOS) {
         final apns = await FirebaseMessaging.instance.getAPNSToken();
         if (apns == null) {
-          const Logger('GlobalNotification')
-              .w('APNS token is null, delaying FCM token request');
+          AppLogger.warning(
+            'APNS token not ready, delaying FCM token request',
+            tag: 'PUSH',
+          );
           return _deviceToken; // still empty for now
         }
       }
 
       _deviceToken = await FirebaseMessaging.instance.getToken() ?? "";
-      const Logger('GlobalNotification').i('FCM TOKEN: $_deviceToken');
+      AppLogger.info('FCM token available', tag: 'PUSH');
       return _deviceToken;
     } catch (e, st) {
-      const Logger('GlobalNotification')
-          .error('getFcmToken error: $e\n$st');
+      AppLogger.error(
+        'Failed to get FCM token',
+        tag: 'PUSH',
+        error: e,
+        stackTrace: st,
+      );
       return _deviceToken;
     }
   }
@@ -131,14 +142,13 @@ class GlobalNotification {
   /// Listen to foreground messages and "tap on notification" events
   Future<void> firebaseCloudMessagingListeners() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      log('onMessage message.data ${message.data}');
-      log(
-        'onMessage message.notification?.toMap() '
-            '${message.notification?.toMap()}',
-      );
-      log(
-        'onMessage message.notification?.android?.channelId '
-            '${message.notification?.android?.channelId}',
+      AppLogger.info(
+        'Foreground push received',
+        tag: 'PUSH',
+        data: {
+          'data': message.data,
+          'notification': message.notification?.toMap(),
+        },
       );
 
       _onMessageStreamController.add(message.data);
@@ -149,10 +159,13 @@ class GlobalNotification {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      log('onMessageOpenedApp message.data ${message.data}');
-      log(
-        'onMessageOpenedApp message.notification?.android?.channelId '
-            '${message.notification?.android?.channelId}',
+      AppLogger.info(
+        'Push notification opened',
+        tag: 'PUSH',
+        data: {
+          'data': message.data,
+          'channelId': message.notification?.android?.channelId,
+        },
       );
       handlePathByRoute(message.data);
     });
@@ -189,7 +202,7 @@ class GlobalNotification {
   /// Handle deep linking / navigation based on notification data
   Future<void> handlePathByRoute(Map<String, dynamic> dataMap) async {
     final String type = dataMap["key"]?.toString() ?? '';
-    log('key: $type');
+    AppLogger.debug('Handling push route', tag: 'PUSH', data: {'key': type});
 
     // TODO: use `type` to navigate to specific screens if needed.
     // Example:
@@ -200,7 +213,11 @@ class GlobalNotification {
 
   /// Called when user taps the local notification (foreground/background)
   Future<void> onSelectNotification(NotificationResponse response) async {
-    log('payload responseType: ${response.notificationResponseType}');
+    AppLogger.debug(
+      'Local notification selected',
+      tag: 'PUSH',
+      data: {'responseType': response.notificationResponseType.name},
+    );
     await handlePathByRoute(_not);
   }
 }

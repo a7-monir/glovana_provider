@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -28,13 +30,11 @@ class _ItemPhotoState extends State<ItemPhoto> {
       onTap: (){
         if(widget.canEdit){
           AppAlert.init.imagePickerDialog(onSubmit: (file) {
+            photoUrl=file.path;
             if(widget.onChange!=null){
-              photoUrl=file.path;
               widget.onChange!(file.path);
-              setState(() {
-
-              });
             }
+            setState(() {});
 
           },);
         }else{
@@ -56,13 +56,21 @@ class _ItemPhotoState extends State<ItemPhoto> {
               border: Border.all(color: Colors.white, width: 2.w),
             ),
             child: ClipOval(
-              child: AppImage(
-                photoUrl?? CacheHelper.photo,
-                height: 190.h,
-                width: 190.h,
-                withBaseImageUrl:(CacheHelper.photo.toLowerCase().startsWith('https')&&photoUrl==null)?false:  photoUrl!=null? false:true,
-                fit: BoxFit.cover,
-              ),
+              child: photoUrl != null
+                  ? Image.file(
+                      File(photoUrl!),
+                      height: 190.h,
+                      width: 190.h,
+                      fit: BoxFit.cover,
+                    )
+                  : AppImage(
+                      CacheHelper.photo,
+                      height: 190.h,
+                      width: 190.h,
+                      withBaseImageUrl:
+                          !CacheHelper.photo.toLowerCase().startsWith('https'),
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
           Container(

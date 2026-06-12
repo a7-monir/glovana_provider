@@ -1,8 +1,7 @@
 import 'package:glovana_provider/features/login/bloc.dart' show User, BanInfo;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../features/login/bloc.dart' show User;
-
+import 'app_logger.dart';
 
 class CacheHelper {
   static late SharedPreferences _ref;
@@ -17,9 +16,6 @@ class CacheHelper {
 
   static String get token {
     return _ref.getString("token") ?? "";
-
-    return _ref.getString("token") ??
-        "3|m6YT2owf8HcG4JXUZZ4OyF55vkqjT7AohAbpo1wD8834d6b9";
   }
 
   static String get phone {
@@ -62,8 +58,14 @@ class CacheHelper {
 
   static int get id {
     return _ref.getInt("id") ?? 0;
-  } static int get activate {
+  }
+
+  static int get activate {
     return _ref.getInt("activate") ?? 0;
+  }
+
+  static Future<void> setActivate(int value) async {
+    await _ref.setInt("activate", value);
   }
 
   static int get balance {
@@ -91,7 +93,7 @@ class CacheHelper {
   }
 
   static Future<void> setToken(String token) async {
-    print("Token Saved $token");
+    AppLogger.info('Auth token saved', tag: 'CACHE');
     await _ref.setString("token", token);
   }
 
@@ -138,6 +140,7 @@ class CacheHelper {
   static Future<void> setValue(String key, String value) async {
     await _ref.setString(key, value);
   }
+
   static getData({required String key}) {
     return _ref.get(key);
   }
@@ -145,27 +148,34 @@ class CacheHelper {
   static String get banReason {
     return _ref.getString("banReason") ?? "";
   }
+
   static String get banDescription {
     return _ref.getString("banDescription") ?? "";
   }
+
   static String get bannedAt {
     return _ref.getString("bannedAt") ?? "";
   }
+
   static String get banUntil {
     return _ref.getString("banUntil") ?? "";
   }
 
   static Future<void> saveBanInfo(BanInfo model) async {
-    print("************** Save the data *****************");
+    AppLogger.info('Ban info saved locally', tag: 'CACHE');
     await _ref.setBool("is_permanent", model.isPermanent);
     await _ref.setString("banReason", model.reason);
     await _ref.setString("banDescription", model.description);
     await _ref.setString("bannedAt", model.bannedAt);
     await _ref.setString("banUntil", model.banUntil);
-
   }
+
   static Future<void> saveData(User model) async {
-    print("************** Save the data *****************");
+    AppLogger.info(
+      'User profile cached',
+      tag: 'CACHE',
+      data: {'userId': model.id},
+    );
     await _ref.setInt("id", model.id);
     await _ref.setString("phone", model.phone);
     await _ref.setString("email", model.email);

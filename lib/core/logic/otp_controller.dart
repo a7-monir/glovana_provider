@@ -1,14 +1,9 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
+import 'app_logger.dart';
 
 class JorMallSmsService {
   Dio dio = Dio();
-
-  JorMallSmsService() {
-    dio.interceptors.add(PrettyDioLogger(requestHeader: true));
-  }
 
   // Replace with your credentials
   String accName = 'glovana';
@@ -26,7 +21,7 @@ class JorMallSmsService {
         final lines = data.split('\n');
         for (final line in lines) {
           if (line.trim().startsWith('Bearer ')) {
-            log(line.trim().substring(7).trim());
+            AppLogger.info('SMS provider token generated', tag: 'SMS');
             return line
                 .trim()
                 .substring(7)
@@ -35,12 +30,18 @@ class JorMallSmsService {
         }
         return "";
       }
-    } catch (e) {
-      print("Token error: $e");
+    } catch (e, stackTrace) {
+      AppLogger.error(
+        'Failed to generate SMS provider token',
+        tag: 'SMS',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
 
     return null;
   }
+
   String removeZeroAtIndex3(String number) {
     if (number.length > 3 && number[3] == '0') {
       return number.substring(0, 3) + number.substring(4);
@@ -62,6 +63,11 @@ class JorMallSmsService {
         '?senderid=$senderId&numbers=$phoneNumber&msg=$message';
 
     try {
+      AppLogger.info(
+        'Sending OTP SMS',
+        tag: 'SMS',
+        data: {'phone': phoneNumber},
+      );
       final response = await dio.post(
         url,
         data: {
@@ -79,14 +85,27 @@ class JorMallSmsService {
       );
 
       if (response.statusCode == 200) {
-        print('SMS sent: ${response.data}');
+        AppLogger.info(
+          'SMS provider response received',
+          tag: 'SMS',
+          data: {'body': response.data.toString()},
+        );
         return true;
       } else {
-        print('Failed to send SMS: ${response.statusCode}');
+        AppLogger.warning(
+          'SMS provider returned non-success status',
+          tag: 'SMS',
+          data: {'statusCode': response.statusCode},
+        );
         return false;
       }
-    } catch (e) {
-      print('Error sending SMS: $e');
+    } catch (e, stackTrace) {
+      AppLogger.error(
+        'Failed to send OTP SMS',
+        tag: 'SMS',
+        error: e,
+        stackTrace: stackTrace,
+      );
       return false;
     }
   }

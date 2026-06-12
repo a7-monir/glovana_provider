@@ -14,6 +14,7 @@ import 'package:kiwi/kiwi.dart';
 import '../../../core/app_theme.dart';
 import '../../../core/design/app_bar.dart';
 import '../../../core/design/app_button.dart';
+import '../../../core/logic/app_logger.dart';
 import '../../../core/logic/cache_helper.dart';
 import '../../../features/complete_data/bloc.dart';
 import '../../../generated/locale_keys.g.dart';
@@ -175,7 +176,11 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
   @override
   void initState() {
     super.initState();
-    print("!!!!!!!!!!!${widget.secondStepModel.pricePerHour}");
+    AppLogger.debug(
+      'Signup last step initialized',
+      tag: 'SIGNUP',
+      data: {'pricePerHour': widget.secondStepModel.pricePerHour},
+    );
   }
 
   @override

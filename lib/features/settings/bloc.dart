@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/logic/app_logger.dart';
 import '../../../core/logic/dio_helper.dart';
 
 part 'events.dart';
@@ -13,9 +14,10 @@ class GetSettingsBloc extends Bloc<GetSettingsEvents, GetSettingsStates> {
     on<GetSettingsEvent>(_getData);
   }
 
-  num minPoints=0;
-  num pointsValue=0;
-  num whatsAppNumber=0;
+  num minPoints = 0;
+  num pointsValue = 0;
+  num whatsAppNumber = 0;
+
   void _getData(GetSettingsEvent event, Emitter<GetSettingsStates> emit) async {
     emit(GetSettingsLoadingState());
     final response = await _dio.get("user/settings");
@@ -29,13 +31,14 @@ class GetSettingsBloc extends Bloc<GetSettingsEvents, GetSettingsStates> {
       //   );
       //   return item.value;
       // }
-       getWhatsappNumber(SettingsModel model) {
+      getWhatsappNumber(SettingsModel model) {
         final item = model.data.firstWhere(
-              (e) => e.key == 'whatsapp_number',
+          (e) => e.key == 'whatsapp_number',
           orElse: () => Data.fromJson({}),
         );
         return item.value;
       }
+
       // getPointsValue(SettingsModel model) {
       //   final item = model.data.firstWhere(
       //         (e) => e.key == 'one_point_equal_money',
@@ -45,10 +48,16 @@ class GetSettingsBloc extends Bloc<GetSettingsEvents, GetSettingsStates> {
       // }
       // minPoints= getMinPointsValue(model);
       // pointsValue= getPointsValue(model);
-      whatsAppNumber= getWhatsappNumber(model);
-      print("+++++++++++++++++");
-      print(minPoints);
-      print(pointsValue);
+      whatsAppNumber = getWhatsappNumber(model);
+      AppLogger.debug(
+        'Settings loaded',
+        tag: 'SETTINGS',
+        data: {
+          'minPoints': minPoints,
+          'pointsValue': pointsValue,
+          'whatsAppNumber': whatsAppNumber,
+        },
+      );
 
       emit(GetSettingsSuccessState(model: model));
     } else {

@@ -15,7 +15,7 @@ import 'package:kiwi/kiwi.dart';
 import '../../core/app_theme.dart';
 import '../../core/design/app_bar.dart';
 import '../../core/design/app_image.dart';
-import '../../core/design/main_gradient_item.dart';
+import '../../core/logic/app_logger.dart';
 import '../../core/logic/helper_methods.dart';
 import '../../features/appointment_details/bloc.dart';
 import '../../features/appointments/bloc.dart';
@@ -110,9 +110,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                 SizedBox(height: 16.h),
                 // Services for this person
                 ...services.asMap().entries.map((serviceEntry) {
-                  final serviceIndex = serviceEntry.key;
                   final service = serviceEntry.value;
-                  final isLastService = serviceIndex == services.length - 1;
 
                   return Padding(
                     padding: EdgeInsets.only(bottom: 3.h),
@@ -170,13 +168,16 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
       bloc: bloc,
       listener: (context, state) {
         if (state is GetAppointmentDetailsSuccessState) {
-          print('++++++++++++++++++++++++++++++++');
-          print(widget.model.appointmentStatus.toString());
-          print(state.model.appointmentStatus.toString());
-          print(widget.model.appointmentStatus.toString());
-
+          AppLogger.debug(
+            'Appointment details refreshed',
+            tag: 'APPOINTMENT',
+            data: {
+              'appointmentId': widget.model.id,
+              'previousStatus': widget.model.appointmentStatus.toString(),
+              'nextStatus': state.model.appointmentStatus.toString(),
+            },
+          );
           widget.model = state.model;
-          print('++++++++++++++++++++++++++++++++');
         }
       },
       builder: (context, state) {
@@ -313,11 +314,12 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                               ),
                             ),
                           ),
-                            _InfoItem(
-                              img: 'marker_fill.png',
-                              title: state.model.address.address,
-                            ),
-                          if (state.model.isHourly && state.model.canShowUserDetails)
+                          _InfoItem(
+                            img: 'marker_fill.png',
+                            title: state.model.address.address,
+                          ),
+                          if (state.model.isHourly &&
+                              state.model.canShowUserDetails)
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 28.w,
@@ -830,15 +832,29 @@ Future<void> _deactivateRooms(String userId, String providerId) async {
         .get();
 
     if (snapshot.docs.isEmpty) {
-      print("No rooms found for $userId / $providerId");
+      AppLogger.warning(
+        'No rooms found to deactivate',
+        tag: 'CHAT',
+        data: {'userId': userId, 'providerId': providerId},
+      );
       return;
     }
 
     for (var doc in snapshot.docs) {
       await doc.reference.update({'is_active': false});
-      print('Room ${doc.id} is_active updated to false');
+      AppLogger.info(
+        'Room marked inactive',
+        tag: 'CHAT',
+        data: {'roomId': doc.id},
+      );
     }
-  } catch (e) {
-    print("Error deactivating rooms: $e");
+  } catch (e, stackTrace) {
+    AppLogger.error(
+      'Failed to deactivate chat rooms',
+      tag: 'CHAT',
+      error: e,
+      stackTrace: stackTrace,
+      data: {'userId': userId, 'providerId': providerId},
+    );
   }
 }

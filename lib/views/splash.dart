@@ -4,8 +4,10 @@ import 'package:glovana_provider/views/auth/done_complete_profile.dart';
 
 import '../core/app_theme.dart';
 import '../core/design/app_image.dart';
+import '../core/logic/app_logger.dart';
 import '../core/logic/cache_helper.dart';
 import '../core/logic/helper_methods.dart';
+import '../core/logic/provider_account_status.dart';
 import 'auth/login/view.dart';
 import 'home_nav/view.dart';
 
@@ -64,27 +66,35 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 800));
     setState(() => _showShapes = true);
     await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
 
+    if (CacheHelper.isAuthed) {
+      await ProviderAccountStatusHelper.refresh();
+    }
+
+    if (mounted) {
       if (CacheHelper.isAuthed) {
-        if (CacheHelper.activate == 3||CacheHelper.activate == 2) {
-          navigateTo(DoneCompleteProfileView(), keepHistory: false);
+        if (ProviderAccountStatusHelper.needsApproval(CacheHelper.activate)) {
+          navigateTo(const DoneCompleteProfileView(), keepHistory: false);
         } else {
-          navigateTo(HomeNavView(), keepHistory: false);
+          navigateTo(const HomeNavView(), keepHistory: false);
         }
       } else {
-        navigateTo(LoginView(), keepHistory: false);
+        navigateTo(const LoginView(), keepHistory: false);
       }
     }
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     final width = MediaQuery.of(context).size.width;
     isTablet = width >= 650;
-
-    print("isTablet: $isTablet");
+    AppLogger.debug(
+      'Splash layout size classified',
+      tag: 'UI',
+      data: {'isTablet': isTablet, 'width': width},
+    );
   }
 
   @override
@@ -109,14 +119,13 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _showShapes ? 1 : 0,
                 duration: const Duration(seconds: 1),
                 child: RotatedBox(
-                  quarterTurns: isTablet?1:0,
+                  quarterTurns: isTablet ? 1 : 0,
                   child: Image.asset(
                     "assets/images/splash_bg.png",
-                     fit: BoxFit.cover,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-
 
               // Foreground animation
               Center(
@@ -145,15 +154,15 @@ class _SplashScreenState extends State<SplashScreen>
                       duration: const Duration(milliseconds: 1500),
                       curve: Curves.easeInOut,
                       left: !_moveToRight
-                          ? screenWidth
-                          / 2 -
+                          ? screenWidth / 2 -
                                 35
                                     .w // center
                           : !_moveBack
                           ? screenWidth -
                                 80
                                     .w // full right
-                          : screenWidth / 2 - (isTablet? 230.w:170.w), // beside text
+                          : screenWidth / 2 -
+                                (isTablet ? 230.w : 170.w), // beside text
                       child: Image.asset(
                         "assets/images/logo.png",
                         width: 67.h,

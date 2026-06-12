@@ -6,6 +6,7 @@ import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/design/app_failed.dart';
 import 'package:glovana_provider/core/design/app_loading.dart';
+import 'package:glovana_provider/core/logic/app_logger.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
 import 'package:glovana_provider/features/delete_discount/bloc.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
@@ -26,7 +27,6 @@ class DiscountsHistoryView extends StatefulWidget {
 class _DiscountsHistoryViewState extends State<DiscountsHistoryView> {
   final bloc = KiwiContainer().resolve<GetDiscountsBloc>();
   //795970357
-
 
   @override
   void initState() {
@@ -54,11 +54,14 @@ class _DiscountsHistoryViewState extends State<DiscountsHistoryView> {
               }
               return ListView.separated(
                 padding: EdgeInsets.all(14.r),
-                itemBuilder: (context, index) =>
-                    _Item(model: state.list[index],
-                    onSuccess: () {
-                      bloc.add(GetDiscountsEvent(providerTypeId: widget.providerId));
-                    },),
+                itemBuilder: (context, index) => _Item(
+                  model: state.list[index],
+                  onSuccess: () {
+                    bloc.add(
+                      GetDiscountsEvent(providerTypeId: widget.providerId),
+                    );
+                  },
+                ),
                 separatorBuilder: (context, index) => SizedBox(height: 12.h),
                 itemCount: state.list.length,
               );
@@ -84,12 +87,13 @@ class _Item extends StatefulWidget {
 class _ItemState extends State<_Item> {
   final bloc = KiwiContainer().resolve<DeleteDiscountBloc>();
 
-  int selectedId=0;
+  int selectedId = 0;
   @override
   void initState() {
     super.initState();
-    selectedId=widget.model.id;
+    selectedId = widget.model.id;
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -124,14 +128,18 @@ class _ItemState extends State<_Item> {
               BlocConsumer<DeleteDiscountBloc, DeleteDiscountStates>(
                 bloc: bloc,
                 buildWhen: (previous, current) =>
-                current is DeleteDiscountLoadingState ||
+                    current is DeleteDiscountLoadingState ||
                     current is DeleteDiscountFailedState ||
                     current is DeleteDiscountSuccessState,
 
                 listener: (context, deleteState) {
                   if (deleteState is DeleteDiscountSuccessState) {
-                    print("111111");
-                    widget.onSuccess(); // ✅ هتشتغل
+                    AppLogger.info(
+                      'Discount deleted successfully',
+                      tag: 'DISCOUNT',
+                      data: {'discountId': widget.model.id},
+                    );
+                    widget.onSuccess();
                   }
                 },
 

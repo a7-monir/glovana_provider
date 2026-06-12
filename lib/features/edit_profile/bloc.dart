@@ -1,16 +1,11 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/logic/dio_helper.dart';
 import '../../../core/logic/helper_methods.dart';
-import '../../core/logic/cache_helper.dart';
-
 import '../../core/logic/firebase_notifications.dart';
+import '../../core/logic/cache_helper.dart';
 import '../login/bloc.dart';
 
 part 'events.dart';
@@ -77,9 +72,27 @@ class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
     final response = await _dio.postData(
       url: "provider/update_profile",
       data: formData,
+      withFiles: true,
     );
     if (response.data['status'] ==true) {
-      model = User.fromJson(response.data['data']['provider']);
+      final rawData = response.data['data'];
+      final providerJson =
+          rawData is Map<String, dynamic> &&
+                  rawData['provider'] is Map<String, dynamic>
+              ? rawData['provider'] as Map<String, dynamic>
+              : rawData;
+
+      if (providerJson is! Map<String, dynamic>) {
+        emit(
+          EditProfileFailedState(
+            msg: 'Unable to parse updated profile data.',
+            statusCode: response.statusCode,
+          ),
+        );
+        return;
+      }
+
+      model = User.fromJson(providerJson);
       CacheHelper.saveData(model!);
       emit(EditProfileSuccessState(msg: response.data['message']));
     } else {
