@@ -2,7 +2,7 @@
 
 // ignore_for_file: constant_identifier_names
 
-abstract class  LocaleKeys {
+abstract class LocaleKeys {
   static const welcome = 'welcome';
   static const youAreJoiningOneOfTheBestApps = 'youAreJoiningOneOfTheBestApps';
   static const login = 'login';
@@ -35,7 +35,8 @@ abstract class  LocaleKeys {
   static const thisIsARequiredField = 'thisIsARequiredField';
   static const validateRequired = 'validateRequired';
   static const invalidEmail = 'invalidEmail';
-  static const validateAtLeastDigitsWithNameAndValue = 'validateAtLeastDigitsWithNameAndValue';
+  static const validateAtLeastDigitsWithNameAndValue =
+      'validateAtLeastDigitsWithNameAndValue';
   static const noInternetConnectionFound = 'noInternetConnectionFound';
   static const tryAgain = 'tryAgain';
   static const instant = 'instant';
@@ -48,7 +49,7 @@ abstract class  LocaleKeys {
   static const gallery = 'gallery';
   static const about = 'about';
   static const description = 'description';
-  static const topOptions  = 'topOptions ';
+  static const topOptions = 'topOptions ';
   static const bookAppointment = 'bookAppointment';
   static const bookNow = 'bookNow';
   static const servicesPricing = 'servicesPricing';
@@ -133,14 +134,15 @@ abstract class  LocaleKeys {
   static const products = 'products';
   static const providers = 'providers';
   static const tapToSelectService = 'tapToSelectService';
-  static const noOfPerson  = 'noOfPerson ';
+  static const noOfPerson = 'noOfPerson ';
   static const allServices = 'allServices';
   static const alwaysOpen = 'alwaysOpen';
   static const deliveryArea = 'deliveryArea';
   static const person = 'person';
   static const add = 'add';
   static const remove = 'remove';
-  static const youMustChooseServicesForAllPersons = 'youMustChooseServicesForAllPersons';
+  static const youMustChooseServicesForAllPersons =
+      'youMustChooseServicesForAllPersons';
   static const noAvailableTimeSlots = 'noAvailableTimeSlots';
   static const date = 'date';
   static const time = 'time';
@@ -153,6 +155,8 @@ abstract class  LocaleKeys {
   static const arabic = 'arabic';
   static const english = 'english';
   static const apply = 'apply';
+  static const all = 'all';
+  static const clear = 'clear';
   static const language = 'language';
   static const areYouSureYouWantLogout = 'areYouSureYouWantLogout';
   static const yesLogout = 'yesLogout';
@@ -202,7 +206,8 @@ abstract class  LocaleKeys {
   static const workNumber = 'workNumber';
   static const workingHours = 'workingHours';
   static const WhatYourService = 'WhatYourService';
-  static const setTheMaximumNumberOfBookingsPerHour = 'setTheMaximumNumberOfBookingsPerHour';
+  static const setTheMaximumNumberOfBookingsPerHour =
+      'setTheMaximumNumberOfBookingsPerHour';
   static const howMuchDoYouChargePerHour = 'howMuchDoYouChargePerHour';
   static const availableServices = 'availableServices';
   static const selectedServices = 'selectedServices';
@@ -221,7 +226,8 @@ abstract class  LocaleKeys {
   static const nationalID = 'nationalID';
   static const commercialRegistration = 'commercialRegistration';
   static const takePhotos = 'takePhotos';
-  static const yourApplicationIsBeingProcessed = 'yourApplicationIsBeingProcessed';
+  static const yourApplicationIsBeingProcessed =
+      'yourApplicationIsBeingProcessed';
   static const basicInformation = 'basicInformation';
   static const details = 'details';
   static const photos = 'photos';
@@ -230,18 +236,22 @@ abstract class  LocaleKeys {
   static const on = 'on';
   static const submitDeactivationRequest = 'submitDeactivationRequest';
   static const deleteAccount = 'deleteAccount';
-  static const areYouSureYouWantDeleteAccount = 'areYouSureYouWantDeleteAccount';
+  static const areYouSureYouWantDeleteAccount =
+      'areYouSureYouWantDeleteAccount';
   static const yesDelete = 'yesDelete';
   static const completeData = 'completeData';
   static const accept = 'accept';
   static const reject = 'reject';
   static const onTheWay = 'onTheWay';
-  static const hereYouCanCreateGeneralDiscount = 'hereYouCanCreateGeneralDiscount';
-  static const selectTheServiceYouLikeToApplyDiscountTo = 'selectTheServiceYouLikeToApplyDiscountTo';
+  static const hereYouCanCreateGeneralDiscount =
+      'hereYouCanCreateGeneralDiscount';
+  static const selectTheServiceYouLikeToApplyDiscountTo =
+      'selectTheServiceYouLikeToApplyDiscountTo';
   static const selectAll = 'selectAll';
   static const days = 'days';
   static const pleaseSelectService = 'pleaseSelectService';
-  static const pleaseSelectDiscountPercentage = 'pleaseSelectDiscountPercentage';
+  static const pleaseSelectDiscountPercentage =
+      'pleaseSelectDiscountPercentage';
   static const pleaseSelectRangeOfDays = 'pleaseSelectRangeOfDays';
   static const discountTitle = 'discountTitle';
   static const discountDescription = 'discountDescription';
@@ -254,7 +264,8 @@ abstract class  LocaleKeys {
   static const canResentCodeAround = 'canResentCodeAround';
   static const minute = 'minute';
   static const resetPassword = 'resetPassword';
-  static const pleaseEnterYourPhoneToResetYourPassword = 'pleaseEnterYourPhoneToResetYourPassword';
+  static const pleaseEnterYourPhoneToResetYourPassword =
+      'pleaseEnterYourPhoneToResetYourPassword';
   static const pleaseEnterYourNewPassword = 'pleaseEnterYourNewPassword';
   static const confirmPassword = 'confirmPassword';
   static const passwordsNotMatched = 'passwordsNotMatched';
@@ -273,5 +284,4 @@ abstract class  LocaleKeys {
   static const message = 'message';
   static const youMustConfirmPayment = 'youMustConfirmPayment';
   static const stopsInstantRequestsOnly = 'stopsInstantRequestsOnly';
-
 }

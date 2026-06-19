@@ -36,6 +36,8 @@ class GetAppointmentsBloc
   String userArriveLength = '0';
   String startWorkLength = '0';
   String inWayLength = '0';
+  String completedLength = '0';
+  String canceledLength = '0';
 
   int? getStatus(AppointmentStatus status) {
     switch (status) {
@@ -141,6 +143,14 @@ class GetAppointmentsBloc
         AppointmentStatus.onTheWay,
         allList,
       );
+      completedLength = getAppointmentsCountByStatus(
+        AppointmentStatus.completed,
+        allList,
+      );
+      canceledLength = getAppointmentsCountByStatus(
+        AppointmentStatus.canceled,
+        allList,
+      );
       AppLogger.debug(
         'Appointments summary updated',
         tag: 'APPOINTMENT',
@@ -151,6 +161,8 @@ class GetAppointmentsBloc
           'arrivedUser': userArriveLength,
           'startWork': startWorkLength,
           'onTheWay': inWayLength,
+          'completed': completedLength,
+          'canceled': canceledLength,
         },
       );
       emit(GetAllAppointmentsSuccessState());

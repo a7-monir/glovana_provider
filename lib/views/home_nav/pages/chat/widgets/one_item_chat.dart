@@ -10,14 +10,12 @@ class OnePersonChatItem extends StatelessWidget {
   final Room room;
   final Function()? onTap;
 
-  const OnePersonChatItem({
-    super.key,
-    required this.room,
-    required this.onTap,
-  });
+  const OnePersonChatItem({super.key, required this.room, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    final lastMessageType = room.lastMessageType?.toUpperCase();
+
     return Padding(
       padding: EdgeInsets.only(bottom: 16.sp),
       child: InkWell(
@@ -38,7 +36,6 @@ class OnePersonChatItem extends StatelessWidget {
                 ),
                 SizedBox(width: 8.w),
 
-
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -57,9 +54,9 @@ class OnePersonChatItem extends StatelessWidget {
                       SizedBox(
                         width: 150.w,
                         child: Text(
-                          room.lastMessageType == "image"
+                          lastMessageType == "IMAGE"
                               ? "Photo"
-                              : room.lastMessageType == "voice"
+                              : lastMessageType == "VOICE"
                               ? "Voice"
                               : room.lastMessage ?? "",
                           style: TextStyle(
@@ -75,13 +72,14 @@ class OnePersonChatItem extends StatelessWidget {
               ],
             ),
 
-
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 if (room.lastMessageDate != null)
                   Text(
-                    DateFormat('hh:mm a').format(room.lastMessageDate!.toDate()),
+                    DateFormat(
+                      'hh:mm a',
+                    ).format(room.lastMessageDate!.toDate()),
                     style: TextStyle(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.normal,
@@ -90,10 +88,13 @@ class OnePersonChatItem extends StatelessWidget {
                 if (room.unreadCountProvider > 0)
                   Container(
                     margin: EdgeInsets.only(top: 4.h),
-                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6.w,
+                      vertical: 2.h,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.primary,
-                        shape: BoxShape.circle
+                      shape: BoxShape.circle,
                     ),
                     child: Text(
                       (room.unreadCountProvider).toString(),

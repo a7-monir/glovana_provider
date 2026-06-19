@@ -1,7 +1,5 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../../core/app_theme.dart';
-import '../../../../core/logic/cache_helper.dart';
 import 'models/message_model.dart';
 import 'models/rooms_model.dart';
 
@@ -29,26 +27,42 @@ class ChatUtils {
 
     String roomId;
     if (querySnapshot.docs.isNotEmpty) {
-      // روم موجودة مسبقًا → تحديثها
       roomId = querySnapshot.docs.first.id;
-      await firestore.collection('rooms').doc(roomId).update(room.toJson());
+      final updateData = <String, dynamic>{
+        if (room.userName != null && room.userName!.isNotEmpty)
+          'user_name': room.userName,
+        if (room.providerName != null && room.providerName!.isNotEmpty)
+          'provider_name': room.providerName,
+        if (room.userImageUrl != null && room.userImageUrl!.isNotEmpty)
+          'user_image_url': room.userImageUrl,
+        if (room.providerImageUrl != null && room.providerImageUrl!.isNotEmpty)
+          'provider_image_url': room.providerImageUrl,
+        'is_active': room.isActive,
+      };
+
+      if (updateData.isNotEmpty) {
+        await firestore.collection('rooms').doc(roomId).update(updateData);
+      }
     } else {
-      // روم جديدة → إنشاءها
       final docRef = await firestore.collection('rooms').add(room.toJson());
       roomId = docRef.id;
     }
 
     final docSnapshot = await firestore.collection('rooms').doc(roomId).get();
-    if (!docSnapshot.exists) {
+    final docData = docSnapshot.data();
+    if (!docSnapshot.exists || docData == null) {
       throw Exception('Failed to create/update room');
     }
 
-    return Room.fromJson(docSnapshot.data()!, docId: docSnapshot.id);
+    return Room.fromJson(docData, docId: docSnapshot.id);
   }
 
   /// جلب كل الرومات للبروفايدر
   /// يمكن فلترتهم حسب isActive لو عايز تظهر الرومات النشطة فقط
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getRooms(String providerId, {bool onlyActive = false}) {
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getRooms(
+    String providerId, {
+    bool onlyActive = false,
+  }) {
     var query = firestore
         .collection('rooms')
         .where('provider_id', isEqualTo: providerId);
@@ -62,9 +76,9 @@ class ChatUtils {
 
   /// جلب رسائل روم محدد
   static Stream<QuerySnapshot<Map<String, dynamic>>> getRoomMessages(
-      String userId,
-      String providerId,
-      ) {
+    String userId,
+    String providerId,
+  ) {
     return firestore
         .collection('messages')
         .where('provider_id', isEqualTo: providerId)
@@ -84,33 +98,24 @@ class ChatUtils {
         .limit(1)
         .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      final docRef = firestore.collection('rooms').doc(querySnapshot.docs.first.id);
+    if (querySnapshot.docs.isEmpty) return;
 
-      if (fromProvider) {
-        // انت البروفايدر → الرسائل غير مقروءة عند اليوزر
-        await docRef.update({
-          'last_message': message.content,
-          'last_message_date': message.sentAt,
-          'last_message_type': message.type,
-          'last_message_user_id': message.userId,
-          'is_read_user': false,
-          'unread_count_user': FieldValue.increment(1),
-          'is_active': true, // أي رسالة جديدة تجعل الشات نشط
-        });
-      } else {
-        // من اليوزر → الرسائل غير مقروءة عند البروفايدر
-        await docRef.update({
-          'last_message': message.content,
-          'last_message_date': message.sentAt,
-          'last_message_type': message.type,
-          'last_message_user_id': message.userId,
-          'is_read_provider': false,
-          'unread_count_provider': FieldValue.increment(1),
-          'is_active': true, // أي رسالة جديدة تجعل الشات نشط
-        });
-      }
-    }
+    final roomDoc = querySnapshot.docs.first;
+    await firestore.collection('rooms').doc(roomDoc.id).update({
+      'last_message': message.content,
+      'last_message_date': message.sentAt,
+      'last_message_type': message.type,
+      'last_message_user_id': message.senderId,
+      'is_read_user': !fromProvider,
+      'is_read_provider': fromProvider,
+      'unread_count_user': fromProvider
+          ? FieldValue.increment(1)
+          : FieldValue.increment(0),
+      'unread_count_provider': fromProvider
+          ? FieldValue.increment(0)
+          : FieldValue.increment(1),
+      'is_active': true,
+    });
   }
 
   /// تحديد الرسائل كمقروءة للبروفايدر

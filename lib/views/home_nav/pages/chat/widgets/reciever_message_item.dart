@@ -3,8 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
-import 'package:glovana_provider/core/design/app_button.dart';
-import 'package:glovana_provider/core/design/app_colors.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/constants.dart';
 
@@ -30,13 +28,12 @@ class ReceiverMsgItemWidget extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(100.r),
-          child:
-          AppImage(recieverPhoto,
+          child: AppImage(
+            recieverPhoto,
             withBaseImageUrl: !recieverPhoto.toLowerCase().startsWith('http'),
             height: 40.sp,
             width: 40.sp,
             fit: BoxFit.fill,
-
           ),
         ),
 
@@ -58,39 +55,59 @@ class ReceiverMsgItemWidget extends StatelessWidget {
                 ),
                 child: message.type == "IMAGE"
                     ? ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: CachedNetworkImage(
-                    imageUrl: resolveMediaUrl(message.content.toString()),
-                    height: Constants.getHeight(context) * 0.2,
-                    width: 30,
-                    fit: BoxFit.cover,
-                  ),
-                )
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: CachedNetworkImage(
+                          imageUrl: resolveMediaUrl(message.content.toString()),
+                          height: Constants.getHeight(context) * 0.2,
+                          width: 30,
+                          fit: BoxFit.cover,
+                        ),
+                      )
                     : message.type == "FILE"
                     ? InkWell(
-                  onTap: () => launchUrl(Uri.parse(resolveMediaUrl(message.content.toString()))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.file_copy_outlined, size: 30, color: Colors.black),
-                      const SizedBox(width: 10),
-                      Text("open_file", style: TextStyle(fontSize: 16.sp, color: Colors.black)),
-                    ],
-                  ),
-                )
+                        onTap: () => launchUrl(
+                          Uri.parse(
+                            resolveMediaUrl(message.content.toString()),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.file_copy_outlined,
+                              size: 30,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              "open_file",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                     : message.type == "VOICE"
                     ? AudioPlayerWidget(
-                  backgroundColor: AppTheme.primary,
-                  progressBarColor: Colors.white,
-                  audioType: AudioType.url,
-                  playerStyle: PlayerStyle.style1,
-                  textDirection: Constants.lang == "en" ? ui.TextDirection.ltr : ui.TextDirection.rtl,
-                  audioPath: resolveMediaUrl(message.content.toString()),
-                )
+                        backgroundColor: AppTheme.primary,
+                        progressBarColor: Colors.white,
+                        audioType: AudioType.url,
+                        playerStyle: PlayerStyle.style1,
+                        textDirection: Constants.lang == "en"
+                            ? ui.TextDirection.ltr
+                            : ui.TextDirection.rtl,
+                        audioPath: resolveMediaUrl(message.content.toString()),
+                      )
                     : Text(
-                  message.content.toString(),
-                  style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400),
-                ),
+                        message.content.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
               ),
               const SizedBox(height: 6),
               Text(
@@ -111,6 +128,7 @@ class ReceiverMsgItemWidget extends StatelessWidget {
     );
   }
 }
+
 String resolveMediaUrl(String content) {
   if (content.startsWith('http://') || content.startsWith('https://')) {
     return content;

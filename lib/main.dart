@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +14,12 @@ import 'core/app_theme.dart';
 import 'core/logic/app_logger.dart';
 import 'core/logic/bloc_observer.dart';
 import 'core/logic/cache_helper.dart';
+import 'core/logic/firebase_init.dart';
 import 'core/logic/firebase_notifications.dart';
 import 'core/logic/helper_methods.dart';
 import 'core/logic/un_focus.dart';
 import 'features/service_locator.dart';
 import 'features/toggle_lang/bloc.dart';
-import 'firebase_options.dart';
 
 import 'package:firebase_app_check/firebase_app_check.dart';
 
@@ -162,17 +161,7 @@ Future<void> init() async {
 
 Future<void> initFirebase() async {
   try {
-    const firebaseAppName = 'GlovanaApp';
-
-    FirebaseApp? app;
-
-    try {
-      app = Firebase.app(firebaseAppName);
-    } catch (_) {
-      app = await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-    }
+    final app = await ensureFirebaseInitialized();
 
     if (kDebugMode) {
       AppLogger.info(
@@ -208,6 +197,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      GlobalNotification().flushPendingNavigation();
+    });
   }
 
   @override

@@ -1,9 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_input.dart';
-import 'package:glovana_provider/core/design/constants.dart';
-import 'package:glovana_provider/core/design/custom_text_field.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 
 class SearchChatWidget extends StatefulWidget {
