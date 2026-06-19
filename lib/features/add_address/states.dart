@@ -7,7 +7,7 @@ class AddAddressLoadingState extends AddAddressStates {}
 class AddAddressFailedState extends AddAddressStates {
   final CustomResponse response;
 
-  AddAddressFailedState({required this.response,}) {
+  AddAddressFailedState({required this.response}) {
     showMessage(response.msg);
   }
 }

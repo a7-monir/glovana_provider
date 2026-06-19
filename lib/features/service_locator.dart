@@ -1,4 +1,3 @@
-
 import 'package:glovana_provider/features/payment_report/bloc.dart';
 import 'package:glovana_provider/features/pending_payment/bloc.dart';
 import 'package:glovana_provider/features/provider_profile/bloc.dart';
@@ -25,7 +24,6 @@ import 'add_discount/bloc.dart';
 import 'address/bloc.dart';
 import 'appointment_details/bloc.dart';
 import 'appointments/bloc.dart';
-
 import 'check_phone/bloc.dart';
 import 'complete_data/bloc.dart';
 import 'complete_data_update/bloc.dart';
@@ -34,7 +32,6 @@ import 'delete_discount/bloc.dart';
 import 'delete_gallary/bloc.dart';
 import 'delivery/bloc.dart';
 import 'edit_profile/bloc.dart';
-
 import 'get_discount/bloc.dart';
 import 'google_login/bloc.dart';
 import 'login/bloc.dart';
@@ -57,7 +54,7 @@ void initKiwi() {
   con.registerFactory((c) => SocialLoginBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetWalletBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetStaticPageBloc(c.resolve<DioHelper>()));
-  con.registerFactory((c) => SignOutBloc(c.resolve<DioHelper>()));
+  con.registerFactory((c) => SignOutBloc());
   con.registerFactory((c) => GetServicesBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetAppointmentDetailsBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => UpdateStatusBloc(c.resolve<DioHelper>()));

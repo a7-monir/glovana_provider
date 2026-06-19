@@ -13,6 +13,4 @@ class CompleteDataFailedState extends CompleteDataStates {
   }
 }
 
-class CompleteDataSuccessState extends CompleteDataStates {
-
-}
+class CompleteDataSuccessState extends CompleteDataStates {}

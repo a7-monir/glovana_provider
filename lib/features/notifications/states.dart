@@ -7,7 +7,6 @@ class GetNotificationsLoadingState extends GetNotificationsStates {}
 class GetNotificationsFailedState extends GetNotificationsStates {
   final CustomResponse response;
 
-
   GetNotificationsFailedState({required this.response});
 }
 

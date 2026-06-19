@@ -1,6 +1,5 @@
 part of '../login/view.dart';
 
-
 class SwitchButtonSection extends StatelessWidget {
   final bool isLogin;
 
@@ -11,7 +10,7 @@ class SwitchButtonSection extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40.r),
-        color:  Theme.of(context).cardColor,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.25),
@@ -29,7 +28,7 @@ class SwitchButtonSection extends StatelessWidget {
             isActive: isLogin,
             onTap: () {
               if (!isLogin) {
-                navigateTo(LoginView(),keepHistory: false);
+                navigateTo(LoginView(), keepHistory: false);
               }
             },
           ),
@@ -38,7 +37,7 @@ class SwitchButtonSection extends StatelessWidget {
             isActive: !isLogin,
             onTap: () {
               if (isLogin) {
-                navigateTo(SignupView(),keepHistory: false);
+                navigateTo(SignupView(), keepHistory: false);
               }
             },
           ),
@@ -46,16 +45,17 @@ class SwitchButtonSection extends StatelessWidget {
       ),
     );
   }
-
-
-
-
 }
+
 class _BuildToggleButton extends StatelessWidget {
   final String text;
   final bool isActive;
   final VoidCallback onTap;
-  const _BuildToggleButton({required this.text, required this.isActive, required this.onTap});
+  const _BuildToggleButton({
+    required this.text,
+    required this.isActive,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,23 +66,26 @@ class _BuildToggleButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(40),
           boxShadow: [
-
-            if(isActive)
+            if (isActive)
               BoxShadow(
-                  offset: Offset(0, -4),
-                  blurRadius: 20.r,
-                  color: Colors.white.withValues(alpha: .72),
-                  blurStyle: BlurStyle.inner
-              )
+                offset: Offset(0, -4),
+                blurRadius: 20.r,
+                color: Colors.white.withValues(alpha: .72),
+                blurStyle: BlurStyle.inner,
+              ),
           ],
-          color: isActive ? Theme.of(context).secondaryHeaderColor :Theme.of(context).scaffoldBackgroundColor,
+          color: isActive
+              ? Theme.of(context).secondaryHeaderColor
+              : Theme.of(context).scaffoldBackgroundColor,
         ),
         child: Text(
           text,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color:  Theme.of(context).primaryColor.withValues(alpha: isActive?1:.4) ,
+            color: Theme.of(
+              context,
+            ).primaryColor.withValues(alpha: isActive ? 1 : .4),
           ),
         ),
       ),

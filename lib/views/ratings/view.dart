@@ -40,7 +40,8 @@ class _RatingsViewState extends State<RatingsView> {
               },
             );
           } else if (state is GetRatingsSuccessState) {
-            if(state.list.isEmpty)return AppEmpty(title: LocaleKeys.ratings.tr(),);
+            if (state.list.isEmpty)
+              return AppEmpty(title: LocaleKeys.ratings.tr());
             return ListView.separated(
               itemBuilder: (context, index) => _Item(model: state.list[index]),
               separatorBuilder: (context, index) => SizedBox(height: 14.h),

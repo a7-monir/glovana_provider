@@ -78,8 +78,9 @@ class _AppInputState extends State<AppInput> {
     return Padding(
       padding: EdgeInsets.only(bottom: widget.marginBottom ?? 16.h),
       child: Column(
-        crossAxisAlignment:
-        widget.isCenterTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+        crossAxisAlignment: widget.isCenterTitle
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
         children: [
           if (widget.fixedPositionedLabel != null)
             Padding(
@@ -105,7 +106,8 @@ class _AppInputState extends State<AppInput> {
                   onFocusChange: widget.onFocusChange,
                   child: TextFormField(
                     onTapOutside: (event) {
-                      if (widget.onFieldSubmitted != null && widget.controller != null) {
+                      if (widget.onFieldSubmitted != null &&
+                          widget.controller != null) {
                         widget.onFieldSubmitted!(widget.controller!.text);
                       }
                     },
@@ -115,7 +117,8 @@ class _AppInputState extends State<AppInput> {
                     maxLines: widget.maxLines,
                     textAlign: widget.textAlign ?? TextAlign.start,
                     obscureText:
-                    ((widget.inputType == InputType.password) && !isPasswordShown) ||
+                        ((widget.inputType == InputType.password) &&
+                            !isPasswordShown) ||
                         widget.isPassword,
                     textInputAction: widget.textInputAction,
                     onFieldSubmitted: widget.onFieldSubmitted,
@@ -138,10 +141,13 @@ class _AppInputState extends State<AppInput> {
       if (widget.isChat) ChatInputFormatter(), // يمنع أرقام الموبايل واللينكات
       if ([InputType.money].contains(widget.inputType))
         FilteringTextInputFormatter.allow(RegExp("^(?!0)[0-9\\s]*")),
-      if (widget.maxLength != null) LengthLimitingTextInputFormatter(widget.maxLength),
-      if (widget.keyboardType == TextInputType.datetime) CardExpirationFormatter(),
+      if (widget.maxLength != null)
+        LengthLimitingTextInputFormatter(widget.maxLength),
+      if (widget.keyboardType == TextInputType.datetime)
+        CardExpirationFormatter(),
       if (widget.isCardNumber) CardFormatter(separator: '-'),
-      if ((widget.keyboardType == TextInputType.phone || widget.inputType == InputType.phone) &&
+      if ((widget.keyboardType == TextInputType.phone ||
+              widget.inputType == InputType.phone) &&
           !widget.isChat)
         FilteringTextInputFormatter.deny(RegExp(r'^0+(?=.)')),
     ];
@@ -162,30 +168,33 @@ class _AppInputState extends State<AppInput> {
       isDense: widget.isDense,
       labelText: widget.label,
       contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-      prefixIcon: widget.inputType == InputType.phone && CacheHelper.lang == "en"
+      prefixIcon:
+          widget.inputType == InputType.phone && CacheHelper.lang == "en"
           ? countryCode
           : widget.prefix,
       suffixIcon: widget.inputType == InputType.password
           ? GestureDetector(
-        child: Container(
-          color: Colors.transparent,
-          child: Icon(
-            Icons.remove_red_eye_outlined,
-            color: isPasswordShown ? Theme.of(context).primaryColor : Theme.of(context).hintColor,
-          ),
-        ),
-        onTap: () {
-          isPasswordShown = !isPasswordShown;
-          if (widget.onTogglePassword != null) {
-            widget.onTogglePassword!(isPasswordShown);
-          }
-          setState(() {});
-        },
-      )
+              child: Container(
+                color: Colors.transparent,
+                child: Icon(
+                  Icons.remove_red_eye_outlined,
+                  color: isPasswordShown
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).hintColor,
+                ),
+              ),
+              onTap: () {
+                isPasswordShown = !isPasswordShown;
+                if (widget.onTogglePassword != null) {
+                  widget.onTogglePassword!(isPasswordShown);
+                }
+                setState(() {});
+              },
+            )
           : widget.suffix ??
-          (widget.inputType == InputType.phone && CacheHelper.lang == "ar"
-              ? countryCode
-              : null),
+                (widget.inputType == InputType.phone && CacheHelper.lang == "ar"
+                    ? countryCode
+                    : null),
     );
   }
 
@@ -202,7 +211,11 @@ class _AppInputState extends State<AppInput> {
               Text(
                 "+962",
                 textDirection: TextDirection.ltr,
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w400, color: Theme.of(context).hintColor),
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).hintColor,
+                ),
               ),
             if (widget.inputType == InputType.phone)
               Padding(
@@ -224,10 +237,16 @@ class _AppInputState extends State<AppInput> {
 // يمنع كتابة أرقام الموبايل واللينكات في الشات
 class ChatInputFormatter extends TextInputFormatter {
   final RegExp _phoneRegex = RegExp(r'\b\d{7,}\b');
-  final RegExp _linkRegex = RegExp(r'(https?:\/\/|www\.)', caseSensitive: false);
+  final RegExp _linkRegex = RegExp(
+    r'(https?:\/\/|www\.)',
+    caseSensitive: false,
+  );
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     String text = newValue.text.trim(); // إزالة المسافات من البداية والنهاية
     String cleanedText = text.replaceAll(' ', ''); // إزالة أي مسافات داخل النص
 
@@ -243,7 +262,10 @@ class ChatInputFormatter extends TextInputFormatter {
 
 class CardExpirationFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final newValueString = newValue.text;
     String valueToReturn = '';
 
@@ -251,13 +273,17 @@ class CardExpirationFormatter extends TextInputFormatter {
       if (newValueString[i] != '/') valueToReturn += newValueString[i];
       var nonZeroIndex = i + 1;
       final contains = valueToReturn.contains(RegExp(r'\/'));
-      if (nonZeroIndex % 2 == 0 && nonZeroIndex != newValueString.length && !(contains)) {
+      if (nonZeroIndex % 2 == 0 &&
+          nonZeroIndex != newValueString.length &&
+          !(contains)) {
         valueToReturn += '/';
       }
     }
     return newValue.copyWith(
       text: valueToReturn,
-      selection: TextSelection.fromPosition(TextPosition(offset: valueToReturn.length)),
+      selection: TextSelection.fromPosition(
+        TextPosition(offset: valueToReturn.length),
+      ),
     );
   }
 }
@@ -268,7 +294,10 @@ class CardFormatter extends TextInputFormatter {
   CardFormatter({required this.separator});
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     var oldS = oldValue.text;
     var newS = newValue.text;
     var endsWithSeparator = false;
@@ -283,8 +312,13 @@ class CardFormatter extends TextInputFormatter {
       var clean = newS.replaceAll(separator, '');
       if (!endsWithSeparator && clean.length > 1 && clean.length % 4 == 1) {
         return newValue.copyWith(
-          text: newS.substring(0, newS.length - 1) + separator + newS.characters.last,
-          selection: TextSelection.collapsed(offset: newValue.selection.end + separator.length),
+          text:
+              newS.substring(0, newS.length - 1) +
+              separator +
+              newS.characters.last,
+          selection: TextSelection.collapsed(
+            offset: newValue.selection.end + separator.length,
+          ),
         );
       }
     }
@@ -300,7 +334,9 @@ class CardFormatter extends TextInputFormatter {
       if (endsWithSeparator && clean.isNotEmpty && clean.length % 4 == 0) {
         return newValue.copyWith(
           text: newS.substring(0, newS.length - separator.length),
-          selection: TextSelection.collapsed(offset: newValue.selection.end - separator.length),
+          selection: TextSelection.collapsed(
+            offset: newValue.selection.end - separator.length,
+          ),
         );
       }
     }

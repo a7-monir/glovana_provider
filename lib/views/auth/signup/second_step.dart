@@ -610,7 +610,7 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
               SizedBox(height: 30.h),
               Divider(height: 2),
               SizedBox(height: 20.h),
-              if (widget.firstStepModel.bookingType != "hourly")...[
+              if (widget.firstStepModel.bookingType != "hourly") ...[
                 Text(LocaleKeys.WhatYourService.tr()),
                 SizedBox(height: 10.h),
                 BlocConsumer(
@@ -629,7 +629,8 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                       );
                     } else if (state is GetServicesSuccessState) {
                       return InkWell(
-                        onTap: () => widget.firstStepModel.bookingType == "hourly"
+                        onTap: () =>
+                            widget.firstStepModel.bookingType == "hourly"
                             ? _showMultiSelect(context)
                             : _showServicePriceDialog(context),
                         child: Row(
@@ -642,53 +643,57 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                                 child: SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: _selectedServices
                                         .map(
                                           (serviceWithPrice) => Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 4.h,
-                                        ),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 4.w,
-                                          ),
-                                          margin: EdgeInsetsDirectional.only(
-                                            end: 8.w,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.hoverColor,
-                                            borderRadius:
-                                            BorderRadius.circular(15.r),
-                                            boxShadow: [AppTheme.mainShadow],
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Text(serviceWithPrice.name),
-
-                                              IconButton(
-                                                padding: EdgeInsets.zero,
-                                                constraints:
-                                                const BoxConstraints(),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _selectedServices
-                                                        .remove(
-                                                      serviceWithPrice,
-                                                    );
-                                                  });
-                                                },
-                                                icon: Icon(
-                                                  Icons.close,
-                                                  size: 20.sp,
-                                                  color: Colors.red,
-                                                ),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 4.h,
+                                            ),
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 4.w,
                                               ),
-                                            ],
+                                              margin:
+                                                  EdgeInsetsDirectional.only(
+                                                    end: 8.w,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.hoverColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(15.r),
+                                                boxShadow: [
+                                                  AppTheme.mainShadow,
+                                                ],
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Text(serviceWithPrice.name),
+
+                                                  IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    constraints:
+                                                        const BoxConstraints(),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _selectedServices
+                                                            .remove(
+                                                              serviceWithPrice,
+                                                            );
+                                                      });
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.close,
+                                                      size: 20.sp,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    )
+                                        )
                                         .toList(),
                                   ),
                                 ),
@@ -698,70 +703,78 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                                 child: SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: _selectedServicesWithPrices
                                         .map(
                                           (serviceWithPrice) => Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 4.h,
-                                        ),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 4.w,
-                                          ),
-                                          margin: EdgeInsetsDirectional.only(
-                                            end: 8.w,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.hoverColor,
-                                            borderRadius:
-                                            BorderRadius.circular(15.r),
-                                            boxShadow: [AppTheme.mainShadow],
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                serviceWithPrice.service.name,
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 4.h,
+                                            ),
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 4.w,
                                               ),
-                                              SizedBox(width: 4.w),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 4.w,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                    15.r,
+                                              margin:
+                                                  EdgeInsetsDirectional.only(
+                                                    end: 8.w,
                                                   ),
-                                                  color: AppTheme.canvasColor,
-                                                ),
-                                                child: Text(
-                                                  "${serviceWithPrice.price} ${LocaleKeys.jod.tr()}",
-                                                ),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.hoverColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(15.r),
+                                                boxShadow: [
+                                                  AppTheme.mainShadow,
+                                                ],
                                               ),
-                                              IconButton(
-                                                padding: EdgeInsets.zero,
-                                                constraints:
-                                                const BoxConstraints(),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _selectedServicesWithPrices
-                                                        .remove(
-                                                      serviceWithPrice,
-                                                    );
-                                                  });
-                                                },
-                                                icon: Icon(
-                                                  Icons.close,
-                                                  size: 20.sp,
-                                                  color: Colors.red,
-                                                ),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    serviceWithPrice
+                                                        .service
+                                                        .name,
+                                                  ),
+                                                  SizedBox(width: 4.w),
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                          horizontal: 4.w,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            15.r,
+                                                          ),
+                                                      color:
+                                                          AppTheme.canvasColor,
+                                                    ),
+                                                    child: Text(
+                                                      "${serviceWithPrice.price} ${LocaleKeys.jod.tr()}",
+                                                    ),
+                                                  ),
+                                                  IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    constraints:
+                                                        const BoxConstraints(),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _selectedServicesWithPrices
+                                                            .remove(
+                                                              serviceWithPrice,
+                                                            );
+                                                      });
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.close,
+                                                      size: 20.sp,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    )
+                                        )
                                         .toList(),
                                   ),
                                 ),
@@ -874,19 +887,20 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
                       }
                       final model = SecondStepModel(
                         firstStepModel: widget.firstStepModel,
-                        workNumber:_workNumberController.text,
+                        workNumber: _workNumberController.text,
                         pricePerHour: double.parse(
                           _pricePerHourController.text,
                         ),
                         serviceWithPrice: _selectedServicesWithPrices
                             .map((service) => service.toMap())
                             .toList(),
-                        service:widget.firstStepModel.bookingType ==
-                            "hourly"? _selectedServices
-                            .map((service) => service.id)
-                            .toList():_selectedServicesWithPrices
-                            .map((service) => service.service.id)
-                            .toList(),
+                        service: widget.firstStepModel.bookingType == "hourly"
+                            ? _selectedServices
+                                  .map((service) => service.id)
+                                  .toList()
+                            : _selectedServicesWithPrices
+                                  .map((service) => service.service.id)
+                                  .toList(),
                         availability: availability,
                       );
                       navigateTo(

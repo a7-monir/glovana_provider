@@ -6,11 +6,16 @@ import 'app_image.dart';
 
 class AppSliderAutoRun extends StatefulWidget {
   final List<String> list;
-  final bool autoPlay,withDotes;
+  final bool autoPlay, withDotes;
   final double? height;
 
-
-  const AppSliderAutoRun({super.key, required this.list,this.autoPlay=true, this.height,  this.withDotes=true,});
+  const AppSliderAutoRun({
+    super.key,
+    required this.list,
+    this.autoPlay = true,
+    this.height,
+    this.withDotes = true,
+  });
 
   @override
   State<AppSliderAutoRun> createState() => _AppSliderAutoRunState();
@@ -22,14 +27,14 @@ class _AppSliderAutoRunState extends State<AppSliderAutoRun> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height:widget.height?? 191.h,
+      height: widget.height ?? 191.h,
       child: Column(
         children: [
           Expanded(
             child: CarouselSlider.builder(
               itemCount: widget.list.length,
               options: CarouselOptions(
-                height: widget.height?? 191.h,
+                height: widget.height ?? 191.h,
                 aspectRatio: 1,
                 viewportFraction: 1,
                 initialPage: 0,
@@ -49,59 +54,57 @@ class _AppSliderAutoRunState extends State<AppSliderAutoRun> {
               ),
               itemBuilder:
                   (BuildContext context, int index, int pageViewIndex) =>
-                  Container(
-                    clipBehavior: Clip.antiAlias,
-                    margin: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
-                      boxShadow: [
-                        // BoxShadow(
-                        //   color: Colors.black.withValues(alpha: .25),
-                        //   offset: Offset(0, 4),
-                        //   blurRadius: 4.r
-                        // )
-                      ],
-                      // border: Border.all(
-                      //   color: Theme.of(context).dividerColor,
-                      //   strokeAlign: BorderSide.strokeAlignOutside,
-                      //   width: .5.w,
-                      // ),
-                    ),
-                    child: AppImage(
-                      widget.list[index],
-                      height:widget.height??  191.h,
-                      withBaseImageUrl: true,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                      Container(
+                        clipBehavior: Clip.antiAlias,
+                        margin: EdgeInsets.symmetric(horizontal: 16.w),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.r),
+                          boxShadow: [
+                            // BoxShadow(
+                            //   color: Colors.black.withValues(alpha: .25),
+                            //   offset: Offset(0, 4),
+                            //   blurRadius: 4.r
+                            // )
+                          ],
+                          // border: Border.all(
+                          //   color: Theme.of(context).dividerColor,
+                          //   strokeAlign: BorderSide.strokeAlignOutside,
+                          //   width: .5.w,
+                          // ),
+                        ),
+                        child: AppImage(
+                          widget.list[index],
+                          height: widget.height ?? 191.h,
+                          withBaseImageUrl: true,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
             ),
           ),
-          if(widget.withDotes)...[
+          if (widget.withDotes) ...[
             SizedBox(height: 12.h),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: List.generate(
                 widget.list.length,
-                    (index) => Container(
+                (index) => Container(
                   height: 8.h,
-                  width:  8.h,
+                  width: 8.h,
                   margin: EdgeInsetsDirectional.only(end: 8.w),
                   decoration: BoxDecoration(
                     // shape: BoxShape.circle,
                     borderRadius: BorderRadius.circular(32.r),
-                    color: Theme.of(context)
-                        .primaryColor
-                        .withValues(alpha:  currentPage == index ? 1 : .12),
+                    color: Theme.of(context).primaryColor.withValues(
+                      alpha: currentPage == index ? 1 : .12,
+                    ),
                   ),
                 ),
               ),
             ),
-          ]
-
+          ],
         ],
       ),
     );
   }
 }
-

@@ -5,7 +5,6 @@ import 'package:glovana_provider/views/auth/login/view.dart';
 import '../../../../core/logic/cache_helper.dart';
 import '../../../../core/logic/dio_helper.dart';
 import '../../../../core/logic/helper_methods.dart';
-import '../../../views/home_nav/view.dart';
 
 part 'events.dart';
 part 'states.dart';
@@ -16,16 +15,16 @@ class DeleteAccountBloc extends Bloc<DeleteAccountEvents, DeleteAccountStates> {
   DeleteAccountBloc(this._dioHelper) : super(DeleteAccountStates()) {
     on<DeleteAccountEvent>(_sendData);
   }
-  final reason=TextEditingController();
+  final reason = TextEditingController();
 
   Future<void> _sendData(
-      DeleteAccountEvent event, Emitter<DeleteAccountStates> emit) async {
+    DeleteAccountEvent event,
+    Emitter<DeleteAccountStates> emit,
+  ) async {
     emit(DeleteAccountLoadingState());
     final resp = await _dioHelper.send(
       "provider/delete_account",
-      data: {
-        'reason':reason.text
-      }
+      data: {'reason': reason.text},
     );
     if (resp.isSuccess) {
       await CacheHelper.logOut();

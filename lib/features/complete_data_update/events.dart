@@ -6,7 +6,10 @@ class CompleteDataUpdateEvent extends CompleteDataUpdateEvents {
   final List<ProviderType> providerTypes;
   final int providerId;
 
-  CompleteDataUpdateEvent({required this.providerTypes,required this.providerId});
+  CompleteDataUpdateEvent({
+    required this.providerTypes,
+    required this.providerId,
+  });
 }
 
 class ProviderType {
@@ -18,11 +21,11 @@ class ProviderType {
   final double lat;
   final double lng;
   final String address;
-  final String workNumber,bookingType;
+  final String workNumber, bookingType;
   final double? pricePerHour;
   final List<Map<String, dynamic>>? servicesWithPrices;
 
-// final bool isVip;
+  // final bool isVip;
   final List<int>? serviceIds;
   final File? images;
   final List<File> gallery;
@@ -38,7 +41,7 @@ class ProviderType {
     this.typeId,
     this.providerId,
     required this.name,
-    required this. bookingType,
+    required this.bookingType,
     required this.description,
     required this.workNumber,
     required this.lat,
@@ -46,8 +49,8 @@ class ProviderType {
     required this.address,
     this.pricePerHour,
     this.servicesWithPrices,
-    //  required this.isVip,
 
+    //  required this.isVip,
     this.serviceIds,
     required this.images,
     required this.gallery,
@@ -58,6 +61,7 @@ class ProviderType {
     this.practicePhoto,
   });
 }
+
 class Availability {
   int? id;
   int? providerTypeId;

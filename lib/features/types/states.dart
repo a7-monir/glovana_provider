@@ -7,7 +7,6 @@ class GetTypesLoadingState extends GetTypesStates {}
 class GetTypesFailedState extends GetTypesStates {
   final CustomResponse response;
 
-
   GetTypesFailedState({required this.response});
 }
 

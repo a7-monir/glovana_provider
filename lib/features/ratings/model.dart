@@ -1,4 +1,5 @@
 part of 'bloc.dart';
+
 class RatingData {
   late final bool status;
   late final String message;
@@ -7,9 +8,9 @@ class RatingData {
   RatingData.fromJson(Map<String, dynamic> json) {
     status = json["status"] ?? false;
     message = json["message"] ?? '';
-    data = List.from(json["data"] ?? [])
-        .map((x) => RatingModel.fromJson(x))
-        .toList();
+    data = List.from(
+      json["data"] ?? [],
+    ).map((x) => RatingModel.fromJson(x)).toList();
   }
 }
 

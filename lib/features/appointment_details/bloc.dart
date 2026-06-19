@@ -6,7 +6,8 @@ import '../../../core/logic/dio_helper.dart';
 part 'events.dart';
 part 'states.dart';
 
-class GetAppointmentDetailsBloc extends Bloc<GetAppointmentDetailsEvents, GetAppointmentDetailsStates> {
+class GetAppointmentDetailsBloc
+    extends Bloc<GetAppointmentDetailsEvents, GetAppointmentDetailsStates> {
   final DioHelper _dio;
 
   GetAppointmentDetailsBloc(this._dio) : super(GetAppointmentDetailsStates()) {
@@ -18,9 +19,7 @@ class GetAppointmentDetailsBloc extends Bloc<GetAppointmentDetailsEvents, GetApp
     Emitter<GetAppointmentDetailsStates> emit,
   ) async {
     emit(GetAppointmentDetailsLoadingState());
-    final response = await _dio.get("provider/appointments/${event.id}",
-
-    );
+    final response = await _dio.get("provider/appointments/${event.id}");
     if (response.isSuccess) {
       final model = Appointment.fromJson(response.data['data']['appointment']);
       emit(GetAppointmentDetailsSuccessState(model: model));

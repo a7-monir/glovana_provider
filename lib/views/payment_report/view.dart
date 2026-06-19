@@ -42,7 +42,9 @@ class _PaymentReportViewState extends State<PaymentReportView> {
           } else if (state is GetPaymentReportSuccessState) {
             return SafeArea(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 18.w).copyWith(bottom: 12.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 18.w,
+                ).copyWith(bottom: 12.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -101,18 +103,20 @@ class _PaymentReportViewState extends State<PaymentReportView> {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    SizedBox( height: 16.h),
-                    if(state.model.appointments.isNotEmpty)
-                    ListView.separated(
-                      padding: EdgeInsets.symmetric(horizontal: 14.w),
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => ItemList(model: state.model.appointments[index],),
-                      separatorBuilder: (context, index) => SizedBox(height: 16.h,),
-                      itemCount: state.model.appointments.length,
-                    ),
-                    if(state.model.appointments.isEmpty)
-                      AppEmpty(title: LocaleKeys.appointmentList.tr(),)
+                    SizedBox(height: 16.h),
+                    if (state.model.appointments.isNotEmpty)
+                      ListView.separated(
+                        padding: EdgeInsets.symmetric(horizontal: 14.w),
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) =>
+                            ItemList(model: state.model.appointments[index]),
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 16.h),
+                        itemCount: state.model.appointments.length,
+                      ),
+                    if (state.model.appointments.isEmpty)
+                      AppEmpty(title: LocaleKeys.appointmentList.tr()),
                   ],
                 ),
               ),
@@ -166,6 +170,7 @@ class ItemGrid extends StatelessWidget {
     );
   }
 }
+
 class ItemList extends StatelessWidget {
   final PaymentAppointment model;
   const ItemList({super.key, required this.model});
@@ -177,10 +182,7 @@ class ItemList extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.canvasColor,
         borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          AppTheme.mainShadow
-        ]
-
+        boxShadow: [AppTheme.mainShadow],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,45 +190,61 @@ class ItemList extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('#${model.id}',style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 20.sp,
-                color: AppTheme.hintTextColor,
-                fontFamily: getFontFamily(FontFamilyType.inter),
-              ),),
-              Text(DateFormat("d / MMMM / y h:mm a", "ar").format(DateTime.parse(model.date)),style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 8.sp,
-                color: AppTheme.hintTextColor,
-
-              ),),
+              Text(
+                '#${model.id}',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20.sp,
+                  color: AppTheme.hintTextColor,
+                  fontFamily: getFontFamily(FontFamilyType.inter),
+                ),
+              ),
+              Text(
+                DateFormat(
+                  "d / MMMM / y h:mm a",
+                  "ar",
+                ).format(DateTime.parse(model.date)),
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 8.sp,
+                  color: AppTheme.hintTextColor,
+                ),
+              ),
             ],
           ),
-          SizedBox(height:4.h),
+          SizedBox(height: 4.h),
           Row(
             children: [
               Expanded(
                 child: Column(
-crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${LocaleKeys.totalCommission.tr()} ${model.commission} ${LocaleKeys.jod.tr()}',style: TextStyle(fontSize: 11.sp,
-                    fontWeight: FontWeight.w400
-                    ),),
+                    Text(
+                      '${LocaleKeys.totalCommission.tr()} ${model.commission} ${LocaleKeys.jod.tr()}',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                     SizedBox(height: 2.h),
-                    Text('${LocaleKeys.yourEarnings.tr()} ${model.providerEarnings} ${LocaleKeys.jod.tr()}',style: TextStyle(fontSize: 11.sp,
-                    fontWeight: FontWeight.w400
-                    ),),
+                    Text(
+                      '${LocaleKeys.yourEarnings.tr()} ${model.providerEarnings} ${LocaleKeys.jod.tr()}',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Text('${model.total} ${LocaleKeys.jod.tr()}',style: TextStyle(fontSize: 20.sp,
-                  fontWeight: FontWeight.w400
-              ),),
+              Text(
+                '${model.total} ${LocaleKeys.jod.tr()}',
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w400),
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 }
-

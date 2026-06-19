@@ -1,13 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/logic/dio_helper.dart';
 import '../../../core/logic/helper_methods.dart';
-import '../../core/logic/cache_helper.dart';
-import '../../core/logic/firebase_notifications.dart';
 
 part 'events.dart';
 part 'states.dart';
@@ -25,8 +21,10 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvents, ResetPasswordStates> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-
-  Future<void> _sendData(ResetPasswordEvent event, Emitter<ResetPasswordStates> emit) async {
+  Future<void> _sendData(
+    ResetPasswordEvent event,
+    Emitter<ResetPasswordStates> emit,
+  ) async {
     emit(ResetPasswordLoadingState());
     try {
       final response = await _dio.send(
@@ -38,7 +36,12 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvents, ResetPasswordStates> {
       );
 
       if (!response.isSuccess) {
-        emit(ResetPasswordFailedState(msg: response.msg, statusCode: response.statusCode));
+        emit(
+          ResetPasswordFailedState(
+            msg: response.msg,
+            statusCode: response.statusCode,
+          ),
+        );
         return;
       }
 

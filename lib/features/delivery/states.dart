@@ -11,7 +11,7 @@ class GetDeliveryFailedState extends GetDeliveryStates {
 }
 
 class GetDeliverySuccessState extends GetDeliveryStates {
-  final List<Delivery>list;
+  final List<Delivery> list;
 
   GetDeliverySuccessState({required this.list});
 }

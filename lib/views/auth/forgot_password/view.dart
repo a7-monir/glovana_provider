@@ -75,7 +75,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                             ChangePasswordView(
                               phone: bloc.phoneController.text,
                             ),
-                            replacement: true
+                            replacement: true,
                           );
                         },
                       ),

@@ -3,7 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 import '../../../core/logic/helper_methods.dart';
 import '../../../generated/locale_keys.g.dart';
 import '../login/view.dart';
@@ -21,10 +20,9 @@ class HaveAccountSection extends StatelessWidget {
         TextSpan(
           children: [
             TextSpan(
-              text:
-                  isLogin
-                      ? LocaleKeys.doNotHaveAnAccount.tr()
-                      : LocaleKeys.alreadyHaveAnAccount.tr(),
+              text: isLogin
+                  ? LocaleKeys.doNotHaveAnAccount.tr()
+                  : LocaleKeys.alreadyHaveAnAccount.tr(),
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
@@ -38,11 +36,13 @@ class HaveAccountSection extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: Theme.of(context).primaryColor,
               ),
-              recognizer:
-                  TapGestureRecognizer()
-                    ..onTap = () {
-                      navigateTo(isLogin ? SignupView() : LoginView(), keepHistory: false);
-                    },
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  navigateTo(
+                    isLogin ? SignupView() : LoginView(),
+                    keepHistory: false,
+                  );
+                },
             ),
           ],
         ),

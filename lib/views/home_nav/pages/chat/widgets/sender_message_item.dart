@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,6 @@ import 'package:glovana_provider/views/home_nav/pages/chat/models/message_model.
 import 'package:url_launcher/url_launcher.dart';
 import 'package:voice_note_kit/player/audio_player_widget.dart';
 import 'package:voice_note_kit/player/player_enums/player_enums.dart';
-import 'dart:ui' as ui;
 
 class SenderMsgItemWidget extends StatelessWidget {
   const SenderMsgItemWidget({

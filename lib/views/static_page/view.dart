@@ -136,7 +136,7 @@ class _StaticPageViewState extends State<StaticPageView> {
           if (state is GetStaticPageLoadingState) {
             return AppLoading();
           } else if (state is GetStaticPageSuccessState) {
-            if(state.model==null) return AppEmpty(title: widget.title,);
+            if (state.model == null) return AppEmpty(title: widget.title);
             return RefreshIndicator(
               onRefresh: _fetchPageData,
               child: SingleChildScrollView(

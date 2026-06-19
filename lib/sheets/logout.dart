@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kiwi/kiwi.dart';
+
 import '../../../core/design/app_button.dart';
 import '../../../core/logic/helper_methods.dart';
 import '../core/design/base_sheet.dart';
@@ -47,13 +48,12 @@ class _LogoutSheetState extends State<LogoutSheet> {
                       navigateTo(LoginView(), keepHistory: false);
                     }
                   },
-                  builder:
-                      (context, state) => AppButton(
-                        text: LocaleKeys.yesLogout.tr(),
-                        isLoading: state is SignOutLoadingState,
-                        type: ButtonType.outlined,
-                        onPress: () => bloc.add(SignOutEvent()),
-                      ),
+                  builder: (context, state) => AppButton(
+                    text: LocaleKeys.yesLogout.tr(),
+                    isLoading: state is SignOutLoadingState,
+                    type: ButtonType.outlined,
+                    onPress: () => bloc.add(SignOutEvent()),
+                  ),
                 ),
               ),
               SizedBox(width: 12.w),

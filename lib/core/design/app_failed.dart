@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,7 +19,7 @@ class AppFailed extends StatelessWidget {
 
   const AppFailed({
     super.key,
-     this.response,
+    this.response,
     required this.onPress,
     this.description,
     this.isScrollable = false,
@@ -31,7 +30,9 @@ class AppFailed extends StatelessWidget {
 
   Widget get image => ClipOval(
     child: AppImage(
-      (response?.msg ?? msg).toLowerCase().contains("no internet") ? "no_internet.svg" : "failed.svg",
+      (response?.msg ?? msg).toLowerCase().contains("no internet")
+          ? "no_internet.svg"
+          : "failed.svg",
       height: isSmallShape ? 56.h : 240.h,
       width: isSmallShape ? 56.h : 240.h,
       fit: BoxFit.fill,
@@ -40,7 +41,9 @@ class AppFailed extends StatelessWidget {
   );
 
   Widget get texts => Column(
-    crossAxisAlignment: isSmallShape ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+    crossAxisAlignment: isSmallShape
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.center,
     children: [
       Text(
         response?.msg ?? msg,
@@ -51,7 +54,9 @@ class AppFailed extends StatelessWidget {
           // color: Theme.of(context).primaryColor,
         ),
       ),
-      if ((description != null || (response?.msg ?? msg).toLowerCase().contains("no internet") && !isSmallShape))
+      if ((description != null ||
+          (response?.msg ?? msg).toLowerCase().contains("no internet") &&
+              !isSmallShape))
         Padding(
           padding: EdgeInsets.only(bottom: 16.h, top: isSmallShape ? 4.h : 8.h),
           child: Text(
@@ -74,11 +79,15 @@ class AppFailed extends StatelessWidget {
         physics: isScrollable ? null : const NeverScrollableScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: isSmallShape ? CrossAxisAlignment.center : CrossAxisAlignment.stretch,
+          crossAxisAlignment: isSmallShape
+              ? CrossAxisAlignment.center
+              : CrossAxisAlignment.stretch,
           children: [
             if (isSmallShape)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: withPaddingHorizontal ? 24.w : 0),
+                padding: EdgeInsets.symmetric(
+                  horizontal: withPaddingHorizontal ? 24.w : 0,
+                ),
                 child: Row(
                   children: [
                     // image,
@@ -88,14 +97,17 @@ class AppFailed extends StatelessWidget {
                       onPressed: onPress,
                       icon: Container(
                         padding: EdgeInsets.all(8.r),
-                        decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          shape: BoxShape.circle,
+                        ),
                         child: Icon(
                           Icons.replay,
                           color: Colors.white,
                           size: 20.r,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -110,12 +122,14 @@ class AppFailed extends StatelessWidget {
               ),
             if (!isSmallShape)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w).copyWith(top: 16.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24.w,
+                ).copyWith(top: 16.h),
                 child: AppButton(
                   text: LocaleKeys.tryAgain.tr(),
                   onPress: onPress,
                 ),
-              )
+              ),
           ],
         ),
       ),

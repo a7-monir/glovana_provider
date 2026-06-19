@@ -2,14 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/logic/dio_helper.dart';
 import '../../../core/logic/helper_methods.dart';
-import '../../core/logic/firebase_notifications.dart';
 import '../../core/logic/cache_helper.dart';
+import '../../core/logic/firebase_notifications.dart';
 import '../login/bloc.dart';
 
 part 'events.dart';
-
 part 'states.dart';
 
 class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
@@ -74,13 +74,13 @@ class EditProfileBloc extends Bloc<EditProfileEvents, EditProfileStates> {
       data: formData,
       withFiles: true,
     );
-    if (response.data['status'] ==true) {
+    if (response.data['status'] == true) {
       final rawData = response.data['data'];
       final providerJson =
           rawData is Map<String, dynamic> &&
-                  rawData['provider'] is Map<String, dynamic>
-              ? rawData['provider'] as Map<String, dynamic>
-              : rawData;
+              rawData['provider'] is Map<String, dynamic>
+          ? rawData['provider'] as Map<String, dynamic>
+          : rawData;
 
       if (providerJson is! Map<String, dynamic>) {
         emit(

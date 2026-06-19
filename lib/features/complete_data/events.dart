@@ -13,21 +13,21 @@ class ProviderType {
   final int? providerId;
   final int? typeId;
   final String name;
-  final String description,bookingType;
+  final String description, bookingType;
   final double lat;
   final double lng;
   final String address;
   final double? pricePerHour;
   final List<Map<String, dynamic>>? servicesWithPrices;
 
-// final bool isVip;
+  // final bool isVip;
   final List<int>? serviceIds;
   final File? images;
   final List<File> gallery;
   final List<String>? deletedImages;
   final List<String>? deletedGalleries;
   final List<Availability> availability;
-final String workNumber;
+  final String workNumber;
   File? identityPhoto;
   File? practicePhoto;
 
@@ -45,8 +45,8 @@ final String workNumber;
 
     this.pricePerHour,
     this.servicesWithPrices,
-    //  required this.isVip,
 
+    //  required this.isVip,
     this.serviceIds,
     required this.images,
     required this.gallery,
@@ -57,6 +57,7 @@ final String workNumber;
     this.practicePhoto,
   });
 }
+
 class Availability {
   int? id;
   int? providerTypeId;

@@ -7,27 +7,26 @@ import '../logic/helper_methods.dart';
 Future showMySheet({required Widget child, bool withDivider = true}) async {
   return await showModalBottomSheet(
     isScrollControlled: true,
-    builder:
-        (context) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (withDivider)
-              Padding(
-                padding: EdgeInsets.only(top: 21.h, bottom: 24.h),
-                child: Center(
-                  child: Container(
-                    width: 134.w,
-                    height: 5.h,
-                    decoration: BoxDecoration(
-                      color: const Color(0xffDCDCE4),
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
+    builder: (context) => Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (withDivider)
+          Padding(
+            padding: EdgeInsets.only(top: 21.h, bottom: 24.h),
+            child: Center(
+              child: Container(
+                width: 134.w,
+                height: 5.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xffDCDCE4),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
               ),
-            child,
-          ],
-        ),
+            ),
+          ),
+        child,
+      ],
+    ),
     backgroundColor: AppTheme.bgLightColor,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.only(

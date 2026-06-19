@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,7 +48,6 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
     errorController = StreamController<ErrorAnimationType>();
     bloc.add(SendOtpEvent(phone: widget.phone));
 
-
     super.initState();
   }
 
@@ -68,7 +68,6 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
         } else if (state is SendOtpFailedState) {
           showMessage(state.msg);
         }
-
       },
       builder: (context, state) {
         return Scaffold(

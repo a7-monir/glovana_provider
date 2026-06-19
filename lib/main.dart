@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/views/splash.dart';
 import 'package:kiwi/kiwi.dart';
+
 import 'core/app_theme.dart';
 import 'core/logic/app_logger.dart';
 import 'core/logic/bloc_observer.dart';
@@ -20,8 +22,6 @@ import 'core/logic/helper_methods.dart';
 import 'core/logic/un_focus.dart';
 import 'features/service_locator.dart';
 import 'features/toggle_lang/bloc.dart';
-
-import 'package:firebase_app_check/firebase_app_check.dart';
 
 Future<void> main() async {
   runZonedGuarded(

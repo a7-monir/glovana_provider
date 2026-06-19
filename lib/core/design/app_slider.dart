@@ -54,19 +54,19 @@ class _AppSliderState extends State<AppSlider> {
             mainAxisSize: MainAxisSize.min,
             children: List.generate(
               widget.list.length,
-                  (index) => Container(
+              (index) => Container(
                 height: 8.h,
                 width: currentPage == index ? 32.w : 8.h,
                 margin: EdgeInsetsDirectional.only(end: 2.w),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32.r),
-                  color: Theme.of(context)
-                      .primaryColor
-                      .withOpacity(currentPage == index ? 1 : .12),
+                  color: Theme.of(
+                    context,
+                  ).primaryColor.withOpacity(currentPage == index ? 1 : .12),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

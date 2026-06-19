@@ -1,20 +1,14 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/logic/dio_helper.dart';
 import '../../../core/logic/helper_methods.dart';
-import '../../core/logic/cache_helper.dart';
-import '../../core/logic/firebase_notifications.dart';
-import '../../generated/locale_keys.g.dart';
 
 part 'events.dart';
-
-
 part 'states.dart';
 
 class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
@@ -26,8 +20,10 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
     on<CompleteDataEvent>(_sendData);
   }
 
-
-  void _sendData(CompleteDataEvent event, Emitter<CompleteDataStates> emit) async {
+  void _sendData(
+    CompleteDataEvent event,
+    Emitter<CompleteDataStates> emit,
+  ) async {
     emit(CompleteDataLoadingState());
 
     FormData formData = FormData();
@@ -38,25 +34,34 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
       // Add basic fields
       formData.fields.addAll([
         MapEntry(
-            'provider_types[$i][type_id]', provider.typeId?.toString() ?? ''),
+          'provider_types[$i][type_id]',
+          provider.typeId?.toString() ?? '',
+        ),
         MapEntry('provider_types[$i][name]', provider.name),
         MapEntry('provider_types[$i][description]', provider.description),
         MapEntry('provider_types[$i][lat]', provider.lat.toString()),
         MapEntry('provider_types[$i][lng]', provider.lng.toString()),
         MapEntry('provider_types[$i][address]', provider.address),
         MapEntry(
-            provider.bookingType == "hourly"?'provider_types[$i][price_per_hour]':'provider_types[$i][number_of_work]',
-             provider.pricePerHour.toString()),
+          provider.bookingType == "hourly"
+              ? 'provider_types[$i][price_per_hour]'
+              : 'provider_types[$i][number_of_work]',
+          provider.pricePerHour.toString(),
+        ),
         MapEntry(
-            'provider_types[$i][phone_number_of_provider_type]',
-            provider.workNumber,)]);
+          'provider_types[$i][phone_number_of_provider_type]',
+          provider.workNumber,
+        ),
+      ]);
 
       if (provider.serviceIds != null) {
         // Add service IDs (keep for backward compatibility)
         for (int j = 0; j < provider.serviceIds!.length; j++) {
           formData.fields.add(
-            MapEntry('provider_types[$i][service_ids][$j]',
-                provider.serviceIds![j].toString()),
+            MapEntry(
+              'provider_types[$i][service_ids][$j]',
+              provider.serviceIds![j].toString(),
+            ),
           );
         }
       }
@@ -66,13 +71,17 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
           final serviceWithPrice = provider.servicesWithPrices![j];
           formData.fields.addAll([
             MapEntry(
-                'provider_types[$i][services_with_prices][$j][service_id]',
-                serviceWithPrice['service_id'].toString()),
-            MapEntry('provider_types[$i][services_with_prices][$j][price]',
-                serviceWithPrice['price'].toString()),
+              'provider_types[$i][services_with_prices][$j][service_id]',
+              serviceWithPrice['service_id'].toString(),
+            ),
             MapEntry(
-                'provider_types[$i][services_with_prices][$j][is_active]',
-                serviceWithPrice['is_active'].toString()),
+              'provider_types[$i][services_with_prices][$j][price]',
+              serviceWithPrice['price'].toString(),
+            ),
+            MapEntry(
+              'provider_types[$i][services_with_prices][$j][is_active]',
+              serviceWithPrice['is_active'].toString(),
+            ),
           ]);
         }
       }
@@ -130,25 +139,35 @@ class CompleteDataBloc extends Bloc<CompleteDataEvents, CompleteDataStates> {
       for (int j = 0; j < provider.availability.length; j++) {
         final avail = provider.availability[j];
         formData.fields.addAll([
-          MapEntry('provider_types[$i][availabilities][$j][day_of_week]',
-              avail!.dayOfWeek ?? ""),
-          MapEntry('provider_types[$i][availabilities][$j][start_time]',
-              avail.startTime ?? ""),
-          MapEntry('provider_types[$i][availabilities][$j][end_time]',
-              avail.endTime ?? ""),
+          MapEntry(
+            'provider_types[$i][availabilities][$j][day_of_week]',
+            avail.dayOfWeek ?? "",
+          ),
+          MapEntry(
+            'provider_types[$i][availabilities][$j][start_time]',
+            avail.startTime ?? "",
+          ),
+          MapEntry(
+            'provider_types[$i][availabilities][$j][end_time]',
+            avail.endTime ?? "",
+          ),
         ]);
       }
     }
 
     final response = await _dio.postData(
       url: "provider/complete-profile",
-      data:formData,
+      data: formData,
     );
-    if (response.data['status'] ==true ) {
-
+    if (response.data['status'] == true) {
       emit(CompleteDataSuccessState());
     } else {
-      emit(CompleteDataFailedState(msg:  response.data['message'] , statusCode: response.statusCode));
+      emit(
+        CompleteDataFailedState(
+          msg: response.data['message'],
+          statusCode: response.statusCode,
+        ),
+      );
     }
   }
 }

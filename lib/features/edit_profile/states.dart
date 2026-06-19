@@ -17,5 +17,4 @@ class EditProfileSuccessState extends EditProfileStates {
   final String msg;
 
   EditProfileSuccessState({required this.msg});
-
 }

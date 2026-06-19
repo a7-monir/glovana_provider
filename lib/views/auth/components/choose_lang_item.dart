@@ -44,27 +44,24 @@ class _ChooseLangItemState extends State<ChooseLangItem> {
                 height: 40.h,
                 value: list[index],
                 padding: EdgeInsets.zero,
-                onTap:
-                    selectedLang != list[index]
-                        ? () {
-                          selectedLang = list[index];
-                          langBloc.add(ToggleLangEvent(selectedLang));
-                          widget.onChange();
-                          setState(() {});
-                        }
-                        : null,
+                onTap: selectedLang != list[index]
+                    ? () {
+                        selectedLang = list[index];
+                        langBloc.add(ToggleLangEvent(selectedLang));
+                        widget.onChange();
+                        setState(() {});
+                      }
+                    : null,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 14.w),
                   height: 40.h,
                   decoration: BoxDecoration(
-                    color:
-                        selectedLang == list[index]
-                            ? AppTheme.containerColor
-                            : null,
-                    borderRadius:
-                        selectedLang == list[index]
-                            ? BorderRadius.circular(10.r)
-                            : null,
+                    color: selectedLang == list[index]
+                        ? AppTheme.containerColor
+                        : null,
+                    borderRadius: selectedLang == list[index]
+                        ? BorderRadius.circular(10.r)
+                        : null,
                     boxShadow: [
                       if (selectedLang == list[index]) AppTheme.mainShadow,
                     ],

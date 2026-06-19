@@ -40,10 +40,9 @@ class ProviderAccountStatusHelper {
     }
 
     final responseData = response.data;
-    final data =
-        responseData is Map && responseData['data'] is Map
-            ? responseData['data'] as Map
-            : null;
+    final data = responseData is Map && responseData['data'] is Map
+        ? responseData['data'] as Map
+        : null;
     final provider = data?['provider'];
 
     final activate = _parseActivate(

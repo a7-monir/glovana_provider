@@ -31,8 +31,6 @@ class ProfileView extends StatefulWidget {
   State<ProfileView> createState() => _ProfileViewState();
 }
 
-
-
 class _ProfileViewState extends State<ProfileView> {
   final settingBloc = KiwiContainer().resolve<GetSettingsBloc>()
     ..add(GetSettingsEvent());

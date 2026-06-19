@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MainServices {
   static Future<File?> getCameraImageUsingImagePicker(
-      ImageSource source) async {
+    ImageSource source,
+  ) async {
     var pickedImage = await ImagePicker().pickImage(
       source: source,
       imageQuality: 15,
@@ -18,9 +20,7 @@ class MainServices {
   }
 
   static Future<File?> getImageUsingImagePicker(ImageSource source) async {
-    var pickedImage = await ImagePicker().pickMedia(
-      imageQuality: 25,
-    );
+    var pickedImage = await ImagePicker().pickMedia(imageQuality: 25);
     if (pickedImage != null) {
       return File(pickedImage.path);
     } else {

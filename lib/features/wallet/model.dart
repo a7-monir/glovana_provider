@@ -14,10 +14,9 @@ class WalletTransactions {
   late final List<WalletTransaction> list;
 
   WalletTransactions.fromJson(Map<String, dynamic> json) {
-    list =
-        List.from(
-          json['data'] ?? [],
-        ).map((e) => WalletTransaction.fromJson(e)).toList();
+    list = List.from(
+      json['data'] ?? [],
+    ).map((e) => WalletTransaction.fromJson(e)).toList();
   }
 }
 

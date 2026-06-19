@@ -6,14 +6,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/design/app_styles.dart';
 import 'package:glovana_provider/core/design/space_widget.dart';
+import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/widgets/reciever_message_item.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/widgets/send_message_item.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/widgets/sender_message_item.dart';
+
 import 'chat_utils.dart';
 import 'models/message_model.dart';
 import 'models/rooms_model.dart';
-import 'package:glovana_provider/core/logic/cache_helper.dart';
 
 class ChatDetailsScreen extends StatefulWidget {
   final String providerId;
@@ -226,10 +227,10 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                                                 widget.providerImage ?? '',
                                           )
                                         : ReceiverMsgItemWidget(
-                                          message: message,
-                                          recieverPhoto:
-                                              widget.userImage ?? '',
-                                        );
+                                            message: message,
+                                            recieverPhoto:
+                                                widget.userImage ?? '',
+                                          );
                                   },
                                 );
                               },

@@ -7,7 +7,6 @@ import '../../core/logic/app_logger.dart';
 import '../../core/logic/otp_controller.dart';
 
 part 'events.dart';
-
 part 'states.dart';
 
 class SendOtpBloc extends Bloc<SendOtpEvents, SendOtpStates> {

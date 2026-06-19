@@ -7,7 +7,7 @@ class SendOtpLoadingState extends SendOtpStates {}
 class SendOtpFailedState extends SendOtpStates {
   final String msg;
 
-  SendOtpFailedState({required this.msg,});
+  SendOtpFailedState({required this.msg});
 }
 
 class SendOtpSuccessState extends SendOtpStates {

@@ -7,10 +7,9 @@ class UpdateStatusLoadingState extends UpdateStatusStates {}
 class UpdateStatusFailedState extends UpdateStatusStates {
   final CustomResponse response;
 
-  UpdateStatusFailedState({required this.response,}) {
+  UpdateStatusFailedState({required this.response}) {
     showMessage(response.msg);
   }
 }
 
-class UpdateStatusSuccessState extends UpdateStatusStates {
-}
+class UpdateStatusSuccessState extends UpdateStatusStates {}

@@ -150,10 +150,12 @@ class Data2 {
     userId: json["user_id"],
     photo: json["photo"],
     voice: json["voice"],
-    updatedAt:
-        json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
-    createdAt:
-        json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
     id: json["id"],
   );
 

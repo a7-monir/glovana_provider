@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/views/auth/otp/view.dart';
-
-
 import 'package:kiwi/kiwi.dart';
 
 import '../../core/design/app_bar.dart';
@@ -88,10 +86,11 @@ class _EditProfileViewState extends State<EditProfileView> {
           padding: EdgeInsets.symmetric(horizontal: 14),
           child: Column(
             children: [
-              ItemPhoto(canEdit: true,
-              onChange: (v) {
-                bloc.photo=v;
-              },
+              ItemPhoto(
+                canEdit: true,
+                onChange: (v) {
+                  bloc.photo = v;
+                },
               ),
               SizedBox(height: 30.h),
               Row(
@@ -103,11 +102,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                       controller: bloc.firstNameController,
                       isValid: bloc.firstNameValid,
                       marginBottom: 32.h,
-                      validator:
-                          (v) => InputValidator.requiredValidator(
-                            value: v!,
-                            itemName: LocaleKeys.firstName.tr(),
-                          ),
+                      validator: (v) => InputValidator.requiredValidator(
+                        value: v!,
+                        itemName: LocaleKeys.firstName.tr(),
+                      ),
                     ),
                   ),
                   SizedBox(width: 32.w),
@@ -117,11 +115,10 @@ class _EditProfileViewState extends State<EditProfileView> {
                       isCenterTitle: true,
                       controller: bloc.lastNameController,
                       isValid: bloc.lastNameValid,
-                      validator:
-                          (v) => InputValidator.requiredValidator(
-                            value: v!,
-                            itemName: LocaleKeys.lastName.tr(),
-                          ),
+                      validator: (v) => InputValidator.requiredValidator(
+                        value: v!,
+                        itemName: LocaleKeys.lastName.tr(),
+                      ),
                     ),
                   ),
                 ],
@@ -145,10 +142,8 @@ class _EditProfileViewState extends State<EditProfileView> {
               BlocConsumer(
                 bloc: bloc,
                 listener: (context, state) {
-                  if(state is EditProfileSuccessState){
-
-                    navigateTo(HomeNavView(pageIndex: 2,),keepHistory: false);
-
+                  if (state is EditProfileSuccessState) {
+                    navigateTo(HomeNavView(pageIndex: 2), keepHistory: false);
                   }
                 },
                 builder: (context, state) {
@@ -157,12 +152,14 @@ class _EditProfileViewState extends State<EditProfileView> {
                     isLoading: state is EditProfileLoadingState,
                     onPress: () {
                       if (bloc.formKey.currentState!.validate()) {
-                        navigateTo(VerifyOtpScreen(phone: bloc.phoneController.text,
-                        onSuccess: () {
-                          bloc.add(EditProfileEvent());
-                        },
-                        ));
-
+                        navigateTo(
+                          VerifyOtpScreen(
+                            phone: bloc.phoneController.text,
+                            onSuccess: () {
+                              bloc.add(EditProfileEvent());
+                            },
+                          ),
+                        );
                       } else {
                         bloc.validateMode = AutovalidateMode.onUserInteraction;
                         setState(() {});

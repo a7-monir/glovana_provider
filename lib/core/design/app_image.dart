@@ -8,11 +8,11 @@ import 'package:lottie/lottie.dart';
 
 import '../app_theme.dart';
 
-enum FailedImageType { normal, male, female,person }
+enum FailedImageType { normal, male, female, person }
 
 class AppImage extends StatefulWidget {
   final FailedImageType failedImageType;
-  final bool isClickable,withBaseImageUrl;
+  final bool isClickable, withBaseImageUrl;
   final String url;
   final double? height, width;
   final Color? color;
@@ -26,7 +26,8 @@ class AppImage extends StatefulWidget {
     this.width,
     this.color,
     this.fit = BoxFit.scaleDown,
-    this.failedImageType = FailedImageType.normal,  this.withBaseImageUrl=false,
+    this.failedImageType = FailedImageType.normal,
+    this.withBaseImageUrl = false,
   });
 
   @override
@@ -34,14 +35,14 @@ class AppImage extends StatefulWidget {
 }
 
 class _AppImageState extends State<AppImage> {
-
   @override
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    if(widget.withBaseImageUrl){
+    if (widget.withBaseImageUrl) {
       return Image.network(
         "${AppTheme.imageUrl}${widget.url}",
         width: widget.width,
@@ -49,8 +50,11 @@ class _AppImageState extends State<AppImage> {
         fit: widget.fit,
         errorBuilder: (context, error, stackTrace) => errWidget,
       );
-    }else{
-      if ((widget.url.startsWith('https')||widget.url.startsWith('http')||widget.url.startsWith("Https")) && !widget.url.endsWith("svg")) {
+    } else {
+      if ((widget.url.startsWith('https') ||
+              widget.url.startsWith('http') ||
+              widget.url.startsWith("Https")) &&
+          !widget.url.endsWith("svg")) {
         return Image.network(
           widget.url,
           width: widget.width,
@@ -58,15 +62,15 @@ class _AppImageState extends State<AppImage> {
           fit: widget.fit,
           errorBuilder: (context, error, stackTrace) => errWidget,
         );
-      }  else if (widget.url.endsWith("json")) {
+      } else if (widget.url.endsWith("json")) {
         return Lottie.asset(
           "assets/lottie/${widget.url}",
           height: widget.height,
           width: widget.width,
           fit: widget.fit,
         );
-      }else if (widget.url.endsWith("svg")) {
-        if (widget.url.startsWith('https')||widget.url.startsWith("Https")) {
+      } else if (widget.url.endsWith("svg")) {
+        if (widget.url.startsWith('https') || widget.url.startsWith("Https")) {
           return SvgPicture.network(
             widget.url,
             width: widget.width,
@@ -78,7 +82,9 @@ class _AppImageState extends State<AppImage> {
           "assets/svg/${widget.url}",
           height: widget.height,
           width: widget.width,
-          colorFilter: widget.color!=null?ColorFilter.mode(widget.color!, BlendMode.srcATop):null,
+          colorFilter: widget.color != null
+              ? ColorFilter.mode(widget.color!, BlendMode.srcATop)
+              : null,
           // color: color,
           fit: widget.fit,
         );
@@ -121,7 +127,6 @@ class _AppImageState extends State<AppImage> {
         );
       }
     }
-
   }
 
   bool _isLocalFilePath(String value) {
@@ -152,27 +157,25 @@ class _AppImageState extends State<AppImage> {
           Stack(
             alignment: AlignmentDirectional.topEnd,
             children: [
-              Image.memory(
-                base64Decode(widget.url),
-              ),
+              Image.memory(base64Decode(widget.url)),
               PositionedDirectional(
                 top: 16.h,
                 end: 16.w,
                 child: const CloseButton(),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
   Widget get errWidget => Image.asset(
-        "assets/images/$_errorImage",
-        height: widget.height ?? 20,
-        width: widget.width ?? 20,
-        fit: BoxFit.scaleDown,
-      );
+    "assets/images/$_errorImage",
+    height: widget.height ?? 20,
+    width: widget.width ?? 20,
+    fit: BoxFit.scaleDown,
+  );
 
   String get _errorImage {
     switch (widget.failedImageType) {

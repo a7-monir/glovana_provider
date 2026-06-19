@@ -64,8 +64,12 @@ class _NotificationsViewState extends State<NotificationsView> {
                     return AppEmpty(title: LocaleKeys.notifications.tr());
                   }
                   return ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w,vertical: 12.h),
-                    separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w,
+                      vertical: 12.h,
+                    ),
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
                     itemBuilder: (context, index) {
                       final item = state.list[index];
                       return _Item(model: item);

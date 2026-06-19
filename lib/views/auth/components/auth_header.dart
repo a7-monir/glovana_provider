@@ -6,12 +6,12 @@ import '../../../generated/locale_keys.g.dart';
 import '../login/view.dart';
 
 class AuthHeader extends StatelessWidget {
-  final bool  isLogin;
+  final bool isLogin;
   const AuthHeader({super.key, required this.isLogin});
 
   @override
   Widget build(BuildContext context) {
-    return  Column(
+    return Column(
       children: [
         SizedBox(height: 32.h),
         Text(

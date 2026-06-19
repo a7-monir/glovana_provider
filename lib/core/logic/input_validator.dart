@@ -1,12 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
 
 import '../../generated/locale_keys.g.dart';
 
-
 class InputValidator {
-  static final emailReg =
-      RegExp(r'[a-z]+\d*@[a-z]+\.[a-z]{3}', caseSensitive: false);
+  static final emailReg = RegExp(
+    r'[a-z]+\d*@[a-z]+\.[a-z]{3}',
+    caseSensitive: false,
+  );
   static final arabicPhoneNumbersReg = RegExp(r"[\u0661-\u0669]");
   static final _arabicTextReg = RegExp(r"[\u0600-\u06ff]+");
   static final _cardNumbersReg = RegExp(r"\d.{4}");
@@ -15,8 +15,7 @@ class InputValidator {
   static String? validatePhone(String? value) {
     if (value!.isEmpty) {
       return LocaleKeys.thisIsARequiredField.tr();
-    }
-    else if (!jordanNumberReg.hasMatch(value)) {
+    } else if (!jordanNumberReg.hasMatch(value)) {
       return LocaleKeys.invalidPhoneNumber.tr();
     }
     return null;
@@ -24,8 +23,9 @@ class InputValidator {
 
   static String? emailValidator(String value) {
     if (value.isEmpty) {
-      return LocaleKeys.validateRequired
-          .tr(namedArgs: {"name": LocaleKeys.emailAddress.tr()});
+      return LocaleKeys.validateRequired.tr(
+        namedArgs: {"name": LocaleKeys.emailAddress.tr()},
+      );
     } else if (emailReg.hasMatch(value)) {
       return null;
     } else {
@@ -33,16 +33,18 @@ class InputValidator {
     }
   }
 
-  static String? requiredValidator(
-      {required String value,
-      required String itemName,
-      bool lengthRequired = false,
-      int lengthNumber = 3}) {
+  static String? requiredValidator({
+    required String value,
+    required String itemName,
+    bool lengthRequired = false,
+    int lengthNumber = 3,
+  }) {
     if (value.trim().isEmpty) {
       return LocaleKeys.validateRequired.tr(namedArgs: {"name": itemName});
     } else if (value.trim().length < lengthNumber && lengthRequired) {
-      return LocaleKeys.validateAtLeastDigitsWithNameAndValue
-          .tr(namedArgs: {"name": itemName, "value": lengthNumber.toString()});
+      return LocaleKeys.validateAtLeastDigitsWithNameAndValue.tr(
+        namedArgs: {"name": itemName, "value": lengthNumber.toString()},
+      );
     }
     return null;
   }
@@ -71,31 +73,32 @@ class InputValidator {
   //   return null;
   // }
 
-  static String? passwordValidator(String value,  {lengthRequired = false}) {
+  static String? passwordValidator(String value, {lengthRequired = false}) {
     if (value.isEmpty) {
       return LocaleKeys.validateRequired.tr(
-        namedArgs: {
-          'name':LocaleKeys.password.tr()
-        }
+        namedArgs: {'name': LocaleKeys.password.tr()},
       );
-    }
-    else if (lengthRequired) {
+    } else if (lengthRequired) {
       if (value.length >= 8) {
         return null;
       } else {
-        return LocaleKeys.validateAtLeastDigitsWithNameAndValue.tr(namedArgs: {
-          "name": LocaleKeys.password.tr(),
-          "value": "8",
-        });
+        return LocaleKeys.validateAtLeastDigitsWithNameAndValue.tr(
+          namedArgs: {"name": LocaleKeys.password.tr(), "value": "8"},
+        );
       }
     } else {
       return null;
     }
   }
 
-  static String? confirmPasswordValidator(String password, String confirmPassword) {
+  static String? confirmPasswordValidator(
+    String password,
+    String confirmPassword,
+  ) {
     if (password.isEmpty) {
-      return LocaleKeys.validateRequired.tr(namedArgs: {"name": LocaleKeys.confirmPassword.tr()});
+      return LocaleKeys.validateRequired.tr(
+        namedArgs: {"name": LocaleKeys.confirmPassword.tr()},
+      );
     } else if (confirmPassword.isEmpty) {
       return null;
     } else if (password != confirmPassword) {
@@ -113,7 +116,9 @@ class InputValidator {
 
   static String replaceArabicNumbers(String value) {
     return value.replaceAllMapped(
-        arabicPhoneNumbersReg, (m) => '${(m[0]!.codeUnits[0] - 1584) - 48}');
+      arabicPhoneNumbersReg,
+      (m) => '${(m[0]!.codeUnits[0] - 1584) - 48}',
+    );
   }
 
   static bool isTextArabic(String value) {

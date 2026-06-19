@@ -39,7 +39,7 @@ class _DiscountsViewState extends State<DiscountsView> {
   final discount = TextEditingController();
   String? startDate, endDate;
   int? providerId;
-  bool isService=true;
+  bool isService = true;
 
   Future<void> selectDateRange() async {
     final DateTime now = DateTime.now();
@@ -76,8 +76,10 @@ class _DiscountsViewState extends State<DiscountsView> {
           body: BlocConsumer(
             bloc: getProviderProfileBloc,
             listener: (context, state) {
-              if (state is GetProviderProfileSuccessState){
-                isService=state.model.providerTypes.first.type.bookingType=='service';
+              if (state is GetProviderProfileSuccessState) {
+                isService =
+                    state.model.providerTypes.first.type.bookingType ==
+                    'service';
               }
             },
             builder: (context, state) {
@@ -89,7 +91,15 @@ class _DiscountsViewState extends State<DiscountsView> {
                 );
               } else if (state is GetProviderProfileSuccessState) {
                 providerId = state.model.providerTypes.first.id;
-                if (state.model.providerTypes.isEmpty||(state.model.providerTypes.isNotEmpty&&state.model.providerTypes.first.providerServices.isEmpty&&isService)) {
+                if (state.model.providerTypes.isEmpty ||
+                    (state.model.providerTypes.isNotEmpty &&
+                        state
+                            .model
+                            .providerTypes
+                            .first
+                            .providerServices
+                            .isEmpty &&
+                        isService)) {
                   return AppEmpty(title: LocaleKeys.providerType.tr());
                 }
                 return Form(
@@ -141,7 +151,7 @@ class _DiscountsViewState extends State<DiscountsView> {
                             borderSide: BorderSide(color: AppTheme.primary),
                           ),
                         ),
-                        if (isService)...[
+                        if (isService) ...[
                           Align(
                             alignment: AlignmentDirectional.centerEnd,
                             child: GestureDetector(
@@ -170,9 +180,7 @@ class _DiscountsViewState extends State<DiscountsView> {
                                   vertical: 2.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Theme
-                                      .of(context)
-                                      .secondaryHeaderColor,
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   borderRadius: BorderRadius.circular(15.r),
                                   boxShadow: [AppTheme.mainShadow],
                                 ),
@@ -249,7 +257,9 @@ class _DiscountsViewState extends State<DiscountsView> {
                                     vertical: 8.h,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).secondaryHeaderColor,
+                                    color: Theme.of(
+                                      context,
+                                    ).secondaryHeaderColor,
                                     boxShadow: [AppTheme.mainShadow],
                                     borderRadius: BorderRadius.circular(15.r),
                                   ),
@@ -297,7 +307,7 @@ class _DiscountsViewState extends State<DiscountsView> {
                                         },
                                         visualDensity: VisualDensity.compact,
                                         materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                                            MaterialTapTargetSize.shrinkWrap,
                                       ),
                                     ],
                                   ),
@@ -372,7 +382,7 @@ class _DiscountsViewState extends State<DiscountsView> {
                               onPress: () {
                                 if (addDiscountBloc.formKey.currentState!
                                     .validate()) {
-                                  if (selectedList.isEmpty&&isService) {
+                                  if (selectedList.isEmpty && isService) {
                                     showMessage(
                                       LocaleKeys.pleaseSelectService,
                                       type: MessageType.warning,
@@ -408,12 +418,16 @@ class _DiscountsViewState extends State<DiscountsView> {
                             );
                           },
                         ),
-                        if(providerId!=null)
-                        AppButton(text: LocaleKeys.showHistory.tr(),
-                        type: ButtonType.outlined,
-                        onPress: () {
-                          navigateTo(DiscountsHistoryView(providerId: providerId!,));
-                        },)
+                        if (providerId != null)
+                          AppButton(
+                            text: LocaleKeys.showHistory.tr(),
+                            type: ButtonType.outlined,
+                            onPress: () {
+                              navigateTo(
+                                DiscountsHistoryView(providerId: providerId!),
+                              );
+                            },
+                          ),
                       ],
                     ),
                   ),

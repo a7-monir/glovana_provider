@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:glovana_provider/core/design/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String? hintText;
@@ -61,17 +60,11 @@ class CustomTextField extends StatelessWidget {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? 30.r),
-            borderSide: const BorderSide(
-
-              width: 1.3,
-            ),
+            borderSide: const BorderSide(width: 1.3),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? 30.r),
-            borderSide: const BorderSide(
-
-              width: 1,
-            ),
+            borderSide: const BorderSide(width: 1),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius ?? 30.r),

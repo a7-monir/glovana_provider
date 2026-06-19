@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
-import 'package:glovana_provider/core/logic/helper_methods.dart';
-import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/core/design/app_styles.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
+import 'package:glovana_provider/core/logic/helper_methods.dart';
+import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/auth/login/view.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/chat_details_screen.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/chat_utils.dart';
@@ -35,7 +35,8 @@ class _ChatsViewState extends State<ChatsView> {
         filteredRooms = allRooms.where((room) {
           final userName = room.userName?.toLowerCase() ?? '';
           final lastMsg = room.lastMessage?.toLowerCase() ?? '';
-          return userName.contains(searchQuery) || lastMsg.contains(searchQuery);
+          return userName.contains(searchQuery) ||
+              lastMsg.contains(searchQuery);
         }).toList();
       }
     });
@@ -63,7 +64,9 @@ class _ChatsViewState extends State<ChatsView> {
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 14.w).copyWith(bottom: 15.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 14.w,
+                ).copyWith(bottom: 15.h),
                 child: SearchChatWidget(onSearchChanged: filterRooms),
               ),
             ),
@@ -97,7 +100,6 @@ class _ChatsViewState extends State<ChatsView> {
                     );
                   }
 
-
                   allRooms = snapshot.data!.docs
                       .map((d) => Room.fromJson(d.data(), docId: d.id))
                       .toList();
@@ -106,16 +108,20 @@ class _ChatsViewState extends State<ChatsView> {
                   filteredRooms = searchQuery.isEmpty
                       ? List.from(allRooms)
                       : allRooms.where((room) {
-                    final userName = room.userName?.toLowerCase() ?? '';
-                    final lastMsg = room.lastMessage?.toLowerCase() ?? '';
-                    return userName.contains(searchQuery) || lastMsg.contains(searchQuery);
-                  }).toList();
+                          final userName = room.userName?.toLowerCase() ?? '';
+                          final lastMsg = room.lastMessage?.toLowerCase() ?? '';
+                          return userName.contains(searchQuery) ||
+                              lastMsg.contains(searchQuery);
+                        }).toList();
 
                   if (filteredRooms.isEmpty) {
                     return Center(
                       child: Text(
                         LocaleKeys.noData.tr(),
-                        style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     );
                   }
@@ -139,7 +145,9 @@ class _ChatsViewState extends State<ChatsView> {
                             ChatDetailsScreen(
                               providerId: CacheHelper.id.toString(),
                               providerName: CacheHelper.name,
-                              providerImage: CacheHelper.photo.isEmpty ? null : CacheHelper.photo,
+                              providerImage: CacheHelper.photo.isEmpty
+                                  ? null
+                                  : CacheHelper.photo,
                               userId: room.userId ?? '0',
                               userName: room.userName ?? '',
                               userImage: room.userImageUrl ?? '',

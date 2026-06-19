@@ -6,6 +6,4 @@ class GetAppointmentDetailsEvent extends GetAppointmentDetailsEvents {
   final int id;
 
   GetAppointmentDetailsEvent({required this.id});
-
-
 }

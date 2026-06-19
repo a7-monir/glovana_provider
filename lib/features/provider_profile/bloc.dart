@@ -6,14 +6,18 @@ part 'events.dart';
 part 'model.dart';
 part 'states.dart';
 
-class GetProviderProfileBloc extends Bloc<GetProviderProfileEvents, GetProviderProfileStates> {
+class GetProviderProfileBloc
+    extends Bloc<GetProviderProfileEvents, GetProviderProfileStates> {
   final DioHelper _dio;
 
   GetProviderProfileBloc(this._dio) : super(GetProviderProfileStates()) {
     on<GetProviderProfileEvent>(_getData);
   }
 
-  void _getData(GetProviderProfileEvent event, Emitter<GetProviderProfileStates> emit) async {
+  void _getData(
+    GetProviderProfileEvent event,
+    Emitter<GetProviderProfileStates> emit,
+  ) async {
     emit(GetProviderProfileLoadingState());
     final response = await _dio.get("provider/providerProfile");
     if (response.isSuccess) {

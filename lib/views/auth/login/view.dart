@@ -3,27 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kiwi/kiwi.dart';
+
 import '../../../core/design/app_button.dart';
 import '../../../core/design/app_circle_icon.dart';
 import '../../../core/design/app_input.dart';
 import '../../../core/logic/cache_helper.dart';
 import '../../../core/logic/helper_methods.dart';
 import '../../../core/logic/input_validator.dart';
-import '../../../features/google_login/bloc.dart';
 import '../../../features/login/bloc.dart';
 import '../../../generated/locale_keys.g.dart';
 import '../../home_nav/view.dart';
 import '../components/auth_header.dart';
 import '../components/choose_lang_item.dart';
 import '../components/have_account.dart';
-import '../components/with_section.dart';
 import '../done_complete_profile.dart';
 import '../forgot_password/view.dart';
 import '../otp/view.dart';
 import '../signup/view.dart';
 
 part '../components/social_section.dart';
-
 part '../components/switch_button_section.dart';
 
 class LoginView extends StatefulWidget {
@@ -60,8 +58,6 @@ class _LoginViewState extends State<LoginView> {
     });
   }
 
-
-
   bool isLogin = true;
   late String phone;
 
@@ -79,7 +75,10 @@ class _LoginViewState extends State<LoginView> {
                 Stack(
                   children: [
                     Center(child: AuthHeader(isLogin: true)),
-                    ChooseLangItem(onChange: () => navigateTo(LoginView(),keepHistory: false),),
+                    ChooseLangItem(
+                      onChange: () =>
+                          navigateTo(LoginView(), keepHistory: false),
+                    ),
                   ],
                 ),
                 SizedBox(height: 60.h),
@@ -93,8 +92,7 @@ class _LoginViewState extends State<LoginView> {
                     isValid: bloc.phoneValid,
                     validator: (v) => InputValidator.validatePhone(v!),
                     onChanged: (value) {
-
-                      phone=value;
+                      phone = value;
                     },
                   ),
                 ),
@@ -139,12 +137,15 @@ class _LoginViewState extends State<LoginView> {
                             CacheHelper.setToken(state.token);
                             CacheHelper.saveData(state.model);
                             CacheHelper.saveBanInfo(bloc.banInfo!);
-                            if(state.model.activate==3||state.model.activate==2){
-                              navigateTo(DoneCompleteProfileView(), keepHistory: false);
-                            }else{
+                            if (state.model.activate == 3 ||
+                                state.model.activate == 2) {
+                              navigateTo(
+                                DoneCompleteProfileView(),
+                                keepHistory: false,
+                              );
+                            } else {
                               navigateTo(HomeNavView());
                             }
-
                           },
                         ),
                       );

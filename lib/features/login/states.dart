@@ -14,11 +14,12 @@ class LoginFailedState extends LoginStates {
 }
 
 class LoginSuccessState extends LoginStates {
-  final String msg,token;
+  final String msg, token;
   final User model;
 
-  LoginSuccessState({required this.msg, required this.token, required this.model});
-
-
-
+  LoginSuccessState({
+    required this.msg,
+    required this.token,
+    required this.model,
+  });
 }

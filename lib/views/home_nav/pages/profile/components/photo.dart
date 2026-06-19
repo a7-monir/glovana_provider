@@ -9,43 +9,41 @@ import '../../../../../core/logic/cache_helper.dart';
 import '../../../../../core/logic/helper_methods.dart';
 import '../../../../edit_profile/view.dart';
 
-
 class ItemPhoto extends StatefulWidget {
   final bool canEdit;
 
-  final Function(String)?onChange;
+  final Function(String)? onChange;
 
-  const ItemPhoto({super.key,  this.canEdit=false,  this.onChange,});
+  const ItemPhoto({super.key, this.canEdit = false, this.onChange});
 
   @override
   State<ItemPhoto> createState() => _ItemPhotoState();
 }
 
 class _ItemPhotoState extends State<ItemPhoto> {
-  String?photoUrl;
+  String? photoUrl;
 
   @override
   Widget build(BuildContext context) {
-    return  GestureDetector(
-      onTap: (){
-        if(widget.canEdit){
-          AppAlert.init.imagePickerDialog(onSubmit: (file) {
-            photoUrl=file.path;
-            if(widget.onChange!=null){
-              widget.onChange!(file.path);
-            }
-            setState(() {});
-
-          },);
-        }else{
+    return GestureDetector(
+      onTap: () {
+        if (widget.canEdit) {
+          AppAlert.init.imagePickerDialog(
+            onSubmit: (file) {
+              photoUrl = file.path;
+              if (widget.onChange != null) {
+                widget.onChange!(file.path);
+              }
+              setState(() {});
+            },
+          );
+        } else {
           navigateTo(EditProfileView());
         }
-
       },
       child: Stack(
         alignment: AlignmentDirectional.bottomCenter,
         children: [
-
           Container(
             clipBehavior: Clip.antiAlias,
             height: 190.h,
@@ -67,8 +65,9 @@ class _ItemPhotoState extends State<ItemPhoto> {
                       CacheHelper.photo,
                       height: 190.h,
                       width: 190.h,
-                      withBaseImageUrl:
-                          !CacheHelper.photo.toLowerCase().startsWith('https'),
+                      withBaseImageUrl: !CacheHelper.photo
+                          .toLowerCase()
+                          .startsWith('https'),
                       fit: BoxFit.cover,
                     ),
             ),

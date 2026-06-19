@@ -7,7 +7,7 @@ class ProviderUpdateStatusLoadingState extends ProviderUpdateStatusStates {}
 class ProviderUpdateStatusFailedState extends ProviderUpdateStatusStates {
   final CustomResponse response;
 
-  ProviderUpdateStatusFailedState({required this.response,}) {
+  ProviderUpdateStatusFailedState({required this.response}) {
     showMessage(response.msg);
   }
 }

@@ -5,7 +5,5 @@ class DeleteGallaryEvents {}
 class DeleteGallaryEvent extends DeleteGallaryEvents {
   final int galleryId;
 
-
   DeleteGallaryEvent({required this.galleryId});
-
 }

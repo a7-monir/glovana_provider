@@ -6,18 +6,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../app_theme.dart';
 import '../logic/cache_helper.dart';
 import 'app_circle_icon.dart';
-import 'app_image.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
-  final bool centerTitle, withBack,withDivider;
+  final bool centerTitle, withBack, withDivider;
   final VoidCallback? onBackPress;
   final List<Widget>? actions;
   final Widget? leadingIcon;
   final Widget? titleWidget;
   final double? leadingWidth, titleSpacing;
   final TextStyle? textStyle;
-  final Color? backColor, backgroundColor,shadowColor;
+  final Color? backColor, backgroundColor, shadowColor;
 
   const MainAppBar({
     super.key,
@@ -32,26 +31,47 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.titleSpacing,
     this.withBack = true,
     this.backColor,
-    this.backgroundColor, this.shadowColor,  this.withDivider=false,
+    this.backgroundColor,
+    this.shadowColor,
+    this.withDivider = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       shadowColor: Colors.transparent,
-      backgroundColor: backgroundColor ?? (shadowColor!=null?Theme.of(context).scaffoldBackgroundColor:Colors.transparent),
-      elevation: shadowColor!=null?1:0,
-      bottom:withDivider? PreferredSize(preferredSize: preferredSize, child: Divider(height: 2.h,color: Colors.black.withValues(alpha: .25),)):null,
+      backgroundColor:
+          backgroundColor ??
+          (shadowColor != null
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Colors.transparent),
+      elevation: shadowColor != null ? 1 : 0,
+      bottom: withDivider
+          ? PreferredSize(
+              preferredSize: preferredSize,
+              child: Divider(
+                height: 2.h,
+                color: Colors.black.withValues(alpha: .25),
+              ),
+            )
+          : null,
       leadingWidth: leadingWidth ?? (withBack ? 56.w : 16.w),
       titleSpacing: titleSpacing ?? (withBack ? 8.w : 24.w),
       toolbarHeight: 90.h,
       scrolledUnderElevation: 0,
       automaticallyImplyLeading: false,
       actions: actions ?? [],
-      leading: leadingIcon ?? (withBack ? CustomBackIcon(backColor: backColor) : null),
+      leading:
+          leadingIcon ??
+          (withBack ? CustomBackIcon(backColor: backColor) : null),
       title:
           titleWidget ??
-          Text(title??'', style: textStyle ?? TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w400)),
+          Text(
+            title ?? '',
+            style:
+                textStyle ??
+                TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w400),
+          ),
       centerTitle: centerTitle,
     );
   }
@@ -73,7 +93,7 @@ class SecondAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const SecondAppBar({
     super.key,
-    this.title='',
+    this.title = '',
     this.centerTitle = true,
     this.textStyle,
     this.onBackPress,
@@ -91,7 +111,8 @@ class SecondAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       shadowColor: Colors.transparent,
-      backgroundColor: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor:
+          backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       leadingWidth: leadingWidth ?? (withBack ? 56.w : 16.w),
       titleSpacing: titleSpacing ?? (withBack ? 8.w : 24.w),
@@ -103,13 +124,18 @@ class SecondAppBar extends StatelessWidget implements PreferredSizeWidget {
           leadingIcon ??
           (withBack
               ? CustomBackIcon(
-                backColor: Theme.of(context).primaryColor,
-                circleColor: AppTheme.containerColor,
-              )
+                  backColor: Theme.of(context).primaryColor,
+                  circleColor: AppTheme.containerColor,
+                )
               : null),
       title:
           titleWidget ??
-          Text(title, style: textStyle ?? TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700)),
+          Text(
+            title,
+            style:
+                textStyle ??
+                TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w700),
+          ),
       centerTitle: centerTitle,
     );
   }

@@ -5,9 +5,12 @@ class Responsive extends StatelessWidget {
 
   final Widget? web;
 
-  const Responsive(
-      {Key? key, required this.mobile, required this.tablet, this.web})
-      : super(key: key);
+  const Responsive({
+    Key? key,
+    required this.mobile,
+    required this.tablet,
+    this.web,
+  }) : super(key: key);
 
   static bool isMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < 650;
@@ -24,16 +27,16 @@ class Responsive extends StatelessWidget {
     return isWeb(context)
         ? 2
         : isTablet(context)
-            ? 2
-            : 1;
+        ? 2
+        : 1;
   }
 
   static int gridView3ItemCount(BuildContext context) {
     return isWeb(context)
         ? 3
         : isTablet(context)
-            ? 2
-            : 1;
+        ? 2
+        : 1;
   }
 
   @override
@@ -43,7 +46,7 @@ class Responsive extends StatelessWidget {
         if (constraints.maxWidth >= 1100) {
           return web ?? tablet;
         } else if (constraints.maxWidth >= 650) {
-          return tablet ;
+          return tablet;
         }
         return mobile;
       },

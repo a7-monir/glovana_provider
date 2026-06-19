@@ -10,10 +10,7 @@ class ToggleLangBloc extends Bloc<ToggleLangEvents, ToggleLangStates> {
     on<ToggleLangEvent>(_toggle);
   }
 
-  void _toggle(
-    ToggleLangEvent event,
-    Emitter<ToggleLangStates> emit,
-  ) async {
+  void _toggle(ToggleLangEvent event, Emitter<ToggleLangStates> emit) async {
     await CacheHelper.setLang(event.lang);
     emit(ToggleLangState(event.lang));
   }

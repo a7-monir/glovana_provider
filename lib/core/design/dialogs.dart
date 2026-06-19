@@ -1,30 +1,29 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/features/appointments/bloc.dart';
 import 'package:kiwi/kiwi.dart';
+
 import '../../features/confirm_payment/bloc.dart';
 import '../../generated/locale_keys.g.dart';
 import '../app_theme.dart';
 import '../logic/helper_methods.dart';
 import 'app_button.dart';
-import 'app_circle_icon.dart';
 import 'app_image.dart';
 
 Future showMyDialog({required Widget child, bool isDismissible = true}) async {
   return await showDialog(
     barrierDismissible: isDismissible,
     builder: (context) => SimpleDialog(
-        elevation: 0,
-        backgroundColor: AppTheme.bgLightColor,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-        contentPadding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 24.h),
-        children: [child]),
+      elevation: 0,
+      backgroundColor: AppTheme.bgLightColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+      contentPadding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 24.h),
+      children: [child],
+    ),
     context: navigatorKey.currentContext!,
   );
 }
@@ -78,11 +77,6 @@ Future showMyDialog({required Widget child, bool isDismissible = true}) async {
 //   }
 // }
 
-
-
-
-
-
 // showSuccessDialog(BuildContext context,{required String title,
 //   required String des,
 //   VoidCallback? onBackTap
@@ -102,19 +96,17 @@ Future showMyDialog({required Widget child, bool isDismissible = true}) async {
 //   );
 // }
 
-
 class ConfirmPaymentDialog extends StatefulWidget {
   final Appointment model;
 
-  const ConfirmPaymentDialog({super.key, required this.model,});
+  const ConfirmPaymentDialog({super.key, required this.model});
 
   @override
   State<ConfirmPaymentDialog> createState() => _ConfirmPaymentDialogState();
 }
 
 class _ConfirmPaymentDialogState extends State<ConfirmPaymentDialog> {
-
-  final bloc =KiwiContainer().resolve<ConfirmPaymentBloc>();
+  final bloc = KiwiContainer().resolve<ConfirmPaymentBloc>();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -130,8 +122,9 @@ class _ConfirmPaymentDialogState extends State<ConfirmPaymentDialog> {
           children: [
             ClipRRect(
               borderRadius: BorderRadiusGeometry.circular(8.r),
-              child: AppImage(widget.model.user.photoUrl,
-              height: 60.h,
+              child: AppImage(
+                widget.model.user.photoUrl,
+                height: 60.h,
                 width: 60.h,
               ),
             ),
@@ -141,7 +134,8 @@ class _ConfirmPaymentDialogState extends State<ConfirmPaymentDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(widget.model.user.name),
-                  Text(widget.model.user.phone,
+                  Text(
+                    widget.model.user.phone,
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12.sp,
@@ -149,7 +143,6 @@ class _ConfirmPaymentDialogState extends State<ConfirmPaymentDialog> {
                       fontFamily: getFontFamily(FontFamilyType.inter),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -161,18 +154,19 @@ class _ConfirmPaymentDialogState extends State<ConfirmPaymentDialog> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(LocaleKeys.total.tr()),
-            Text("${widget.model.totalPrices} ${LocaleKeys.jod.tr()}",
-              style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w400),)
+            Text(
+              "${widget.model.totalPrices} ${LocaleKeys.jod.tr()}",
+              style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w400),
+            ),
           ],
         ),
-
 
         SizedBox(height: 16.h),
         BlocConsumer(
           bloc: bloc,
           listener: (context, state) {
             if (state is ConfirmPaymentSuccessState) {
-              showMessage(state.msg,type: MessageType.success);
+              showMessage(state.msg, type: MessageType.success);
               Navigator.pop(context);
             }
           },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+
 import '../app_theme.dart';
 
 class AppShimmer extends StatelessWidget {
@@ -10,11 +11,12 @@ class AppShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-        //baseColor: AppTheme.warningColor,
-        baseColor: AppTheme.primary.withValues(alpha: .2),
-        // direction: ShimmerDirection.l,
-        highlightColor: Colors.white,
-        period: const Duration(seconds: 2),
-        child: child);
+      //baseColor: AppTheme.warningColor,
+      baseColor: AppTheme.primary.withValues(alpha: .2),
+      // direction: ShimmerDirection.l,
+      highlightColor: Colors.white,
+      period: const Duration(seconds: 2),
+      child: child,
+    );
   }
 }

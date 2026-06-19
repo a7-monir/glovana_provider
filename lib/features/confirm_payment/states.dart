@@ -7,7 +7,7 @@ class ConfirmPaymentLoadingState extends ConfirmPaymentStates {}
 class ConfirmPaymentFailedState extends ConfirmPaymentStates {
   final CustomResponse response;
 
-  ConfirmPaymentFailedState({required this.response,}) {
+  ConfirmPaymentFailedState({required this.response}) {
     showMessage(response.msg);
   }
 }

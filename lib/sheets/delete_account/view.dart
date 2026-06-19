@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,32 +51,37 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
                   withShadow: false,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15.r),
-                    borderSide: BorderSide(color: AppTheme.primary)
+                    borderSide: BorderSide(color: AppTheme.primary),
                   ),
-                  validator: (v) =>InputValidator.requiredValidator(value: v!, itemName: LocaleKeys.reason.tr()) ,
-                  maxLines: 3,),
+                  validator: (v) => InputValidator.requiredValidator(
+                    value: v!,
+                    itemName: LocaleKeys.reason.tr(),
+                  ),
+                  maxLines: 3,
+                ),
                 SizedBox(height: 32.h),
                 Row(
                   children: [
                     Expanded(
                       child: BlocBuilder(
-                          bloc: bloc,
-                          builder: (context, state) {
-                            return AppButton(
-                              text: LocaleKeys.yesDelete.tr(),
-                              type: ButtonType.outlined,
-                              isLoading: state is DeleteAccountLoadingState,
-                              onPress: () {
-                                if(formKey.currentState!.validate()){
-                                  bloc.add(DeleteAccountEvent());
-                                }else {
-                                  validateMode=AutovalidateMode.onUserInteraction;
-                                  setState(() {});
-                                }
-                
-                              },
-                            );
-                          }),
+                        bloc: bloc,
+                        builder: (context, state) {
+                          return AppButton(
+                            text: LocaleKeys.yesDelete.tr(),
+                            type: ButtonType.outlined,
+                            isLoading: state is DeleteAccountLoadingState,
+                            onPress: () {
+                              if (formKey.currentState!.validate()) {
+                                bloc.add(DeleteAccountEvent());
+                              } else {
+                                validateMode =
+                                    AutovalidateMode.onUserInteraction;
+                                setState(() {});
+                              }
+                            },
+                          );
+                        },
+                      ),
                     ),
                     SizedBox(width: 12.w),
                     Expanded(
@@ -87,10 +91,8 @@ class _DeleteAccountSheetState extends State<DeleteAccountSheet> {
                         onPress: () => Navigator.pop(context),
                       ),
                     ),
-                
-                
                   ],
-                )
+                ),
               ],
             ),
           ),

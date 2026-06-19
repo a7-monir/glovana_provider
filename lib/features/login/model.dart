@@ -1,4 +1,3 @@
-
 part of 'bloc.dart';
 
 class UserData {
@@ -44,7 +43,7 @@ class User {
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? 0;
-    name = json['name_of_manager'] ?? json['name']??'';
+    name = json['name_of_manager'] ?? json['name'] ?? '';
     countryCode = json['country_code'] ?? '';
     phone = json['phone'] ?? '';
     email = json['email'] ?? '';
@@ -80,20 +79,20 @@ class User {
     "photo_url": photoUrl,
   };
 }
-class BanInfo {
 
+class BanInfo {
   late final bool isPermanent;
   late final String reason;
   late final String description;
   late final String bannedAt;
   late final String banUntil;
 
-  BanInfo.fromJson(Map<String, dynamic> json){
-    isPermanent = json['is_permanent']??false;
-    reason = json['reason']??'';
-    description = json['description']??'';
-    bannedAt = json['banned_at']??'';
-    banUntil = json['ban_until']??'';
+  BanInfo.fromJson(Map<String, dynamic> json) {
+    isPermanent = json['is_permanent'] ?? false;
+    reason = json['reason'] ?? '';
+    description = json['description'] ?? '';
+    bannedAt = json['banned_at'] ?? '';
+    banUntil = json['ban_until'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
@@ -118,11 +117,7 @@ class UserResponseModel {
   String? message;
   Data? data;
 
-  UserResponseModel({
-    this.status,
-    this.message,
-    this.data,
-  });
+  UserResponseModel({this.status, this.message, this.data});
 
   factory UserResponseModel.fromJson(Map<String, dynamic> json) =>
       UserResponseModel(
@@ -142,18 +137,12 @@ class Data {
   String? token;
   User? user;
 
-  Data({
-    this.token,
-    this.user,
-  });
+  Data({this.token, this.user});
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     token: json["token"],
     user: json["user"] == null ? null : User.fromJson(json["user"]),
   );
 
-  Map<String, dynamic> toJson() => {
-    "token": token,
-    "user": user?.toJson(),
-  };
+  Map<String, dynamic> toJson() => {"token": token, "user": user?.toJson()};
 }

@@ -5,7 +5,5 @@ class DeleteDiscountEvents {}
 class DeleteDiscountEvent extends DeleteDiscountEvents {
   final int id;
 
-
   DeleteDiscountEvent({required this.id});
-
 }

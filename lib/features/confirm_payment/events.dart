@@ -5,6 +5,5 @@ class ConfirmPaymentEvents {}
 class ConfirmPaymentEvent extends ConfirmPaymentEvents {
   final num id;
 
-  ConfirmPaymentEvent({ required this.id});
-
+  ConfirmPaymentEvent({required this.id});
 }

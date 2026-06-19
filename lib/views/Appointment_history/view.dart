@@ -34,19 +34,18 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return  Stack(
+    return Stack(
       children: [
         MainGradientItem(),
         Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: MainAppBar(
-            title: LocaleKeys.appointmentsHistory.tr(),
-
-          ),
+          appBar: MainAppBar(title: LocaleKeys.appointmentsHistory.tr()),
           body: Column(
             children: [
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 20.w).copyWith(top: 30.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20.w,
+                ).copyWith(top: 30.h),
                 child: Row(
                   children: [
                     Expanded(
@@ -76,7 +75,6 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
                         },
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -119,6 +117,7 @@ class _AppointmentHistoryState extends State<AppointmentHistory> {
     );
   }
 }
+
 class _Item extends StatelessWidget {
   final Appointment model;
 
@@ -206,16 +205,12 @@ class _Item extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                             fontSize: 14.sp,
                             color: Theme.of(context).hintColor,
-                            fontFamily: getFontFamily(
-                              FontFamilyType.inter,
-                            ),
+                            fontFamily: getFontFamily(FontFamilyType.inter),
                           ),
                         ),
                         SizedBox(height: 6.h),
                         Text(
-                          DateFormat.jm().format(
-                            DateTime.parse(model.date),
-                          ),
+                          DateFormat.jm().format(DateTime.parse(model.date)),
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 14.sp,
@@ -235,35 +230,36 @@ class _Item extends StatelessWidget {
                           fontSize: 24.sp,
                         ),
                       ),
-
                     ],
                   ),
                 ],
               ),
               SizedBox(width: 10.w),
-              if(model.reasonOfCancel.isNotEmpty)...[
+              if (model.reasonOfCancel.isNotEmpty) ...[
                 VerticalDivider(width: 2.w),
                 SizedBox(width: 10.w),
                 Expanded(
                   child: Column(
                     children: [
-                      Text(LocaleKeys.reason.tr(),
+                      Text(
+                        LocaleKeys.reason.tr(),
                         style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w400
-                        ),),
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                       SizedBox(height: 4.h),
-                      Text(model.reasonOfCancel,
+                      Text(
+                        model.reasonOfCancel,
                         style: TextStyle(
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w400
-                        ),),
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                     ],
                   ),
-                )
-              ]
-
-
+                ),
+              ],
             ],
           ),
         ),

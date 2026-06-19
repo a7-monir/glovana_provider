@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
-import 'package:intl/intl.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
+import 'package:intl/intl.dart';
 
 import '../models/rooms_model.dart';
 

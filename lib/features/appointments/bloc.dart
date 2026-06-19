@@ -4,9 +4,7 @@ import '../../../core/logic/app_logger.dart';
 import '../../../core/logic/dio_helper.dart';
 
 part 'events.dart';
-
 part 'model.dart';
-
 part 'states.dart';
 
 enum AppointmentStatus {

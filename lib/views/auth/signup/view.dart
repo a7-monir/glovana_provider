@@ -5,24 +5,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/features/types/bloc.dart';
 import 'package:glovana_provider/views/auth/otp/view.dart';
 import 'package:glovana_provider/views/static_page/view.dart';
-
 import 'package:kiwi/kiwi.dart';
 
 import '../../../core/design/app_button.dart';
 import '../../../core/design/app_drop_down.dart';
-import '../../../core/design/app_failed.dart';
 import '../../../core/design/app_input.dart';
 import '../../../core/logic/helper_methods.dart';
 import '../../../core/logic/input_validator.dart';
-import '../../../features/google_login/bloc.dart';
-import '../../../features/services/bloc.dart';
 import '../../../features/signup/bloc.dart';
 import '../../../generated/locale_keys.g.dart';
 import '../components/auth_header.dart';
 import '../components/choose_lang_item.dart';
 import '../components/have_account.dart';
-import '../components/social_buttons.dart';
-import '../components/with_section.dart';
 import 'first_step.dart';
 
 class SignupView extends StatefulWidget {
@@ -116,7 +110,8 @@ class _SignupViewState extends State<SignupView> {
                   children: [
                     Center(child: AuthHeader(isLogin: false)),
                     ChooseLangItem(
-                      onChange: () => navigateTo(SignupView(),keepHistory: false),
+                      onChange: () =>
+                          navigateTo(SignupView(), keepHistory: false),
                     ),
                   ],
                 ),
@@ -131,11 +126,10 @@ class _SignupViewState extends State<SignupView> {
                           isCenterTitle: true,
                           controller: bloc.firstNameController,
                           isValid: bloc.firstNameValid,
-                          validator: (v) =>
-                              InputValidator.requiredValidator(
-                                value: v!,
-                                itemName: LocaleKeys.firstName.tr(),
-                              ),
+                          validator: (v) => InputValidator.requiredValidator(
+                            value: v!,
+                            itemName: LocaleKeys.firstName.tr(),
+                          ),
                         ),
                       ),
                       SizedBox(width: 32.w),
@@ -145,11 +139,10 @@ class _SignupViewState extends State<SignupView> {
                           isCenterTitle: true,
                           controller: bloc.lastNameController,
                           isValid: bloc.lastNameValid,
-                          validator: (v) =>
-                              InputValidator.requiredValidator(
-                                value: v!,
-                                itemName: LocaleKeys.lastName.tr(),
-                              ),
+                          validator: (v) => InputValidator.requiredValidator(
+                            value: v!,
+                            itemName: LocaleKeys.lastName.tr(),
+                          ),
                         ),
                       ),
                     ],
@@ -218,31 +211,38 @@ class _SignupViewState extends State<SignupView> {
                   ),
                 ),
                 Padding(
-                  padding:  EdgeInsets.symmetric(horizontal: 14.w),
+                  padding: EdgeInsets.symmetric(horizontal: 14.w),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
-                          onTap: () => navigateTo(StaticPageView(id: 3, title: LocaleKeys.privacyPolicy.tr())),
-                          child: Text(LocaleKeys.privacyPolicy.tr())),
+                        onTap: () => navigateTo(
+                          StaticPageView(
+                            id: 3,
+                            title: LocaleKeys.privacyPolicy.tr(),
+                          ),
+                        ),
+                        child: Text(LocaleKeys.privacyPolicy.tr()),
+                      ),
                       Checkbox(
                         activeColor: Theme.of(
                           context,
                         ).primaryColor.withValues(alpha: .08),
-                        fillColor: WidgetStateProperty. resolveWith<Color>((Set<WidgetState> states) {
-                          if (states. contains(WidgetState. disabled)) {
-                            return Colors. transparent;
+                        fillColor: WidgetStateProperty.resolveWith<Color>((
+                          Set<WidgetState> states,
+                        ) {
+                          if (states.contains(WidgetState.disabled)) {
+                            return Colors.transparent;
                           }
-                          return Colors. transparent;
+                          return Colors.transparent;
                         }),
                         checkColor: Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4.r),
                         ),
                         side: WidgetStateBorderSide.resolveWith(
-                              (states) => BorderSide(
-                            color: Theme.of(context).primaryColor,
-                          ),
+                          (states) =>
+                              BorderSide(color: Theme.of(context).primaryColor),
                         ),
 
                         value: isAccept,
@@ -269,22 +269,23 @@ class _SignupViewState extends State<SignupView> {
                       text: LocaleKeys.signUp.tr(),
                       padding: EdgeInsets.symmetric(horizontal: 64.w),
                       isLoading: state is SignupLoadingState,
-                      onPress:() {
+                      onPress: () {
                         if (bloc.formKey.currentState!.validate()) {
                           if (isAccept) {
-                            navigateTo(VerifyOtpScreen(phone: bloc.phoneController.text, onSuccess: () {
-                              bloc.add(SignupEvent());
-                            },));
-
+                            navigateTo(
+                              VerifyOtpScreen(
+                                phone: bloc.phoneController.text,
+                                onSuccess: () {
+                                  bloc.add(SignupEvent());
+                                },
+                              ),
+                            );
                           } else {
                             showMessage(
-                                LocaleKeys.mustAcceptWithName.tr(
-                                  namedArgs: {
-                                    'name': LocaleKeys.privacyPolicy,
-                                  },
-
-                                ),
-                                type: MessageType.warning
+                              LocaleKeys.mustAcceptWithName.tr(
+                                namedArgs: {'name': LocaleKeys.privacyPolicy},
+                              ),
+                              type: MessageType.warning,
                             );
                           }
                         } else {

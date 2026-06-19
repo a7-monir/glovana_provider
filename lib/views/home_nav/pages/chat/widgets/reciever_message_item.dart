@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/constants.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 import 'package:voice_note_kit/voice_note_kit.dart';
-import 'dart:ui' as ui;
 
 import '../models/message_model.dart';
 

@@ -5,7 +5,14 @@ class CustomSliverGrid extends StatelessWidget {
   final int itemCount, crossCount;
   final EdgeInsetsGeometry? itemPadding, padding;
 
-  const CustomSliverGrid({super.key, required this.itemBuilder, required this.itemCount, required this.crossCount, this.itemPadding, this.padding});
+  const CustomSliverGrid({
+    super.key,
+    required this.itemBuilder,
+    required this.itemCount,
+    required this.crossCount,
+    this.itemPadding,
+    this.padding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +27,10 @@ class CustomSliverGrid extends StatelessWidget {
               (i) => Expanded(
                 child: (index * crossCount) + i >= itemCount
                     ? const SizedBox.shrink()
-                    : Padding(padding: itemPadding ?? EdgeInsets.zero, child: itemBuilder(context, (index * crossCount) + i)),
+                    : Padding(
+                        padding: itemPadding ?? EdgeInsets.zero,
+                        child: itemBuilder(context, (index * crossCount) + i),
+                      ),
               ),
             ),
           ),
@@ -37,7 +47,7 @@ class CustomGrid extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool shrinkWrap;
   final ScrollPhysics? physics;
-  final double? spacing,runSpacing;
+  final double? spacing, runSpacing;
 
   const CustomGrid({
     super.key,
@@ -59,25 +69,31 @@ class CustomGrid extends StatelessWidget {
       physics: physics,
       padding: padding ?? EdgeInsets.zero,
       itemCount: (itemCount / 2).ceilToDouble().toInt(),
-      itemBuilder: (context, index) =>
-          LayoutBuilder(
-          builder: (context, constraints) {
-        final paddingWidth = padding?.horizontal ?? 0;
-        final spacingWidth = (spacing ?? 0) * (crossCount - 1);
-        final itemWidth = (constraints.maxWidth / crossCount - spacingWidth - paddingWidth).floorToDouble();
+      itemBuilder: (context, index) => LayoutBuilder(
+        builder: (context, constraints) {
+          final paddingWidth = padding?.horizontal ?? 0;
+          final spacingWidth = (spacing ?? 0) * (crossCount - 1);
+          final itemWidth =
+              (constraints.maxWidth / crossCount - spacingWidth - paddingWidth)
+                  .floorToDouble();
 
-        return Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          spacing:spacing??0 ,
-          children: List.generate(
-            crossCount,
-            (i) => SizedBox(
-              width: itemWidth,
-              child: (index * crossCount) + i >= itemCount ? const SizedBox.shrink() : itemBuilder(context, (index * crossCount) + i),
+          return Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: spacing ?? 0,
+            children: List.generate(
+              crossCount,
+              (i) => SizedBox(
+                width: itemWidth,
+                child: (index * crossCount) + i >= itemCount
+                    ? const SizedBox.shrink()
+                    : itemBuilder(context, (index * crossCount) + i),
+              ),
             ),
-          ),
-        );
-      }), separatorBuilder: (BuildContext context, int index) =>SizedBox(height: runSpacing),
+          );
+        },
+      ),
+      separatorBuilder: (BuildContext context, int index) =>
+          SizedBox(height: runSpacing),
     );
   }
 }

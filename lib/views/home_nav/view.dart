@@ -2,18 +2,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
-
 import 'package:glovana_provider/views/home_nav/pages/appointments/view.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/chat_utils.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/models/rooms_model.dart';
 import 'package:glovana_provider/views/home_nav/pages/chats/view.dart';
 import 'package:glovana_provider/views/home_nav/pages/profile/view.dart';
 
-
 import '../../core/app_theme.dart';
 import '../../core/design/app_image.dart';
 import '../../generated/locale_keys.g.dart';
-
 
 class HomeNavView extends StatefulWidget {
   final int? pageIndex;
@@ -30,11 +27,7 @@ class _HomeNavViewState extends State<HomeNavView> {
 
   @override
   void initState() {
-    pages = [
-      const AppointmentsView(),
-      const ChatsView(),
-      const ProfileView(),
-    ];
+    pages = [const AppointmentsView(), const ChatsView(), const ProfileView()];
     if (widget.pageIndex != null && widget.pageIndex != _selectedIndex) {
       setState(() {
         _selectedIndex = widget.pageIndex!;
@@ -50,11 +43,7 @@ class _HomeNavViewState extends State<HomeNavView> {
     LocaleKeys.profile,
   ];
 
-  List<String> icons = [
-    'calender.png',
-    'chat.png',
-    'user.png',
-  ];
+  List<String> icons = ['calender.png', 'chat.png', 'user.png'];
 
   List<Room> allRooms = [];
 
@@ -77,22 +66,22 @@ class _HomeNavViewState extends State<HomeNavView> {
           ],
         ),
         child: StreamBuilder(
-            stream: ChatUtils.getRooms(CacheHelper.id.toString()),
+          stream: ChatUtils.getRooms(CacheHelper.id.toString()),
           builder: (context, snapshot) {
-              if(snapshot.data!=null){
-                allRooms = snapshot.data!.docs
-                    .map((d) => Room.fromJson(d.data(), docId: d.id))
-                    .toList();
-              }
+            if (snapshot.data != null) {
+              allRooms = snapshot.data!.docs
+                  .map((d) => Room.fromJson(d.data(), docId: d.id))
+                  .toList();
+            }
 
             return SafeArea(
               child: Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 24.w),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
                     title.length,
-                        (index) => InkWell(
+                    (index) => InkWell(
                       onTap: () {
                         _selectedIndex = index;
                         setState(() {});
@@ -101,14 +90,18 @@ class _HomeNavViewState extends State<HomeNavView> {
                         title: title[index].tr(),
                         icon: icons[index],
                         isActive: _selectedIndex == index,
-                        isLabelVisible: index==1&&allRooms.any((element) => element.unreadCountProvider>0,),
+                        isLabelVisible:
+                            index == 1 &&
+                            allRooms.any(
+                              (element) => element.unreadCountProvider > 0,
+                            ),
                       ),
                     ),
                   ),
                 ),
               ),
             );
-          }
+          },
         ),
       ),
       body: pages[_selectedIndex],
@@ -127,7 +120,7 @@ class NavBarItem extends StatelessWidget {
   });
 
   final String title, icon;
-  final bool isActive,isLabelVisible;
+  final bool isActive, isLabelVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -151,15 +144,14 @@ class NavBarItem extends StatelessWidget {
           Badge(
             smallSize: 8.r,
             isLabelVisible: isLabelVisible,
-           // backgroundColor: withBadge?:t,
+            // backgroundColor: withBadge?:t,
             child: SizedBox(
               width: 35.w,
               child: AppImage(
                 icon,
                 height: 24.r,
                 width: 24.r,
-                color:
-                isActive
+                color: isActive
                     ? Theme.of(context).secondaryHeaderColor
                     : Theme.of(context).primaryColor,
               ),

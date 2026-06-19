@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../app_theme.dart';
 
 class AppRefresh extends StatelessWidget {
@@ -10,7 +11,7 @@ class AppRefresh extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      backgroundColor:AppTheme.primary,
+      backgroundColor: AppTheme.primary,
       color: Colors.white,
       onRefresh: () async {
         await Future.delayed(const Duration(seconds: 2));

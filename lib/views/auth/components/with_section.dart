@@ -15,7 +15,9 @@ class WithSection extends StatelessWidget {
         Expanded(child: Divider(height: 2.h)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 4.w),
-          child: Text(isLogin?LocaleKeys.loginWith.tr():LocaleKeys.signupWith.tr()),
+          child: Text(
+            isLogin ? LocaleKeys.loginWith.tr() : LocaleKeys.signupWith.tr(),
+          ),
         ),
         Expanded(child: Divider()),
       ],

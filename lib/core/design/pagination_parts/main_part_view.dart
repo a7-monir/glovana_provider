@@ -5,13 +5,13 @@ class PaginationBodyView extends StatelessWidget {
   final VoidCallback onLoading;
   final bool haveNext, isGetPreviousSuccess;
 
-  const PaginationBodyView(
-      {Key? key,
-      required this.child,
-      required this.onLoading,
-      required this.haveNext,
-      required this.isGetPreviousSuccess})
-      : super(key: key);
+  const PaginationBodyView({
+    Key? key,
+    required this.child,
+    required this.onLoading,
+    required this.haveNext,
+    required this.isGetPreviousSuccess,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

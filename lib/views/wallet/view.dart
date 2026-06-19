@@ -41,9 +41,11 @@ class _WalletViewState extends State<WalletView> {
                 bloc.add(GetWalletEvent());
               },
               child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(), // ✅ مهم عشان AppRefresh يشتغل
-                padding: EdgeInsets.symmetric(horizontal: 20.w)
-                    .copyWith(top: 40.h, bottom: 16.h),
+                physics:
+                    const AlwaysScrollableScrollPhysics(), // ✅ مهم عشان AppRefresh يشتغل
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20.w,
+                ).copyWith(top: 40.h, bottom: 16.h),
                 child: Column(
                   children: [
                     Text(
@@ -75,8 +77,9 @@ class _WalletViewState extends State<WalletView> {
                           final isIncome = item.typeOfTransaction == 1;
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundColor:
-                              isIncome ? Colors.green[100] : Colors.red[100],
+                              backgroundColor: isIncome
+                                  ? Colors.green[100]
+                                  : Colors.red[100],
                               child: Icon(
                                 isIncome
                                     ? Icons.arrow_downward
@@ -84,11 +87,11 @@ class _WalletViewState extends State<WalletView> {
                                 color: isIncome ? Colors.green : Colors.red,
                               ),
                             ),
-                            title: Text('${item.amount} ${LocaleKeys.jod.tr()}'),
-                            subtitle: Text(item.note),
-                            trailing: Text(
-                              item.createdAt.substring(0, 10),
+                            title: Text(
+                              '${item.amount} ${LocaleKeys.jod.tr()}',
                             ),
+                            subtitle: Text(item.note),
+                            trailing: Text(item.createdAt.substring(0, 10)),
                           );
                         },
                       ),

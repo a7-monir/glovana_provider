@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/logic/dio_helper.dart';
 import '../../../core/logic/helper_methods.dart';
-import '../../core/logic/cache_helper.dart';
 import '../../core/logic/firebase_notifications.dart';
 
 part 'events.dart';
@@ -23,8 +23,12 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
     on<LoginEvent>(_sendData);
   }
 
-  final phoneController = TextEditingController(text: kDebugMode ? '799008912' : null);
-  final passwordController = TextEditingController(text: kDebugMode ? '123456789' : null);
+  final phoneController = TextEditingController(
+    text: kDebugMode ? '799008912' : null,
+  );
+  final passwordController = TextEditingController(
+    text: kDebugMode ? '123456789' : null,
+  );
 
   User? model;
   BanInfo? banInfo;
@@ -32,7 +36,6 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
 
   bool passwordValid = true;
   bool phoneValid = true;
-
 
   Future<void> _sendData(LoginEvent event, Emitter<LoginStates> emit) async {
     emit(LoginLoadingState());
@@ -50,7 +53,9 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
       );
 
       if (!response.isSuccess) {
-        emit(LoginFailedState(msg: response.msg, statusCode: response.statusCode));
+        emit(
+          LoginFailedState(msg: response.msg, statusCode: response.statusCode),
+        );
         return;
       }
 
@@ -59,11 +64,13 @@ class LoginBloc extends Bloc<LoginEvents, LoginStates> {
 
       model = userModel.user;
       token = userModel.token;
-      banInfo=userModel.banInfo;
+      banInfo = userModel.banInfo;
       phoneController.clear();
       passwordController.clear();
 
-      emit(LoginSuccessState(msg: response.msg,model: model!,token: token??''));
+      emit(
+        LoginSuccessState(msg: response.msg, model: model!, token: token ?? ''),
+      );
     } catch (e) {
       emit(LoginFailedState(msg: e.toString(), statusCode: 0));
     }

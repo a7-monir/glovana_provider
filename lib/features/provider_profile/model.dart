@@ -1,30 +1,24 @@
-
 part of 'bloc.dart';
-class ProviderProfileData {
 
+class ProviderProfileData {
   late final bool status;
   late final String message;
   late final Data data;
 
-  ProviderProfileData.fromJson(Map<String, dynamic> json){
-
-    data = Data.fromJson(json['data']??{});
+  ProviderProfileData.fromJson(Map<String, dynamic> json) {
+    data = Data.fromJson(json['data'] ?? {});
   }
-
 }
 
 class Data {
-
   late final Provider provider;
 
-  Data.fromJson(Map<String, dynamic> json){
-    provider = Provider.fromJson(json['provider']??{});
+  Data.fromJson(Map<String, dynamic> json) {
+    provider = Provider.fromJson(json['provider'] ?? {});
   }
-
 }
 
 class Provider {
-
   late final int id;
   late final String nameOfManager;
   late final String countryCode;
@@ -40,26 +34,27 @@ class Provider {
   late final String photoUrl;
   late final List<ProviderTypes> providerTypes;
 
-  Provider.fromJson(Map<String, dynamic> json){
-    id = json['id']??0;
-    nameOfManager = json['name_of_manager']??'';
-    countryCode = json['country_code']??'';
-    phone = json['phone']??0;
-    email = json['email']??'';
-    photoOfManager = json['photo_of_manager']??'';
-    fcmToken = json['fcm_token']??'';
-    balance = json['balance']??0;
-    totalPoints = json['total_points']??0;
-    activate = json['activate']??0;
-    createdAt = json['created_at']??'';
-    updatedAt = json['updated_at']??'';
-    photoUrl = json['photo_url']??'';
-    providerTypes = List.from(json['provider_types']).map((e)=>ProviderTypes.fromJson(e)).toList();
+  Provider.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? 0;
+    nameOfManager = json['name_of_manager'] ?? '';
+    countryCode = json['country_code'] ?? '';
+    phone = json['phone'] ?? 0;
+    email = json['email'] ?? '';
+    photoOfManager = json['photo_of_manager'] ?? '';
+    fcmToken = json['fcm_token'] ?? '';
+    balance = json['balance'] ?? 0;
+    totalPoints = json['total_points'] ?? 0;
+    activate = json['activate'] ?? 0;
+    createdAt = json['created_at'] ?? '';
+    updatedAt = json['updated_at'] ?? '';
+    photoUrl = json['photo_url'] ?? '';
+    providerTypes = List.from(
+      json['provider_types'],
+    ).map((e) => ProviderTypes.fromJson(e)).toList();
   }
 }
 
 class ProviderTypes {
-
   late final int id;
   late final int providerId;
   late final int typeId;
@@ -71,10 +66,10 @@ class ProviderTypes {
   late final String practiceLicense;
   late final String identityPhoto;
   late final String address;
-  late final num pricePerHour,numberOfWork;
+  late final num pricePerHour, numberOfWork;
   late final int status;
   late final bool isVip;
-  late final String createdAt,phoneNumberOfProviderType;
+  late final String createdAt, phoneNumberOfProviderType;
   late final String updatedAt;
   late final bool isFavourite;
   late final Type type;
@@ -84,35 +79,43 @@ class ProviderTypes {
   late final List<Galleries> galleries;
   late final List<Availabilities> availabilities;
 
-  ProviderTypes.fromJson(Map<String, dynamic> json){
-    id = json['id']??0;
-    providerId = json['provider_id']??0;
-    typeId = json['type_id']??0;
-    activate = json['activate']??0;
-    name = json['name']??'';
-    description = json['description']??'';
-    lat = json['lat']??0;
-    lng = json['lng']??0;
-    practiceLicense = json['practice_license']??'';
-    identityPhoto = json['identity_photo']??'';
-    address = json['address']??'';
-    pricePerHour = json['price_per_hour']??0;
-    phoneNumberOfProviderType = json['phone_number_of_provider_type']??'';
-    numberOfWork = json['number_of_work']??0;
-    status = json['status']??0;
-    isVip = json['is_vip']??false;
-    createdAt = json['created_at']??'0';
-    updatedAt = json['updated_at']??'0';
-    isFavourite = json['is_favourite']??false;
-    type = Type.fromJson(json['type']??{});
-    services = List.from(json['services']??[]).map((e)=>Services.fromJson(e)).toList();
-    providerServices = List.from(json['provider_services']??[]).map((e)=>ProviderServices.fromJson(e)).toList();
-    images = List.from(json['images']??[]).map((e)=>Images.fromJson(e)).toList();
-    galleries = List.from(json['galleries']??[]).map((e)=>Galleries.fromJson(e)).toList();
-    availabilities = List.from(json['availabilities']??[]).map((e)=>Availabilities.fromJson(e)).toList();
+  ProviderTypes.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? 0;
+    providerId = json['provider_id'] ?? 0;
+    typeId = json['type_id'] ?? 0;
+    activate = json['activate'] ?? 0;
+    name = json['name'] ?? '';
+    description = json['description'] ?? '';
+    lat = json['lat'] ?? 0;
+    lng = json['lng'] ?? 0;
+    practiceLicense = json['practice_license'] ?? '';
+    identityPhoto = json['identity_photo'] ?? '';
+    address = json['address'] ?? '';
+    pricePerHour = json['price_per_hour'] ?? 0;
+    phoneNumberOfProviderType = json['phone_number_of_provider_type'] ?? '';
+    numberOfWork = json['number_of_work'] ?? 0;
+    status = json['status'] ?? 0;
+    isVip = json['is_vip'] ?? false;
+    createdAt = json['created_at'] ?? '0';
+    updatedAt = json['updated_at'] ?? '0';
+    isFavourite = json['is_favourite'] ?? false;
+    type = Type.fromJson(json['type'] ?? {});
+    services = List.from(
+      json['services'] ?? [],
+    ).map((e) => Services.fromJson(e)).toList();
+    providerServices = List.from(
+      json['provider_services'] ?? [],
+    ).map((e) => ProviderServices.fromJson(e)).toList();
+    images = List.from(
+      json['images'] ?? [],
+    ).map((e) => Images.fromJson(e)).toList();
+    galleries = List.from(
+      json['galleries'] ?? [],
+    ).map((e) => Galleries.fromJson(e)).toList();
+    availabilities = List.from(
+      json['availabilities'] ?? [],
+    ).map((e) => Availabilities.fromJson(e)).toList();
   }
-
-
 }
 
 class Type {
@@ -195,8 +198,6 @@ class Service2 {
     updatedAt = json['updated_at'] ?? '';
     name = json['name'] ?? '';
   }
-
-
 }
 
 class Images {
@@ -215,8 +216,6 @@ class Images {
     updatedAt = json['updated_at'] ?? '';
     photoUrl = json['photo_url'] ?? '';
   }
-
-
 }
 
 class Galleries {
@@ -235,8 +234,6 @@ class Galleries {
     updatedAt = json['updated_at'] ?? '';
     photoUrl = json['photo_url'] ?? '';
   }
-
-
 }
 
 class Availabilities {

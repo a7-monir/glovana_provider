@@ -11,7 +11,6 @@ import 'package:glovana_provider/core/logic/input_validator.dart';
 import 'package:glovana_provider/features/types/bloc.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/auth/signup/second_step.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kiwi/kiwi.dart';
 
 import '../../../core/app_theme.dart';
@@ -138,39 +137,39 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                   ],
                 ),
                 SizedBox(height: 30.h),
-                if(!widget.fromRegister)
-                BlocBuilder(
-                  bloc: typesBloc,
-                  builder: (context, state) {
-                    if (state is GetServicesFailedState) {
-                      return AppFailed(
-                        isSmallShape: true,
-                        response: state.response,
-                        onPress: () {
-                          typesBloc.add(GetTypesEvent());
+                if (!widget.fromRegister)
+                  BlocBuilder(
+                    bloc: typesBloc,
+                    builder: (context, state) {
+                      if (state is GetServicesFailedState) {
+                        return AppFailed(
+                          isSmallShape: true,
+                          response: state.response,
+                          onPress: () {
+                            typesBloc.add(GetTypesEvent());
+                          },
+                        );
+                      }
+                      return AppDropDown(
+                        title: LocaleKeys.workType.tr(),
+                        list: typesBloc.list.map((e) => e.name).toList(),
+                        isLoading: state is GetTypesLoadingState,
+                        validator: (v) => InputValidator.requiredValidator(
+                          value: v!,
+                          itemName: LocaleKeys.workType.tr(),
+                        ),
+                        hint: '',
+                        onChoose: (value) {
+                          widget.typeModel = TypeModel(
+                            id: typesBloc.list[value].id,
+                            name: typesBloc.list[value].name,
+                            bookingType: typesBloc.list[value].bookingType,
+                          );
+                          //bloc.deliveryId = deliveryBloc.list[value].id;
                         },
                       );
-                    }
-                    return AppDropDown(
-                      title: LocaleKeys.workType.tr(),
-                      list: typesBloc.list.map((e) => e.name).toList(),
-                      isLoading: state is GetTypesLoadingState,
-                      validator: (v) => InputValidator.requiredValidator(
-                        value: v!,
-                        itemName: LocaleKeys.workType.tr(),
-                      ),
-                      hint: '',
-                      onChoose: (value) {
-                        widget.typeModel = TypeModel(
-                          id: typesBloc.list[value].id,
-                          name: typesBloc.list[value].name,
-                          bookingType: typesBloc.list[value].bookingType,
-                        );
-                        //bloc.deliveryId = deliveryBloc.list[value].id;
-                      },
-                    );
-                  },
-                ),
+                    },
+                  ),
                 SizedBox(height: 10.h),
                 AppInput(
                   fixedPositionedLabel: LocaleKeys.yourWorkName.tr(),
@@ -193,14 +192,14 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                 ),
                 Text(
                   LocaleKeys.address.tr(),
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.sp),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14.sp,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    navigateTo(LocationView(
-                      withButton: true,
-
-                    )).then((value) {
+                    navigateTo(LocationView(withButton: true)).then((value) {
                       latitude = value.location.latitude;
                       longitude = value.location.longitude;
                       addressFromPicker = value.description;
@@ -254,7 +253,8 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                                 ],
                               )
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     LocaleKeys.addLocation.tr(),
@@ -263,7 +263,11 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
-                                  AppImage('add.png', height: 22.h, width: 22.h),
+                                  AppImage(
+                                    'add.png',
+                                    height: 22.h,
+                                    width: 22.h,
+                                  ),
                                 ],
                               ),
                       ),
@@ -308,14 +312,12 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                     );
                   },
                 ),
-
-
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar:   SafeArea(
+      bottomNavigationBar: SafeArea(
         child: AppButton(
           text: LocaleKeys.Continue.tr(),
           type: ButtonType.bottomNav,
@@ -339,8 +341,7 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                 navigateTo(
                   SecondStepSignUpView(
                     firstStepModel: model,
-                    isSalon:
-                    widget.typeModel!.bookingType=='service',
+                    isSalon: widget.typeModel!.bookingType == 'service',
                   ),
                 );
               } else {

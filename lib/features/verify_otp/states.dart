@@ -7,7 +7,7 @@ class VerifyOtpLoadingState extends VerifyOtpStates {}
 class VerifyOtpFailedState extends VerifyOtpStates {
   final String msg;
 
-  VerifyOtpFailedState({required this.msg,}){
+  VerifyOtpFailedState({required this.msg}) {
     showMessage(msg);
   }
 }

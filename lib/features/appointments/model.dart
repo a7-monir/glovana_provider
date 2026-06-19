@@ -21,15 +21,12 @@ class Appointments {
 }
 
 class AppointmentsModel {
-
   late final List<Appointment> list;
 
   AppointmentsModel.fromJson(Map<String, dynamic> json) {
-
-    list = List.from(json["data"]??[])
-        .map((x) => Appointment.fromJson(x))
-        .toList();
- 
+    list = List.from(
+      json["data"] ?? [],
+    ).map((x) => Appointment.fromJson(x)).toList();
   }
 }
 
@@ -53,7 +50,7 @@ class Appointment {
   late final String updatedAt;
   late final String statusText;
   late final String paymentStatusText;
-  late final String bookingType,appointmentType;
+  late final String bookingType, appointmentType;
   late final int totalCustomers;
   late final bool canFinish;
   late final bool requiresPaymentConfirmation;
@@ -64,13 +61,17 @@ class Appointment {
   bool get isHourly => bookingType == 'hourly';
   bool get isInstant => appointmentType != 'scheduled';
 
-  bool get canShowUserDetails => appointmentStatus != 5 &&appointmentStatus!=1 &&appointmentStatus!=4;
+  bool get canShowUserDetails =>
+      appointmentStatus != 5 &&
+      appointmentStatus != 1 &&
+      appointmentStatus != 4;
 
   bool get hasPassedTwoMinutes {
     final now = DateTime.now();
     final difference = now.difference(DateTime.parse(createdAt));
     return difference.inSeconds >= 120;
   }
+
   Duration get remainingFromTwoMinutes {
     final created = DateTime.parse(createdAt);
     final now = DateTime.now();
@@ -109,13 +110,14 @@ class Appointment {
     bookingType = json["booking_type"] ?? '';
     totalCustomers = json["total_customers"] ?? 0;
     canFinish = json["can_finish"] ?? false;
-    requiresPaymentConfirmation = json["requires_payment_confirmation"] ?? false;
+    requiresPaymentConfirmation =
+        json["requires_payment_confirmation"] ?? false;
     user = User.fromJson(json["user"] ?? {});
     address = Address.fromJson(json["address"] ?? {});
     providerType = ProviderType.fromJson(json["provider_type"] ?? {});
-    appointmentServices = List.from(json["appointment_services"]??[])
-        .map((x) => AppointmentService.fromJson(x))
-        .toList();
+    appointmentServices = List.from(
+      json["appointment_services"] ?? [],
+    ).map((x) => AppointmentService.fromJson(x)).toList();
   }
 }
 

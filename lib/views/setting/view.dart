@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
@@ -11,8 +10,6 @@ import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/sheets/delete_account/view.dart';
 import 'package:kiwi/kiwi.dart';
 
-import '../../features/provider_profile/bloc.dart';
-import '../../features/provider_update_status/bloc.dart';
 import '../../features/toggle_lang/bloc.dart';
 
 class SettingsView extends StatefulWidget {
@@ -27,13 +24,8 @@ class _SettingsViewState extends State<SettingsView> {
 
   final langBloc = KiwiContainer().resolve<ToggleLangBloc>();
 
-
   final List<String> list = ['en', 'ar'];
-  final List<String> textList = [
-    "English",
-    "العربية",
-  ];
-
+  final List<String> textList = ["English", "العربية"];
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +36,7 @@ class _SettingsViewState extends State<SettingsView> {
           backgroundColor: Colors.transparent,
           appBar: MainAppBar(title: LocaleKeys.settings.tr()),
           body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: 24.w,
-            ).copyWith(top: 60.h),
+            padding: EdgeInsets.symmetric(horizontal: 24.w).copyWith(top: 60.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -60,8 +50,8 @@ class _SettingsViewState extends State<SettingsView> {
                 GestureDetector(
                   onTapDown: (TapDownDetails details) async {
                     final RenderBox overlay =
-                    Overlay.of(context).context.findRenderObject()
-                    as RenderBox;
+                        Overlay.of(context).context.findRenderObject()
+                            as RenderBox;
                     await showMenu(
                       context: context,
                       color: Theme.of(context).scaffoldBackgroundColor,
@@ -74,18 +64,16 @@ class _SettingsViewState extends State<SettingsView> {
                       items: [
                         ...List.generate(
                           list.length,
-                              (index) => PopupMenuItem(
+                          (index) => PopupMenuItem(
                             height: 40.h,
                             value: list[index],
                             padding: EdgeInsets.zero,
                             onTap: selectedLang != list[index]
                                 ? () {
-                              selectedLang = list[index];
-                              langBloc.add(
-                                ToggleLangEvent(selectedLang),
-                              );
-                              setState(() {});
-                            }
+                                    selectedLang = list[index];
+                                    langBloc.add(ToggleLangEvent(selectedLang));
+                                    setState(() {});
+                                  }
                                 : null,
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 14.w),
@@ -104,7 +92,7 @@ class _SettingsViewState extends State<SettingsView> {
                               ),
                               child: Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     textList[index],
@@ -152,38 +140,35 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
                 SizedBox(height: 30.h),
                 GestureDetector(
-                  onTap: () => showModalBottomSheet(context: context,
+                  onTap: () => showModalBottomSheet(
+                    context: context,
                     isScrollControlled: true,
-                    builder: (context) => DeleteAccountSheet(),),
+                    builder: (context) => DeleteAccountSheet(),
+                  ),
                   child: Container(
                     padding: EdgeInsets.all(12.r),
                     decoration: BoxDecoration(
-                        color: AppTheme.canvasColor,
-                        borderRadius: BorderRadius.circular(30.r),
-                        boxShadow: [
-                          AppTheme.mainShadow,
-                          AppTheme.whiteShadow,
-                        ]
+                      color: AppTheme.canvasColor,
+                      borderRadius: BorderRadius.circular(30.r),
+                      boxShadow: [AppTheme.mainShadow, AppTheme.whiteShadow],
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(LocaleKeys.submitDeactivationRequest.tr(),
-                          style: TextStyle(
-
-                          ),
+                        Text(
+                          LocaleKeys.submitDeactivationRequest.tr(),
+                          style: TextStyle(),
                         ),
 
-                        Icon(Icons.delete,color: Colors.red,size: 20.r,)
+                        Icon(Icons.delete, color: Colors.red, size: 20.r),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
         ),
-
       ],
     );
   }

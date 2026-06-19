@@ -68,11 +68,10 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                 fixedPositionedLabel: LocaleKeys.confirmPassword.tr(),
                 hint: LocaleKeys.confirmPassword.tr(),
                 inputType: InputType.password,
-                controller:bloc.confirmPasswordController ,
+                controller: bloc.confirmPasswordController,
                 validator: (v) => InputValidator.confirmPasswordValidator(
                   v!,
                   bloc.passwordController.text,
-
                 ),
               ),
 
@@ -81,13 +80,14 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
               BlocConsumer(
                 bloc: bloc,
                 listener: (context, state) {
-                  if(state is ResetPasswordSuccessState){
-                    showMessage(state.msg,type: MessageType.success);
-                   navigateTo(LoginView(),keepHistory: false);
+                  if (state is ResetPasswordSuccessState) {
+                    showMessage(state.msg, type: MessageType.success);
+                    navigateTo(LoginView(), keepHistory: false);
                   }
                 },
                 builder: (context, state) {
-                  return AppButton(text: LocaleKeys.confirm.tr(),
+                  return AppButton(
+                    text: LocaleKeys.confirm.tr(),
                     isLoading: state is ResetPasswordLoadingState,
                     onPress: () {
                       if (bloc.formKey.currentState!.validate()) {
@@ -96,10 +96,10 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                         bloc.validateMode = AutovalidateMode.onUserInteraction;
                         setState(() {});
                       }
-                    },);
+                    },
+                  );
                 },
-              )
-
+              ),
             ],
           ),
         ),
