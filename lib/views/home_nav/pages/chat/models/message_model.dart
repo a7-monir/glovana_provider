@@ -13,6 +13,51 @@ class Message {
   bool? isReadUser;
   bool? isReadProvider;
 
+  static String? _readString(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+
+    final text = value.toString().trim();
+    if (text.isEmpty || text.toLowerCase() == 'null') {
+      return null;
+    }
+
+    return text;
+  }
+
+  static Timestamp _readTimestamp(dynamic value) {
+    if (value is Timestamp) {
+      return value;
+    }
+    if (value is DateTime) {
+      return Timestamp.fromDate(value);
+    }
+    return Timestamp.fromDate(DateTime.now());
+  }
+
+  static bool? _readBool(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is bool) {
+      return value;
+    }
+    if (value is num) {
+      return value != 0;
+    }
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true' || normalized == '1') {
+        return true;
+      }
+      if (normalized == 'false' || normalized == '0') {
+        return false;
+      }
+    }
+    return null;
+  }
+
   Message({
     this.content,
     this.type,
@@ -27,16 +72,16 @@ class Message {
   });
 
   Message.fromJson(Map<String, dynamic> json) {
-    content = json['content'];
-    type = json['type'];
-    sentAt = json['sent_at'] ?? Timestamp.fromDate(DateTime.now());
-    userId = json['user_id'];
-    userType = json['user_type'];
-    providerId = json['provider_id'];
-    senderId = json['sender_id'];
-    createdAt = json['created_at'] ?? Timestamp.fromDate(DateTime.now());
-    isReadUser = json['is_read_user'];
-    isReadProvider = json['is_read_provider'];
+    content = _readString(json['content']);
+    type = _readString(json['type']);
+    sentAt = _readTimestamp(json['sent_at']);
+    userId = _readString(json['user_id']);
+    userType = _readString(json['user_type']);
+    providerId = _readString(json['provider_id']);
+    senderId = _readString(json['sender_id']);
+    createdAt = _readTimestamp(json['created_at']);
+    isReadUser = _readBool(json['is_read_user']);
+    isReadProvider = _readBool(json['is_read_provider']);
   }
 
   Map<String, dynamic> toJson() {

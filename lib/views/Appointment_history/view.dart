@@ -156,7 +156,7 @@ class _Item extends StatelessWidget {
                     children: [
                       Center(
                         child: Text(
-                          DateFormat.MMM().format(DateTime.parse(model.date)),
+                          DateFormat.MMM().format(model.scheduledAt),
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 14.sp,
@@ -167,7 +167,7 @@ class _Item extends StatelessWidget {
                       ),
                       SizedBox(height: 2.h),
                       Text(
-                        DateFormat.d().format(DateTime.parse(model.date)),
+                        DateFormat.d().format(model.scheduledAt),
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 48.sp,
@@ -176,7 +176,7 @@ class _Item extends StatelessWidget {
                       ),
                       SizedBox(height: 2.h),
                       Text(
-                        DateFormat.EEEE().format(DateTime.parse(model.date)),
+                        DateFormat.EEEE().format(model.scheduledAt),
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 14.sp,
@@ -210,7 +210,7 @@ class _Item extends StatelessWidget {
                         ),
                         SizedBox(height: 6.h),
                         Text(
-                          DateFormat.jm().format(DateTime.parse(model.date)),
+                          DateFormat.jm().format(model.scheduledAt),
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 14.sp,

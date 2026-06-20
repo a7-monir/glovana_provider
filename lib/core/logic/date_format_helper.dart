@@ -1,11 +1,20 @@
 import 'package:intl/intl.dart';
 
 class DateFormatHelper {
+  static DateTime parseApiDate(String? date) {
+    final parsedDate = DateTime.tryParse(date ?? '');
+
+    if (parsedDate == null) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+
+    return parsedDate.isUtc ? parsedDate.toLocal() : parsedDate;
+  }
+
   static String shape1(String date) {
-    //date came like this 2020-12-27T00:00:00
     String newDate = "";
     if (date.isNotEmpty) {
-      final oldDate = DateTime.parse(date);
+      final oldDate = parseApiDate(date);
       if (oldDate.hour > 0) {
         newDate = DateFormat("dd MMM y At ").add_jm().format(oldDate);
       } else {

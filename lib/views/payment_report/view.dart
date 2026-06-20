@@ -8,6 +8,7 @@ import 'package:glovana_provider/core/design/app_empty.dart';
 import 'package:glovana_provider/core/design/app_failed.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/design/app_loading.dart';
+import 'package:glovana_provider/core/logic/date_format_helper.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:kiwi/kiwi.dart';
@@ -203,7 +204,7 @@ class ItemList extends StatelessWidget {
                 DateFormat(
                   "d / MMMM / y h:mm a",
                   "ar",
-                ).format(DateTime.parse(model.date)),
+                ).format(DateFormatHelper.parseApiDate(model.date)),
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 8.sp,

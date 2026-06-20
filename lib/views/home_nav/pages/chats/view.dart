@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/app_theme.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/design/app_styles.dart';
+import 'package:glovana_provider/core/design/space_widget.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
@@ -75,7 +76,7 @@ class _ChatsViewState extends State<ChatsView> {
           Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-              child: StreamBuilder(
+              child: StreamBuilder<List<Room>>(
                 stream: ChatUtils.getRooms(providerId),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -89,22 +90,34 @@ class _ChatsViewState extends State<ChatsView> {
                       ),
                     );
                   }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+
+                  final rooms = snapshot.data ?? [];
+                  if (rooms.isEmpty) {
                     return Center(
-                      child: Text(
-                        'no_data'.tr(),
-                        style: AppStyles.black15BoldStyle.copyWith(
-                          color: AppTheme.primary,
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'no_data'.tr(),
+                            style: AppStyles.black15BoldStyle.copyWith(
+                              color: AppTheme.primary,
+                            ),
+                          ),
+                          const HeightSpace(8),
+                          Text(
+                            'Provider ID: $providerId',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }
 
-                  allRooms = snapshot.data!.docs
-                      .map((d) => Room.fromJson(d.data(), docId: d.id))
-                      .toList();
+                  allRooms = rooms;
 
-                  // Apply search filter
                   filteredRooms = searchQuery.isEmpty
                       ? List.from(allRooms)
                       : allRooms.where((room) {
@@ -116,12 +129,25 @@ class _ChatsViewState extends State<ChatsView> {
 
                   if (filteredRooms.isEmpty) {
                     return Center(
-                      child: Text(
-                        LocaleKeys.noData.tr(),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            LocaleKeys.noData.tr(),
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const HeightSpace(8),
+                          Text(
+                            'No rooms match "$searchQuery"',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }

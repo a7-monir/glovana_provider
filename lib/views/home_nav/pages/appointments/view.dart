@@ -21,6 +21,7 @@ import '../../../../features/provider_update_status/bloc.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../appointment_details/view.dart';
 import '../../../setting/view.dart';
+import 'appointment_calendar_dialog.dart';
 
 class AppointmentsView extends StatefulWidget {
   const AppointmentsView({super.key});
@@ -36,6 +37,34 @@ class _AppointmentsViewState extends State<AppointmentsView> {
   List<Appointment> selectedList = [];
 
   bool get hasDateFilter => bloc.startDate != null && bloc.endDate != null;
+
+  DateTime _normalizeDay(DateTime day) {
+    return DateTime(day.year, day.month, day.day);
+  }
+
+  DateTime? get selectedFilterDay {
+    final rawDate = bloc.startDate;
+    if (rawDate == null || rawDate.isEmpty) {
+      return null;
+    }
+    return DateTime.tryParse(rawDate);
+  }
+
+  List<Appointment> get calendarAppointments {
+    if (bloc.calendarList.isNotEmpty) {
+      return bloc.calendarList;
+    }
+    return bloc.allList;
+  }
+
+  Map<DateTime, int> get calendarAppointmentCounts {
+    final counts = <DateTime, int>{};
+    for (final appointment in calendarAppointments) {
+      final normalizedDay = _normalizeDay(appointment.scheduledAt);
+      counts.update(normalizedDay, (value) => value + 1, ifAbsent: () => 1);
+    }
+    return counts;
+  }
 
   String get selectedDateLabel {
     if (!hasDateFilter) return '';
@@ -69,17 +98,24 @@ class _AppointmentsViewState extends State<AppointmentsView> {
 
   Future<void> selectDate() async {
     final now = DateTime.now();
-    final result = await showDatePicker(
+    final result = await showDialog<DateTime>(
       context: context,
-      locale: context.locale,
-      firstDate: DateTime(now.year - 5),
-      lastDate: DateTime(now.year + 5),
-      initialDate: DateTime.tryParse(bloc.startDate ?? '') ?? now,
+      builder: (context) {
+        return AppointmentCalendarDialog(
+          focusedDay: selectedFilterDay ?? now,
+          selectedDay: selectedFilterDay,
+          appointmentCounts: calendarAppointmentCounts,
+        );
+      },
     );
 
     if (result == null) return;
 
-    final formattedDate = DateFormat("yyyy-MM-dd", "en").format(result);
+    final normalizedResult = _normalizeDay(result);
+    final formattedDate = DateFormat(
+      "yyyy-MM-dd",
+      "en",
+    ).format(normalizedResult);
     setState(() {
       bloc.startDate = formattedDate;
       bloc.endDate = formattedDate;
@@ -89,10 +125,8 @@ class _AppointmentsViewState extends State<AppointmentsView> {
 
   void sortAppointments(List<Appointment> list) {
     list.sort((a, b) {
-      final dateA =
-          DateTime.tryParse(a.date) ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final dateB =
-          DateTime.tryParse(b.date) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final dateA = a.scheduledAt;
+      final dateB = b.scheduledAt;
       return isAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
     });
   }
@@ -660,9 +694,7 @@ class _Item extends StatelessWidget {
                               children: [
                                 Center(
                                   child: Text(
-                                    DateFormat.MMM().format(
-                                      DateTime.parse(model.date),
-                                    ),
+                                    DateFormat.MMM().format(model.scheduledAt),
                                     style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14.sp,
@@ -675,9 +707,7 @@ class _Item extends StatelessWidget {
                                 ),
                                 SizedBox(height: 2.h),
                                 Text(
-                                  DateFormat.d().format(
-                                    DateTime.parse(model.date),
-                                  ),
+                                  DateFormat.d().format(model.scheduledAt),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 48.sp,
@@ -686,9 +716,7 @@ class _Item extends StatelessWidget {
                                 ),
                                 SizedBox(height: 2.h),
                                 Text(
-                                  DateFormat.EEEE().format(
-                                    DateTime.parse(model.date),
-                                  ),
+                                  DateFormat.EEEE().format(model.scheduledAt),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14.sp,
@@ -730,7 +758,7 @@ class _Item extends StatelessWidget {
                                         SizedBox(height: 6.h),
                                         Text(
                                           DateFormat.jm().format(
-                                            DateTime.parse(model.date),
+                                            model.scheduledAt,
                                           ),
                                           style: TextStyle(
                                             fontWeight: FontWeight.w400,

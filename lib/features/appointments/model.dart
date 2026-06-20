@@ -60,6 +60,8 @@ class Appointment {
   late final List<AppointmentService> appointmentServices;
   bool get isHourly => bookingType == 'hourly';
   bool get isInstant => appointmentType != 'scheduled';
+  DateTime get scheduledAt => DateFormatHelper.parseApiDate(date);
+  DateTime get createdAtLocal => DateFormatHelper.parseApiDate(createdAt);
 
   bool get canShowUserDetails =>
       appointmentStatus != 5 &&
@@ -68,12 +70,12 @@ class Appointment {
 
   bool get hasPassedTwoMinutes {
     final now = DateTime.now();
-    final difference = now.difference(DateTime.parse(createdAt));
+    final difference = now.difference(createdAtLocal);
     return difference.inSeconds >= 120;
   }
 
   Duration get remainingFromTwoMinutes {
-    final created = DateTime.parse(createdAt);
+    final created = createdAtLocal;
     final now = DateTime.now();
     final diff = now.difference(created);
 
@@ -82,7 +84,7 @@ class Appointment {
   }
 
   bool get isWithinFirstTwoMinutes {
-    final created = DateTime.parse(createdAt);
+    final created = createdAtLocal;
     return DateTime.now().difference(created).inSeconds < 120;
   }
 

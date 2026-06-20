@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/logic/app_logger.dart';
+import '../../../core/logic/date_format_helper.dart';
 import '../../../core/logic/dio_helper.dart';
 
 part 'events.dart';
@@ -86,6 +87,7 @@ class GetAppointmentsBloc
   // return true;
   // }
   List<Appointment> allList = [];
+  List<Appointment> calendarList = [];
 
   void _getData(
     GetAppointmentsEvent event,
@@ -121,6 +123,9 @@ class GetAppointmentsBloc
     );
     if (response.isSuccess) {
       allList = AppointmentData.fromJson(response.data).data.appointments.list;
+      if (startDate == null && endDate == null) {
+        calendarList = [...allList];
+      }
       pendingLength = getAppointmentsCountByStatus(
         AppointmentStatus.pending,
         allList,

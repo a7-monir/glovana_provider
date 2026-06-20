@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:glovana_provider/core/design/app_bar.dart';
 import 'package:glovana_provider/core/design/app_styles.dart';
 import 'package:glovana_provider/core/design/space_widget.dart';
+import 'package:glovana_provider/core/logic/app_logger.dart';
 import 'package:glovana_provider/core/logic/cache_helper.dart';
 import 'package:glovana_provider/generated/locale_keys.g.dart';
 import 'package:glovana_provider/views/home_nav/pages/chat/widgets/reciever_message_item.dart';
@@ -48,14 +49,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   }
 
   Future<void> _ensureRoom() async {
-    final roomQuery = await FirebaseFirestore.instance
-        .collection('rooms')
-        .where('user_id', isEqualTo: widget.userId)
-        .where('provider_id', isEqualTo: widget.providerId)
-        .limit(1)
-        .get();
-
-    if (roomQuery.docs.isEmpty) {
+    try {
       await ChatUtils.addRoom(
         room: Room(
           userId: widget.userId,
@@ -74,23 +68,15 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
           createdAt: Timestamp.fromDate(DateTime.now()),
         ),
       );
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'Failed to ensure chat room exists',
+        tag: 'CHAT',
+        error: error,
+        stackTrace: stackTrace,
+        data: {'userId': widget.userId, 'providerId': widget.providerId},
+      );
     }
-  }
-
-  Stream<Room?> _roomStream() {
-    return FirebaseFirestore.instance
-        .collection('rooms')
-        .where('user_id', isEqualTo: widget.userId)
-        .where('provider_id', isEqualTo: widget.providerId)
-        .limit(1)
-        .snapshots()
-        .map((snapshot) {
-          if (snapshot.docs.isEmpty) return null;
-          return Room.fromJson(
-            snapshot.docs.first.data(),
-            docId: snapshot.docs.first.id,
-          );
-        });
   }
 
   @override
@@ -155,89 +141,112 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
             ),
             Expanded(
               child: StreamBuilder<Room?>(
-                stream: _roomStream(),
+                stream: ChatUtils.streamRoom(widget.userId, widget.providerId),
                 builder: (context, roomSnapshot) {
                   final roomData = roomSnapshot.data;
-
-                  if (roomData == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                  final isChatActive = roomData?.isActive ?? true;
 
                   return Column(
                     children: [
+                      if (roomSnapshot.hasError)
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
+                          child: Text(
+                            roomSnapshot.error.toString(),
+                            style: AppStyles.black15BoldStyle.copyWith(
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       Expanded(
-                        child:
-                            StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                              stream: ChatUtils.getRoomMessages(
-                                widget.userId,
-                                widget.providerId,
-                              ),
-                              builder: (context, snapshot) {
-                                final docs = snapshot.data?.docs ?? [];
+                        child: StreamBuilder<List<Message>>(
+                          stream: ChatUtils.getRoomMessages(
+                            widget.userId,
+                            widget.providerId,
+                          ),
+                          builder: (context, snapshot) {
+                            final messages = snapshot.data ?? [];
 
-                                if (docs.isNotEmpty) {
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    if (scrollController.hasClients) {
-                                      scrollController.animateTo(
-                                        scrollController
-                                            .position
-                                            .maxScrollExtent,
-                                        duration: const Duration(
-                                          milliseconds: 200,
-                                        ),
-                                        curve: Curves.easeOut,
-                                      );
-                                    }
-                                  });
-                                }
-
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
+                            if (messages.isNotEmpty) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (scrollController.hasClients) {
+                                  scrollController.animateTo(
+                                    scrollController.position.maxScrollExtent,
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeOut,
                                   );
                                 }
-                                if (snapshot.hasError || docs.isEmpty) {
-                                  return const SizedBox.shrink();
-                                }
+                              });
+                            }
 
-                                return ListView.builder(
-                                  controller: scrollController,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                    horizontal: 30,
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting &&
+                                messages.isEmpty) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
                                   ),
-                                  itemCount: docs.length,
-                                  itemBuilder: (context, i) {
-                                    final message = Message.fromJson(
-                                      docs[i].data(),
-                                    );
-                                    final senderId = (message.senderId ?? '')
-                                        .toString();
+                                  child: Text(
+                                    snapshot.error.toString(),
+                                    style: AppStyles.black15BoldStyle.copyWith(
+                                      color: Colors.red,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              );
+                            }
 
-                                    final isMe =
-                                        (senderId == currentProviderId &&
-                                        message.userType == 'provider');
-                                    return isMe
-                                        ? SenderMsgItemWidget(
-                                            message: message,
-                                            senderPhoto:
-                                                widget.providerImage ?? '',
-                                          )
-                                        : ReceiverMsgItemWidget(
-                                            message: message,
-                                            recieverPhoto:
-                                                widget.userImage ?? '',
-                                          );
-                                  },
-                                );
+                            if (messages.isEmpty) {
+                              return Center(
+                                child: Text(
+                                  LocaleKeys.noData.tr(),
+                                  style: AppStyles.black15BoldStyle.copyWith(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return ListView.builder(
+                              controller: scrollController,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 30,
+                              ),
+                              itemCount: messages.length,
+                              itemBuilder: (context, i) {
+                                final message = messages[i];
+                                final senderId = (message.senderId ?? '')
+                                    .toString();
+
+                                final isMe =
+                                    (senderId == currentProviderId &&
+                                    message.userType == 'provider');
+                                return isMe
+                                    ? SenderMsgItemWidget(
+                                        message: message,
+                                        senderPhoto: widget.providerImage ?? '',
+                                      )
+                                    : ReceiverMsgItemWidget(
+                                        message: message,
+                                        recieverPhoto: widget.userImage ?? '',
+                                      );
                               },
-                            ),
+                            );
+                          },
+                        ),
                       ),
 
-                      if (roomData.isActive == false)
+                      if (isChatActive == false)
                         Padding(
                           padding: EdgeInsets.all(16.sp),
                           child: Center(
@@ -251,7 +260,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                             ),
                           ),
                         ),
-                      if (roomData.isActive == true)
+                      if (isChatActive)
                         SendMessageWidget(
                           id: CacheHelper.id,
                           name: CacheHelper.name,

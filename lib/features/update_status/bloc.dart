@@ -18,16 +18,23 @@ class UpdateStatusBloc extends Bloc<UpdateStatusEvents, UpdateStatusStates> {
   }
   final reason = TextEditingController();
 
+  void resetCancelReasonForm() {
+    validateMode = AutovalidateMode.disabled;
+    formKey.currentState?.reset();
+    reason.clear();
+  }
+
   void _sendData(
     UpdateStatusEvent event,
     Emitter<UpdateStatusStates> emit,
   ) async {
     emit(UpdateStatusLoadingState());
+    final trimmedReason = reason.text.trim();
     final response = await _dio.send(
       "provider/appointments/${event.id}/status",
       data: {
         "status": event.newStatus.toString(),
-        'reason_of_cancel': reason.text,
+        if (event.newStatus == 5) 'reason_of_cancel': trimmedReason,
       },
     );
     if (response.isSuccess) {

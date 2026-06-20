@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:glovana_provider/core/logic/app_logger.dart';
 
 import 'models/message_model.dart';
 import 'models/rooms_model.dart';
@@ -13,6 +14,149 @@ class ChatUtils {
 
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  static List<Object> _idVariants(String id) {
+    final variants = <Object>[id];
+    final parsed = int.tryParse(id);
+    if (parsed != null) {
+      variants.add(parsed);
+    }
+    return variants;
+  }
+
+  static bool _matchesId(dynamic actual, String expected) {
+    return actual?.toString() == expected;
+  }
+
+  static int _timestampValue(Timestamp? timestamp) {
+    return timestamp?.millisecondsSinceEpoch ?? 0;
+  }
+
+  static bool _isTruthy(dynamic value) {
+    if (value is bool) {
+      return value;
+    }
+    if (value is num) {
+      return value != 0;
+    }
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      return normalized == 'true' || normalized == '1';
+    }
+    return false;
+  }
+
+  static Query<Map<String, dynamic>> _roomsQueryForProvider(String providerId) {
+    final variants = _idVariants(providerId);
+    final collection = firestore.collection('rooms');
+    if (variants.length > 1) {
+      return collection.where('provider_id', whereIn: variants);
+    }
+    return collection.where('provider_id', isEqualTo: providerId);
+  }
+
+  static Query<Map<String, dynamic>> _messagesQueryForProvider(
+    String providerId,
+  ) {
+    final variants = _idVariants(providerId);
+    final collection = firestore.collection('messages');
+    if (variants.length > 1) {
+      return collection.where('provider_id', whereIn: variants);
+    }
+    return collection.where('provider_id', isEqualTo: providerId);
+  }
+
+  static QueryDocumentSnapshot<Map<String, dynamic>>? _findRoomDocInSnapshot(
+    Iterable<QueryDocumentSnapshot<Map<String, dynamic>>> docs, {
+    required String userId,
+    required String providerId,
+  }) {
+    for (final doc in docs) {
+      final data = doc.data();
+      if (_matchesId(data['user_id'], userId) &&
+          _matchesId(data['provider_id'], providerId)) {
+        return doc;
+      }
+    }
+    return null;
+  }
+
+  static Future<QueryDocumentSnapshot<Map<String, dynamic>>?> _findRoomDoc({
+    required String userId,
+    required String providerId,
+  }) async {
+    final snapshot = await _roomsQueryForProvider(providerId).get();
+    return _findRoomDocInSnapshot(
+      snapshot.docs,
+      userId: userId,
+      providerId: providerId,
+    );
+  }
+
+  static Stream<List<Room>> getRooms(
+    String providerId, {
+    bool onlyActive = false,
+  }) {
+    return _roomsQueryForProvider(providerId).snapshots().map((snapshot) {
+      final rooms = snapshot.docs
+          .where((doc) {
+            final data = doc.data();
+            if (!_matchesId(data['provider_id'], providerId)) {
+              return false;
+            }
+            if (onlyActive && !_isTruthy(data['is_active'])) {
+              return false;
+            }
+            return true;
+          })
+          .map((doc) => Room.fromJson(doc.data(), docId: doc.id))
+          .toList();
+
+      rooms.sort(
+        (a, b) => _timestampValue(
+          b.lastMessageDate,
+        ).compareTo(_timestampValue(a.lastMessageDate)),
+      );
+      return rooms;
+    });
+  }
+
+  static Stream<List<Message>> getRoomMessages(
+    String userId,
+    String providerId,
+  ) {
+    return _messagesQueryForProvider(providerId).snapshots().map((snapshot) {
+      final messages = snapshot.docs
+          .where((doc) {
+            final data = doc.data();
+            return _matchesId(data['provider_id'], providerId) &&
+                _matchesId(data['user_id'], userId);
+          })
+          .map((doc) => Message.fromJson(doc.data()))
+          .toList();
+
+      messages.sort(
+        (a, b) => _timestampValue(
+          a.createdAt,
+        ).compareTo(_timestampValue(b.createdAt)),
+      );
+      return messages;
+    });
+  }
+
+  static Stream<Room?> streamRoom(String userId, String providerId) {
+    return _roomsQueryForProvider(providerId).snapshots().map((snapshot) {
+      final roomDoc = _findRoomDocInSnapshot(
+        snapshot.docs,
+        userId: userId,
+        providerId: providerId,
+      );
+      if (roomDoc == null) {
+        return null;
+      }
+      return Room.fromJson(roomDoc.data(), docId: roomDoc.id);
+    });
+  }
+
   /// إضافة أو تحديث روم
   /// إذا كانت موجودة مسبقًا سيتم تحديثها، إذا لا سيتم إنشاؤها
   static Future<Room> addRoom({Room? room}) async {
@@ -20,16 +164,14 @@ class ChatUtils {
       throw ArgumentError('Room, userId, and providerId cannot be null');
     }
 
-    final querySnapshot = await firestore
-        .collection('rooms')
-        .where('user_id', isEqualTo: room.userId)
-        .where('provider_id', isEqualTo: room.providerId)
-        .limit(1)
-        .get();
-
     String roomId;
-    if (querySnapshot.docs.isNotEmpty) {
-      roomId = querySnapshot.docs.first.id;
+    final existingRoomDoc = await _findRoomDoc(
+      userId: room.userId!,
+      providerId: room.providerId!,
+    );
+
+    if (existingRoomDoc != null) {
+      roomId = existingRoomDoc.id;
       final updateData = <String, dynamic>{
         if (room.userName != null && room.userName!.isNotEmpty)
           'user_name': room.userName,
@@ -59,50 +201,27 @@ class ChatUtils {
     return Room.fromJson(docData, docId: docSnapshot.id);
   }
 
-  /// جلب كل الرومات للبروفايدر
-  /// يمكن فلترتهم حسب isActive لو عايز تظهر الرومات النشطة فقط
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getRooms(
-    String providerId, {
-    bool onlyActive = false,
-  }) {
-    var query = firestore
-        .collection('rooms')
-        .where('provider_id', isEqualTo: providerId);
-
-    if (onlyActive) {
-      query = query.where('is_active', isEqualTo: true);
-    }
-
-    return query.snapshots();
-  }
-
-  /// جلب رسائل روم محدد
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getRoomMessages(
-    String userId,
-    String providerId,
-  ) {
-    return firestore
-        .collection('messages')
-        .where('provider_id', isEqualTo: providerId)
-        .where('user_id', isEqualTo: userId)
-        .orderBy('created_at', descending: false)
-        .snapshots();
-  }
-
   /// إضافة رسالة (كـ بروفايدر أو يوزر)
   static Future addMessage(Message message, {bool fromProvider = true}) async {
     await firestore.collection('messages').add(message.toJson());
 
-    final querySnapshot = await firestore
-        .collection('rooms')
-        .where('user_id', isEqualTo: message.userId)
-        .where('provider_id', isEqualTo: message.providerId)
-        .limit(1)
-        .get();
+    final roomDoc = await _findRoomDoc(
+      userId: message.userId ?? '',
+      providerId: message.providerId ?? '',
+    );
+    if (roomDoc == null) {
+      AppLogger.warning(
+        'Message saved but room was not found for summary update',
+        tag: 'CHAT',
+        data: {
+          'userId': message.userId,
+          'providerId': message.providerId,
+          'senderId': message.senderId,
+        },
+      );
+      return;
+    }
 
-    if (querySnapshot.docs.isEmpty) return;
-
-    final roomDoc = querySnapshot.docs.first;
     await firestore.collection('rooms').doc(roomDoc.id).update({
       'last_message': message.content,
       'last_message_date': message.sentAt,

@@ -65,14 +65,10 @@ class _HomeNavViewState extends State<HomeNavView> {
             ),
           ],
         ),
-        child: StreamBuilder(
+        child: StreamBuilder<List<Room>>(
           stream: ChatUtils.getRooms(CacheHelper.id.toString()),
           builder: (context, snapshot) {
-            if (snapshot.data != null) {
-              allRooms = snapshot.data!.docs
-                  .map((d) => Room.fromJson(d.data(), docId: d.id))
-                  .toList();
-            }
+            allRooms = snapshot.data ?? [];
 
             return SafeArea(
               child: Padding(

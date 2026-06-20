@@ -16,6 +16,7 @@ import '../../core/design/app_bar.dart';
 import '../../core/design/app_image.dart';
 import '../../core/logic/app_logger.dart';
 import '../../core/logic/helper_methods.dart';
+import '../../core/logic/input_validator.dart';
 import '../../features/appointment_details/bloc.dart';
 import '../../features/appointments/bloc.dart';
 import '../../features/update_status/bloc.dart';
@@ -23,9 +24,9 @@ import '../../generated/locale_keys.g.dart';
 import '../location/view.dart';
 
 class AppointmentDetailsView extends StatefulWidget {
-  Appointment model;
+  final Appointment model;
 
-  AppointmentDetailsView({super.key, required this.model});
+  const AppointmentDetailsView({super.key, required this.model});
 
   @override
   State<AppointmentDetailsView> createState() => _AppointmentDetailsViewState();
@@ -34,6 +35,7 @@ class AppointmentDetailsView extends StatefulWidget {
 class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
   final bloc = KiwiContainer().resolve<GetAppointmentDetailsBloc>();
   final updateStatusBloc = KiwiContainer().resolve<UpdateStatusBloc>();
+  late Appointment _model;
 
   Map<int, List<AppointmentService>> _groupServicesByPerson(
     List<AppointmentService> appointmentServicesList,
@@ -154,7 +156,8 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
   @override
   void initState() {
     super.initState();
-    bloc.add(GetAppointmentDetailsEvent(id: widget.model.id));
+    _model = widget.model;
+    bloc.add(GetAppointmentDetailsEvent(id: _model.id));
   }
 
   @override
@@ -171,12 +174,12 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
             'Appointment details refreshed',
             tag: 'APPOINTMENT',
             data: {
-              'appointmentId': widget.model.id,
-              'previousStatus': widget.model.appointmentStatus.toString(),
+              'appointmentId': _model.id,
+              'previousStatus': _model.appointmentStatus.toString(),
               'nextStatus': state.model.appointmentStatus.toString(),
             },
           );
-          widget.model = state.model;
+          _model = state.model;
         }
       },
       builder: (context, state) {
@@ -189,7 +192,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                   return AppFailed(
                     response: state.response,
                     onPress: () {
-                      bloc.add(GetAppointmentDetailsEvent(id: widget.model.id));
+                      bloc.add(GetAppointmentDetailsEvent(id: _model.id));
                     },
                   );
                 } else if (state is GetAppointmentDetailsSuccessState) {
@@ -214,7 +217,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                             child: Text(
                               DateFormat(
                                 "d / MMMM / y h:mm a",
-                              ).format(DateTime.parse(state.model.createdAt)),
+                              ).format(state.model.createdAtLocal),
                               style: TextStyle(
                                 fontSize: 8.sp,
                                 fontWeight: FontWeight.w400,
@@ -257,12 +260,12 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                             img: 'calender.png',
                             title: DateFormat(
                               'EEEE, MMMM d, y',
-                            ).format(DateTime.parse(state.model.date)),
+                            ).format(state.model.scheduledAt),
                           ),
                           _InfoItem(
                             img: 'clock.png',
                             title: DateFormat.jm().format(
-                              DateTime.parse(state.model.date),
+                              state.model.scheduledAt,
                             ),
                           ),
                           _InfoItem(
@@ -275,32 +278,32 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                                 ? LocaleKeys.hourly.tr()
                                 : LocaleKeys.salon.tr(),
                           ),
-                          if (state.model.canShowUserDetails)
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 18.w,
-                              ).copyWith(bottom: 16.h),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.phone,
-                                    size: 16.h,
-                                    color: AppTheme.primary,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Expanded(
-                                    child: Text(
-                                      state.model.user.phone,
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
 
+                          // if (state.model.canShowUserDetails)
+                          //   Padding(
+                          //     padding: EdgeInsets.symmetric(
+                          //       horizontal: 18.w,
+                          //     ).copyWith(bottom: 16.h),
+                          //     child: Row(
+                          //       children: [
+                          //         Icon(
+                          //           Icons.phone,
+                          //           size: 16.h,
+                          //           color: AppTheme.primary,
+                          //         ),
+                          //         SizedBox(width: 8.w),
+                          //         Expanded(
+                          //           child: Text(
+                          //             state.model.user.phone,
+                          //             style: TextStyle(
+                          //               fontSize: 16.sp,
+                          //               fontWeight: FontWeight.w400,
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: 18.w,
@@ -526,7 +529,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
   }
 
   Widget _buildStatusButtons(BuildContext context) {
-    final currentStatus = widget.model.appointmentStatus;
+    final currentStatus = _model.appointmentStatus;
     List<StatusAction> actions = [];
 
     if (currentStatus == 1) {
@@ -535,19 +538,19 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
         StatusAction(text: LocaleKeys.accept.tr(), status: 2),
         StatusAction(text: LocaleKeys.reject.tr(), status: 5),
       ];
-    } else if (currentStatus == 2 && widget.model.isHourly) {
+    } else if (currentStatus == 2 && _model.isHourly) {
       // Accepted
       actions = [
         StatusAction(text: LocaleKeys.onTheWay.tr(), status: 3),
         StatusAction(text: LocaleKeys.cancel.tr(), status: 5),
       ];
-    } else if ((currentStatus == 2 && !widget.model.isHourly)) {
+    } else if ((currentStatus == 2 && !_model.isHourly)) {
       actions = [
         StatusAction(text: LocaleKeys.userArrive.tr(), status: 7),
         StatusAction(text: LocaleKeys.cancel.tr(), status: 5),
       ];
-    } else if ((currentStatus == 7 && !widget.model.isHourly) ||
-        (currentStatus == 3 && widget.model.isHourly)) {
+    } else if ((currentStatus == 7 && !_model.isHourly) ||
+        (currentStatus == 3 && _model.isHourly)) {
       actions = [StatusAction(text: LocaleKeys.startWork.tr(), status: 6)];
     } else if (currentStatus == 6) {
       // Accepted
@@ -571,7 +574,7 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
                   context,
                   action.status,
                   onDone: () async {
-                    bloc.add(GetAppointmentDetailsEvent(id: widget.model.id));
+                    bloc.add(GetAppointmentDetailsEvent(id: _model.id));
                   },
                 ),
               ),
@@ -614,10 +617,12 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
             .tr(); // "confirm_cancel_title".tr();
         dialogContent = LocaleKeys.confirmCancelMessage
             .tr(); // "confirm_cancel_message".tr();
+        break;
       case 6:
         dialogTitle = LocaleKeys.confirmStartWorkTitle
             .tr(); // "confirm_cancel_title".tr();
         dialogContent = LocaleKeys.confirmStartWorkMessage.tr();
+        break;
       case 7:
         dialogTitle = LocaleKeys.confirmUserArriveTitle
             .tr(); // "confirm_cancel_title".tr();
@@ -628,78 +633,112 @@ class _AppointmentDetailsViewState extends State<AppointmentDetailsView> {
         dialogContent = LocaleKeys.areYouSureYouWantToChange.tr();
     }
 
+    updateStatusBloc.resetCancelReasonForm();
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(dialogTitle),
-        titleTextStyle: TextStyle(
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w400,
-          color: AppTheme.primary,
-          fontFamily: getFontFamily(FontFamilyType.aboreto),
-        ),
-        content: Text(dialogContent),
-        contentTextStyle: TextStyle(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w400,
-          color: AppTheme.primary,
-          fontFamily: getFontFamily(FontFamilyType.aboreto),
-        ),
-        actions: [
-          if (status == 5)
-            AppInput(
-              fixedPositionedLabel: LocaleKeys.reason.tr(),
-              maxLines: 3,
-              controller: updateStatusBloc.reason,
-              marginBottom: 20.h,
-            ),
-
-          Row(
-            children: [
-              Expanded(
-                child: AppButton(
-                  isSecondary: false,
-                  onPress: () => Navigator.pop(context),
-                  text: LocaleKeys.cancel.tr(),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: BlocConsumer(
-                  bloc: updateStatusBloc,
-                  listener: (context, updateState) async {
-                    if (updateState is UpdateStatusSuccessState) {
-                      if (status == 3 || status == 5) {
-                        await _deactivateRooms(
-                          widget.model.user.id.toString(),
-                          CacheHelper.id.toString(),
-                        );
-                      }
-                      onDone?.call();
-                      Navigator.pop(context);
-                    } else if (updateState is UpdateStatusFailedState) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  builder: (context, updateState) {
-                    return AppButton(
-                      isLoading: updateState is UpdateStatusLoadingState,
-                      onPress: () {
-                        updateStatusBloc.add(
-                          UpdateStatusEvent(
-                            id: widget.model.id,
-                            newStatus: status,
-                          ),
-                        );
-                      },
-                      text: LocaleKeys.confirm.tr(),
-                    );
-                  },
-                ),
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, dialogSetState) => AlertDialog(
+          title: Text(dialogTitle),
+          titleTextStyle: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+            color: AppTheme.primary,
+            fontFamily: getFontFamily(FontFamilyType.aboreto),
           ),
-        ],
+          content: Form(
+            key: updateStatusBloc.formKey,
+            autovalidateMode: updateStatusBloc.validateMode,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dialogContent,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppTheme.primary,
+                    fontFamily: getFontFamily(FontFamilyType.aboreto),
+                  ),
+                ),
+                if (status == 5) ...[
+                  SizedBox(height: 16.h),
+                  AppInput(
+                    fixedPositionedLabel: LocaleKeys.reason.tr(),
+                    maxLines: 3,
+                    controller: updateStatusBloc.reason,
+                    marginBottom: 0,
+                    validator: (value) => InputValidator.requiredValidator(
+                      value: value ?? '',
+                      itemName: LocaleKeys.reason.tr(),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    isSecondary: false,
+                    onPress: () {
+                      updateStatusBloc.resetCancelReasonForm();
+                      Navigator.pop(context);
+                    },
+                    text: LocaleKeys.cancel.tr(),
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: BlocConsumer(
+                    bloc: updateStatusBloc,
+                    listener: (context, updateState) async {
+                      final navigator = Navigator.of(context);
+                      if (updateState is UpdateStatusSuccessState) {
+                        if (status == 3 || status == 5) {
+                          await _deactivateRooms(
+                            _model.user.id.toString(),
+                            CacheHelper.id.toString(),
+                          );
+                        }
+                        updateStatusBloc.resetCancelReasonForm();
+                        onDone?.call();
+                        navigator.pop();
+                      } else if (updateState is UpdateStatusFailedState) {
+                        updateStatusBloc.resetCancelReasonForm();
+                        navigator.pop();
+                      }
+                    },
+                    builder: (context, updateState) {
+                      return AppButton(
+                        isLoading: updateState is UpdateStatusLoadingState,
+                        onPress: () {
+                          if (status == 5 &&
+                              !(updateStatusBloc.formKey.currentState
+                                      ?.validate() ??
+                                  false)) {
+                            updateStatusBloc.validateMode =
+                                AutovalidateMode.onUserInteraction;
+                            dialogSetState(() {});
+                            return;
+                          }
+
+                          updateStatusBloc.add(
+                            UpdateStatusEvent(id: _model.id, newStatus: status),
+                          );
+                        },
+                        text: LocaleKeys.confirm.tr(),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
