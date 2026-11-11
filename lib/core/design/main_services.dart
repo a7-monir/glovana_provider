@@ -33,7 +33,6 @@ class MainServices {
       allowMultiple: false,
       type: FileType.custom,
       allowedExtensions: ['docx', 'doc', 'pdf'],
-      allowCompression: true,
     );
     if (pickedImage != null) {
       return File(pickedImage.files.first.path!);

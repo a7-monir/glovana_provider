@@ -62,7 +62,7 @@ class _AppDropDownState extends State<AppDropDown> {
             ),
 
           DropdownButtonFormField<int>(
-            value: selectedDurationIndex,
+            initialValue: selectedDurationIndex,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15.r),

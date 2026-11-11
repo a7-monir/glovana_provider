@@ -5,7 +5,8 @@ import 'package:glovana_provider/features/provider_update_status/bloc.dart';
 import 'package:glovana_provider/features/ratings/bloc.dart';
 import 'package:glovana_provider/features/reset_password/bloc.dart';
 import 'package:glovana_provider/features/send_notification/bloc.dart';
-import 'package:glovana_provider/features/send_otp/bloc.dart';
+// OTP is disabled for all builds.
+// import 'package:glovana_provider/features/send_otp/bloc.dart';
 import 'package:glovana_provider/features/services/bloc.dart';
 import 'package:glovana_provider/features/settings/bloc.dart';
 import 'package:glovana_provider/features/signup/bloc.dart';
@@ -13,7 +14,7 @@ import 'package:glovana_provider/features/static_page/bloc.dart';
 import 'package:glovana_provider/features/toggle_lang/bloc.dart';
 import 'package:glovana_provider/features/types/bloc.dart';
 import 'package:glovana_provider/features/update_status/bloc.dart';
-import 'package:glovana_provider/features/verify_otp/bloc.dart';
+// import 'package:glovana_provider/features/verify_otp/bloc.dart';
 import 'package:glovana_provider/features/wallet/bloc.dart';
 import 'package:kiwi/kiwi.dart';
 
@@ -75,6 +76,7 @@ void initKiwi() {
   con.registerFactory((c) => ConfirmPaymentBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetPendingPaymentBloc(c.resolve<DioHelper>()));
   con.registerFactory((c) => GetSettingsBloc(c.resolve<DioHelper>()));
-  con.registerFactory((c) => SendOtpBloc());
-  con.registerFactory((c) => VerifyOtpBloc());
+  // OTP is disabled for all builds.
+  // con.registerFactory((c) => SendOtpBloc());
+  // con.registerFactory((c) => VerifyOtpBloc());
 }

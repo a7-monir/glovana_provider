@@ -256,14 +256,14 @@ class Availabilities {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['id'] = id;
-    _data['provider_type_id'] = providerTypeId;
-    _data['day_of_week'] = dayOfWeek;
-    _data['start_time'] = startTime;
-    _data['end_time'] = endTime;
-    _data['created_at'] = createdAt;
-    _data['updated_at'] = updatedAt;
-    return _data;
+    final data = <String, dynamic>{};
+    data['id'] = id;
+    data['provider_type_id'] = providerTypeId;
+    data['day_of_week'] = dayOfWeek;
+    data['start_time'] = startTime;
+    data['end_time'] = endTime;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    return data;
   }
 }

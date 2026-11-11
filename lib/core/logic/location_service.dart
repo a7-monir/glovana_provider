@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'app_logger.dart';
 
 class LocationService {
   Future<CustomPosition> getCurrentLocation() async {
@@ -28,7 +29,6 @@ class LocationService {
         }
       }
       final position = await Geolocator.getCurrentPosition();
-      debugPrint(position.toJson().toString());
 
       return CustomPosition(msg: "", success: true, position: position);
     } catch (e) {
@@ -44,7 +44,6 @@ class LocationService {
 
         // localeIdentifier: "en"
       );
-      debugPrint(placemarks.first.toJson().toString());
       if (placemarks[0].thoroughfare!.isNotEmpty &&
           placemarks[0].subLocality!.isNotEmpty) {
         return "${placemarks[0].thoroughfare ?? ""} ${placemarks[0].subLocality ?? ""}";
@@ -52,7 +51,7 @@ class LocationService {
         return "${placemarks[0].subAdministrativeArea ?? ""} ${placemarks[0].locality ?? ""}";
       }
     } catch (e) {
-      debugPrint("+++$e");
+      AppLogger.warning('Unable to resolve location name', tag: 'LOCATION');
       return null;
     }
   }

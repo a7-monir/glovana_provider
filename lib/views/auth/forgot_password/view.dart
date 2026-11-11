@@ -7,7 +7,6 @@ import 'package:glovana_provider/core/design/app_button.dart';
 import 'package:glovana_provider/core/design/app_image.dart';
 import 'package:glovana_provider/core/logic/helper_methods.dart';
 import 'package:glovana_provider/features/check_phone/bloc.dart';
-import 'package:glovana_provider/views/auth/otp/view.dart';
 import 'package:kiwi/kiwi.dart';
 
 import '../../../core/design/app_input.dart';
@@ -67,18 +66,22 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 bloc: bloc,
                 listener: (context, state) {
                   if (state is CheckPhoneSuccessState) {
+                    // OTP is disabled for all builds. The former OTP route is
+                    // intentionally kept out of the compiled reset flow:
+                    // navigateTo(
+                    //   VerifyOtpScreen(
+                    //     phone: bloc.phoneController.text,
+                    //     onSuccess: () => navigateTo(
+                    //       ChangePasswordView(
+                    //         phone: bloc.phoneController.text,
+                    //       ),
+                    //       replacement: true,
+                    //     ),
+                    //   ),
+                    // );
                     navigateTo(
-                      VerifyOtpScreen(
-                        phone: bloc.phoneController.text,
-                        onSuccess: () {
-                          navigateTo(
-                            ChangePasswordView(
-                              phone: bloc.phoneController.text,
-                            ),
-                            replacement: true,
-                          );
-                        },
-                      ),
+                      ChangePasswordView(phone: bloc.phoneController.text),
+                      replacement: true,
                     );
                   }
                 },

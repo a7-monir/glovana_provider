@@ -55,6 +55,7 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _images = File(pickedFile.path);
         });
@@ -73,10 +74,12 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
         imageQuality: 85,
       );
 
+      if (!mounted) return;
       setState(() {
         _gallery.addAll(pickedFile.map((file) => File(file.path)).toList());
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("failed_to_take_photo".tr())));
@@ -95,11 +98,13 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _identityPhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to pick identity photo".tr())),
       );
@@ -117,11 +122,13 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _identityPhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to take identity photo".tr())),
       );
@@ -140,11 +147,13 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _practicePhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to pick practice license".tr())),
       );
@@ -162,11 +171,13 @@ class _LastStepSingUpViewState extends State<LastStepSingUpView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _practicePhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to pick practice license".tr())),
       );

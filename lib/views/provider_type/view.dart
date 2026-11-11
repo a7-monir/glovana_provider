@@ -63,7 +63,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
 
   String? _imageFromApi;
   List<Galleries> _galleryFromApi = [];
-  List<File> _gallery = [];
+  final List<File> _gallery = [];
 
   File? _identityPhoto;
   String? _identityPhotoApi;
@@ -480,7 +480,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
     setState(() {});
   }
 
-  List<ServiceWithPrice> _selectedServicesWithPrices = [];
+  final List<ServiceWithPrice> _selectedServicesWithPrices = [];
   List<Service2> allServices = [];
 
   void loadSelectedServicesFromResponse(
@@ -513,6 +513,7 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _images = File(pickedFile.path);
         });
@@ -530,10 +531,12 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
         imageQuality: 85,
       );
 
+      if (!mounted) return;
       setState(() {
         _gallery.addAll(pickedFile.map((file) => File(file.path)).toList());
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("failed_to_take_photo".tr())));
@@ -551,11 +554,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _identityPhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to pick identity photo".tr())),
       );
@@ -572,11 +577,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _identityPhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to take identity photo".tr())),
       );
@@ -594,11 +601,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _practicePhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to pick practice license".tr())),
       );
@@ -615,11 +624,13 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
       );
 
       if (pickedFile != null) {
+        if (!mounted) return;
         setState(() {
           _practicePhoto = File(pickedFile.path);
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to pick practice license".tr())),
       );
@@ -1020,8 +1031,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               // 🔹 Always = اعرض كل الأيام
                                               Column(
                                                 children: days.keys.map((day) {
-                                                  if (day == "Always")
+                                                  if (day == "Always") {
                                                     return const SizedBox.shrink();
+                                                  }
 
                                                   final dayData = days[day]!;
 
@@ -1058,8 +1070,9 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                               // 🔹 مش Always = اعرض الأيام اللي شغالة بس
                                               Column(
                                                 children: days.keys.map((day) {
-                                                  if (day == "Always")
+                                                  if (day == "Always") {
                                                     return const SizedBox.shrink();
+                                                  }
 
                                                   final dayData = days[day]!;
 
@@ -1214,13 +1227,11 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
                                                                             constraints:
                                                                                 const BoxConstraints(),
                                                                             onPressed: () {
-                                                                              setState(
-                                                                                () {
-                                                                                  _selectedServicesWithPrices.remove(
-                                                                                    serviceWithPrice,
-                                                                                  );
-                                                                                },
-                                                                              );
+                                                                              setState(() {
+                                                                                _selectedServicesWithPrices.remove(
+                                                                                  serviceWithPrice,
+                                                                                );
+                                                                              });
                                                                             },
                                                                             icon: Icon(
                                                                               Icons.close,
@@ -1726,12 +1737,12 @@ class _ProviderTypeViewState extends State<ProviderTypeView> {
 }
 
 class _Sheet extends StatefulWidget {
-  List<Galleries> galleryFromApi;
+  final List<Galleries> galleryFromApi;
 
-  List<File> gallery;
+  final List<File> gallery;
   final VoidCallback onSuccess;
 
-  _Sheet({
+  const _Sheet({
     required this.galleryFromApi,
     required this.gallery,
     required this.onSuccess,

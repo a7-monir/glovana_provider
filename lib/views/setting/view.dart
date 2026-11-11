@@ -180,6 +180,7 @@ class BuildToggleButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const BuildToggleButton({
+    super.key,
     required this.text,
     required this.isActive,
     required this.onTap,

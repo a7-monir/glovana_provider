@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart' hide TextDirection;
 import 'package:flutter/material.dart';
@@ -64,7 +63,6 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
       listener: (context, state) {
         if (state is SendOtpSuccessState) {
           otp = state.otp;
-          log("otp: $otp");
         } else if (state is SendOtpFailedState) {
           showMessage(state.msg);
         }

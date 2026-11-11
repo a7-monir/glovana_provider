@@ -2,14 +2,19 @@ import Flutter
 import UIKit
 import GoogleMaps
 import UserNotifications
+import FirebaseCore
 import FirebaseMessaging
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    // Prevent Firebase's verbose transport logs from printing installation
+    // credentials and request headers to the device console.
+    FirebaseConfiguration.shared.setLoggerLevel(.warning)
+
     GMSServices.provideAPIKey("AIzaSyCUAYoQf7A41TOckoUI-DIxsp_gvv1TzhY")
 
     if #available(iOS 10.0, *) {
@@ -18,8 +23,11 @@ import FirebaseMessaging
 
     application.registerForRemoteNotifications()
 
-    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
   }
 
   override func application(

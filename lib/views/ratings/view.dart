@@ -40,8 +40,9 @@ class _RatingsViewState extends State<RatingsView> {
               },
             );
           } else if (state is GetRatingsSuccessState) {
-            if (state.list.isEmpty)
+            if (state.list.isEmpty) {
               return AppEmpty(title: LocaleKeys.ratings.tr());
+            }
             return ListView.separated(
               itemBuilder: (context, index) => _Item(model: state.list[index]),
               separatorBuilder: (context, index) => SizedBox(height: 14.h),
@@ -58,7 +59,7 @@ class _RatingsViewState extends State<RatingsView> {
 class _Item extends StatelessWidget {
   final RatingModel model;
 
-  const _Item({super.key, required this.model});
+  const _Item({required this.model});
 
   @override
   Widget build(BuildContext context) {

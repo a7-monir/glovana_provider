@@ -96,13 +96,13 @@ class BanInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['is_permanent'] = isPermanent;
-    _data['reason'] = reason;
-    _data['description'] = description;
-    _data['banned_at'] = bannedAt;
-    _data['ban_until'] = banUntil;
-    return _data;
+    final data = <String, dynamic>{};
+    data['is_permanent'] = isPermanent;
+    data['reason'] = reason;
+    data['description'] = description;
+    data['banned_at'] = bannedAt;
+    data['ban_until'] = banUntil;
+    return data;
   }
 }
 

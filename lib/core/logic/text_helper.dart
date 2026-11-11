@@ -1,17 +1,17 @@
 import 'cache_helper.dart';
 
 class TextHelper {
-  static String text(_arabName, _englishName) {
+  static String text(arabName, englishName) {
     if (CacheHelper.lang == "en") {
-      if (_englishName.isEmpty) {
-        return _arabName;
+      if (englishName.isEmpty) {
+        return arabName;
       }
-      return _englishName;
+      return englishName;
     } else {
-      if (_arabName.isEmpty) {
-        return _englishName;
+      if (arabName.isEmpty) {
+        return englishName;
       }
-      return _arabName;
+      return arabName;
     }
   }
 

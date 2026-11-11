@@ -277,9 +277,8 @@ class _DiscountsViewState extends State<DiscountsView> {
                                             .name,
                                         style: TextStyle(fontSize: 16.sp),
                                       ),
-                                      Radio<bool>(
-                                        value: true,
-                                        groupValue: isSelected ? true : null,
+                                      Checkbox(
+                                        value: isSelected,
                                         onChanged: (_) {
                                           setState(() {
                                             if (isSelected) {

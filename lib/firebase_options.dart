@@ -59,10 +59,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAHqMHjyYu6EaihlgRJVznqoeSoppS3P8E',
-    appId: '1:189542346816:ios:c14adcdca6b5596c6dafa5',
+    appId: '1:189542346816:ios:06f5888c53b06f4c6dafa5',
     messagingSenderId: '189542346816',
     projectId: 'glovana-4f28a',
     storageBucket: 'glovana-4f28a.firebasestorage.app',
-    iosBundleId: 'com.alianCode.glovanaProvider',
+    iosBundleId: 'com.mutasem.glovanaProvider',
   );
 }

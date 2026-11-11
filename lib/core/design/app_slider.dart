@@ -60,9 +60,9 @@ class _AppSliderState extends State<AppSlider> {
                 margin: EdgeInsetsDirectional.only(end: 2.w),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32.r),
-                  color: Theme.of(
-                    context,
-                  ).primaryColor.withOpacity(currentPage == index ? 1 : .12),
+                  color: Theme.of(context).primaryColor.withValues(
+                    alpha: currentPage == index ? 1 : .12,
+                  ),
                 ),
               ),
             ),

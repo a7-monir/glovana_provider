@@ -78,7 +78,7 @@ class _Item extends StatefulWidget {
   final Discounts model;
   final VoidCallback onSuccess;
 
-  const _Item({super.key, required this.model, required this.onSuccess});
+  const _Item({required this.model, required this.onSuccess});
 
   @override
   State<_Item> createState() => _ItemState();

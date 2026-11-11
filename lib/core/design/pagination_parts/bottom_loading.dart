@@ -7,11 +7,11 @@ class BottomLoading extends StatelessWidget {
   final VoidCallback onLoading;
 
   const BottomLoading({
-    Key? key,
+    super.key,
     required this.isPaginationLoading,
     required this.isPaginationFailed,
     required this.onLoading,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

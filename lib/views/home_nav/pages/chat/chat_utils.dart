@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:glovana_provider/core/logic/app_logger.dart';
 
@@ -247,7 +245,7 @@ class ChatUtils {
         'unread_count_provider': 0,
       });
     } catch (e) {
-      log('Failed to mark messages as read: $e');
+      AppLogger.warning('Failed to mark messages as read', tag: 'CHAT');
     }
   }
 
@@ -257,9 +255,9 @@ class ChatUtils {
       await firestore.collection('rooms').doc(roomId).update({
         'is_active': false,
       });
-      log('Room $roomId is now inactive');
+      AppLogger.info('Chat marked inactive', tag: 'CHAT');
     } catch (e) {
-      log('Failed to end chat: $e');
+      AppLogger.warning('Failed to end chat', tag: 'CHAT');
     }
   }
 }

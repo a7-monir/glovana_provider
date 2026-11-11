@@ -192,7 +192,6 @@ class _ItemProfile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _ItemProfile({
-    super.key,
     required this.image,
     required this.title,
     this.isLogout = false,

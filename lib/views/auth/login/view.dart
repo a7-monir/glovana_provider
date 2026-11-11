@@ -18,7 +18,6 @@ import '../components/choose_lang_item.dart';
 import '../components/have_account.dart';
 import '../done_complete_profile.dart';
 import '../forgot_password/view.dart';
-import '../otp/view.dart';
 import '../signup/view.dart';
 
 part '../components/social_section.dart';
@@ -59,7 +58,22 @@ class _LoginViewState extends State<LoginView> {
   }
 
   bool isLogin = true;
-  late String phone;
+
+  Future<void> _completeLogin(LoginSuccessState state) async {
+    await CacheHelper.setToken(state.token);
+    await CacheHelper.saveData(state.model);
+    await CacheHelper.saveBanInfo(bloc.banInfo!);
+
+    if (!mounted) {
+      return;
+    }
+
+    if (state.model.activate == 3 || state.model.activate == 2) {
+      await navigateTo(const DoneCompleteProfileView(), keepHistory: false);
+    } else {
+      await navigateTo(const HomeNavView(), keepHistory: false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +105,6 @@ class _LoginViewState extends State<LoginView> {
                     controller: bloc.phoneController,
                     isValid: bloc.phoneValid,
                     validator: (v) => InputValidator.validatePhone(v!),
-                    onChanged: (value) {
-                      phone = value;
-                    },
                   ),
                 ),
                 Padding(
@@ -130,25 +141,15 @@ class _LoginViewState extends State<LoginView> {
                   bloc: bloc,
                   listener: (context, state) {
                     if (state is LoginSuccessState) {
-                      navigateTo(
-                        VerifyOtpScreen(
-                          phone: phone,
-                          onSuccess: () {
-                            CacheHelper.setToken(state.token);
-                            CacheHelper.saveData(state.model);
-                            CacheHelper.saveBanInfo(bloc.banInfo!);
-                            if (state.model.activate == 3 ||
-                                state.model.activate == 2) {
-                              navigateTo(
-                                DoneCompleteProfileView(),
-                                keepHistory: false,
-                              );
-                            } else {
-                              navigateTo(HomeNavView());
-                            }
-                          },
-                        ),
-                      );
+                      // OTP is disabled for all builds. The former OTP route is
+                      // intentionally kept out of the compiled login flow:
+                      // navigateTo(
+                      //   VerifyOtpScreen(
+                      //     phone: state.model.phone,
+                      //     onSuccess: () => _completeLogin(state),
+                      //   ),
+                      // );
+                      _completeLogin(state);
                     }
                   },
                   builder: (context, state) {

@@ -1,16 +1,17 @@
-import 'package:dio/dio.dart';
+// OTP is disabled for all builds.
+// import 'package:dio/dio.dart';
 
-import 'app_logger.dart';
+// import 'app_logger.dart';
 
 class JorMallSmsService {
-  Dio dio = Dio();
+  // Dio dio = Dio();
 
-  // Replace with your credentials
-  String accName = 'glovana';
-  String accPass = 'hA3mY0hF0o';
-  String senderId = 'Glovana'; // registered with JorMall
+  // SMS credentials and sender configuration are intentionally omitted.
 
-  Future<String?> generateToken() async {
+  Future<String?> generateToken() {
+    return Future<String?>.value();
+
+    /* Original SMS token implementation is intentionally disabled.
     try {
       final response = await dio.get(
         'https://www.josms.net/sms/api/GenerateToken.cfm?accname=$accName&accpass=$accPass',
@@ -40,20 +41,24 @@ class JorMallSmsService {
     }
 
     return null;
+    */
   }
 
-  String removeZeroAtIndex3(String number) {
-    if (number.length > 3 && number[3] == '0') {
-      return number.substring(0, 3) + number.substring(4);
-    }
-    return number;
-  }
+  // String removeZeroAtIndex3(String number) {
+  //   if (number.length > 3 && number[3] == '0') {
+  //     return number.substring(0, 3) + number.substring(4);
+  //   }
+  //   return number;
+  // }
 
   Future<bool> sendOtpSms({
     required String token,
     required String phoneNumber,
     required String otpCode,
-  }) async {
+  }) {
+    return Future<bool>.value(false);
+
+    /* Original SMS sending implementation is intentionally disabled.
     final message = 'Your OTP code is $otpCode';
 
     //phoneNumber = removeZeroAtIndex3(phoneNumber);
@@ -108,5 +113,6 @@ class JorMallSmsService {
       );
       return false;
     }
+    */
   }
 }

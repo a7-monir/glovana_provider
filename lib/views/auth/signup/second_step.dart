@@ -216,8 +216,8 @@ class _SecondStepSignUpViewState extends State<SecondStepSignUpView> {
     currentSelected = day;
   }
 
-  List<ServiceWithPrice> _selectedServicesWithPrices = [];
-  List<Service2> _selectedServices = []; // For service booking type
+  final List<ServiceWithPrice> _selectedServicesWithPrices = [];
+  final List<Service2> _selectedServices = []; // For service booking type
   List<Service2> allServices = [];
 
   void _showMultiSelect(BuildContext context) {

@@ -21,7 +21,7 @@ class _ItemSocial extends StatelessWidget {
   final String img;
   final VoidCallback onTap;
 
-  const _ItemSocial({super.key, required this.img, required this.onTap});
+  const _ItemSocial({required this.img, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

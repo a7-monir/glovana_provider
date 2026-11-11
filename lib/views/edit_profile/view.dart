@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:glovana_provider/views/auth/otp/view.dart';
 import 'package:kiwi/kiwi.dart';
 
 import '../../core/design/app_bar.dart';
@@ -152,14 +151,15 @@ class _EditProfileViewState extends State<EditProfileView> {
                     isLoading: state is EditProfileLoadingState,
                     onPress: () {
                       if (bloc.formKey.currentState!.validate()) {
-                        navigateTo(
-                          VerifyOtpScreen(
-                            phone: bloc.phoneController.text,
-                            onSuccess: () {
-                              bloc.add(EditProfileEvent());
-                            },
-                          ),
-                        );
+                        // OTP is disabled for all builds. The former OTP route
+                        // is intentionally kept out of the compiled edit flow:
+                        // navigateTo(
+                        //   VerifyOtpScreen(
+                        //     phone: bloc.phoneController.text,
+                        //     onSuccess: () => bloc.add(EditProfileEvent()),
+                        //   ),
+                        // );
+                        bloc.add(EditProfileEvent());
                       } else {
                         bloc.validateMode = AutovalidateMode.onUserInteraction;
                         setState(() {});

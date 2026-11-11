@@ -11,23 +11,23 @@ class VerifyOtpBloc extends Bloc<VerifyOtpEvents, VerifyOtpStates> {
     on<VerifyOtpEvent>(_sendData);
   }
 
-  /// Master code that bypasses the SMS/server verification.
-  static const String masterOtp = '1111';
+  // OTP is disabled for all builds.
+  // static const String masterOtp = '1111';
 
   AutovalidateMode validateMode = AutovalidateMode.disabled;
 
   final codeController = TextEditingController();
 
-  void _sendData(VerifyOtpEvent event, Emitter<VerifyOtpStates> emit) async {
+  void _sendData(VerifyOtpEvent event, Emitter<VerifyOtpStates> emit) {
+    emit(VerifyOtpFailedState(msg: 'OTP is disabled'));
+
+    /* Original OTP verification implementation is intentionally disabled.
     emit(VerifyOtpLoadingState());
-    if (codeController.text == masterOtp) {
-      emit(VerifyOtpSuccessState());
-      return;
-    }
-    if (codeController.text == event.otp) {
+    if (codeController.text == masterOtp || codeController.text == event.otp) {
       emit(VerifyOtpSuccessState());
     } else {
       emit(VerifyOtpFailedState(msg: 'wrong code'));
     }
+    */
   }
 }

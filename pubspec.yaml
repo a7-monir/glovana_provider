@@ -30,7 +30,6 @@ dependencies:
   flutter_svg: ^2.2.1
   shimmer: ^3.0.0
   flutter_bloc: ^9.1.1
-  quick_log: ^5.5.3
   shared_preferences: ^2.5.3
   intl: ^0.20.0
   dio: ^5.9.0
@@ -58,13 +57,14 @@ dependencies:
   voice_note_kit: ^1.2.1
   file_picker: ^10.1.9
   flutter_html: ^3.0.0-beta.2
+  # flutter_html 3.0.0 still calls SelectorGroup.matches, removed in html 0.15.7.
+  html: 0.15.6
   google_fonts: ^6.2.1
   table_calendar: ^3.1.2
   permission_handler: ^12.0.0+1
   firebase_storage: ^13.0.2
   firebase_app_check: ^0.4.1
   pin_code_fields: ^8.0.1
-  pretty_dio_logger: ^1.4.0
   path_provider: ^2.1.2
 
 dev_dependencies:

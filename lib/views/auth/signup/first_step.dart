@@ -23,10 +23,14 @@ import '../../../features/services/bloc.dart';
 import '../../location/view.dart';
 
 class FirstStepSignUpView extends StatefulWidget {
-  TypeModel? typeModel;
+  final TypeModel? typeModel;
   final bool fromRegister;
 
-  FirstStepSignUpView({super.key, this.typeModel, this.fromRegister = true});
+  const FirstStepSignUpView({
+    super.key,
+    this.typeModel,
+    this.fromRegister = true,
+  });
 
   @override
   State<FirstStepSignUpView> createState() => _FirstStepSignUpViewState();
@@ -34,6 +38,7 @@ class FirstStepSignUpView extends StatefulWidget {
 
 class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
   final typesBloc = KiwiContainer().resolve<TypesBloc>();
+  TypeModel? selectedTypeModel;
 
   final nickNameController = TextEditingController();
   bool isNickNameValid = true;
@@ -54,6 +59,7 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
   @override
   void initState() {
     super.initState();
+    selectedTypeModel = widget.typeModel;
 
     if (!widget.fromRegister) {
       typesBloc.add(GetTypesEvent());
@@ -160,7 +166,7 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
                         ),
                         hint: '',
                         onChoose: (value) {
-                          widget.typeModel = TypeModel(
+                          selectedTypeModel = TypeModel(
                             id: typesBloc.list[value].id,
                             name: typesBloc.list[value].name,
                             bookingType: typesBloc.list[value].bookingType,
@@ -326,22 +332,22 @@ class _FirstStepSignUpViewState extends State<FirstStepSignUpView> {
               if (longitude != null &&
                   latitude != null &&
                   addressFromPicker != null &&
-                  widget.typeModel != null) {
+                  selectedTypeModel != null) {
                 final model = FirstStepModel(
                   nickName: nickNameController.text,
-                  bookingType: widget.typeModel!.bookingType,
+                  bookingType: selectedTypeModel!.bookingType,
                   description: descriptionController.text,
                   address: cityController.text,
                   city: cityController.text,
                   addressFromPicker: addressFromPicker!,
-                  typeId: widget.typeModel!.id,
+                  typeId: selectedTypeModel!.id,
                   lat: latitude!,
                   lng: longitude!,
                 );
                 navigateTo(
                   SecondStepSignUpView(
                     firstStepModel: model,
-                    isSalon: widget.typeModel!.bookingType == 'service',
+                    isSalon: selectedTypeModel!.bookingType == 'service',
                   ),
                 );
               } else {

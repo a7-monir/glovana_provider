@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>683113584483-t92f5ont95t9fvnqkgdr9ssnmrk02ioo.apps.googleusercontent.com</string>
+	<string>189542346816-a5g8p30mjbid8tl0rf6g46i48ai4oe6a.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.683113584483-t92f5ont95t9fvnqkgdr9ssnmrk02ioo</string>
+	<string>com.googleusercontent.apps.189542346816-a5g8p30mjbid8tl0rf6g46i48ai4oe6a</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>683113584483-2fvdvfetg34a4m20i7ea81benartjd82.apps.googleusercontent.com</string>
+	<string>189542346816-5u5ls3htjne0jltsopt74v6e03t05v1t.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCFS4iD34wPRap8WnyPdPdE1q1EZkP4bsk</string>
+	<string>AIzaSyAHqMHjyYu6EaihlgRJVznqoeSoppS3P8E</string>
 	<key>GCM_SENDER_ID</key>
-	<string>683113584483</string>
+	<string>189542346816</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.mutasem.glovanaProvider</string>
 	<key>PROJECT_ID</key>
-	<string>glovana</string>
+	<string>glovana-4f28a</string>
 	<key>STORAGE_BUCKET</key>
-	<string>glovana.firebasestorage.app</string>
+	<string>glovana-4f28a.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:683113584483:ios:23b498b75fab9ae5056556</string>
+	<string>1:189542346816:ios:06f5888c53b06f4c6dafa5</string>
 </dict>
 </plist>

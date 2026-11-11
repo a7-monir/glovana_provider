@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../core/logic/cache_helper.dart';
+import '../../../../core/logic/app_logger.dart';
 import '../../../../core/logic/helper_methods.dart';
 import '../../views/auth/login/view.dart';
 
@@ -12,7 +11,6 @@ part 'events.dart';
 part 'states.dart';
 
 class SignOutBloc extends Bloc<SignOutEvents, SignOutStates> {
-
   SignOutBloc() : super(SignOutStates()) {
     on<SignOutEvent>(_sendData);
   }
@@ -28,7 +26,7 @@ class SignOutBloc extends Bloc<SignOutEvents, SignOutStates> {
       await GoogleSignIn().signOut();
       // }
     } catch (e) {
-      log('Error signing out from Google: $e');
+      AppLogger.warning('Google sign-out failed', tag: 'AUTH');
       emit(SignOutFailedState(msg: e.toString()));
     }
     await CacheHelper.logOut();

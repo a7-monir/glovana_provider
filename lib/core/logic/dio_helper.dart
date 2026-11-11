@@ -441,6 +441,8 @@ abstract class NetworkExceptions {
           return 'Send timeout in connection with API server. Please try again later.';
         case DioExceptionType.receiveTimeout:
           return 'Receive timeout in connection with API server. Please try again later.';
+        case DioExceptionType.transformTimeout:
+          return 'The server response took too long to process. Please try again later.';
         case DioExceptionType.connectionTimeout:
           return 'Connection request timeout. Please try again later.';
         case DioExceptionType.badResponse:

@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../firebase_options.dart';
+import 'app_logger.dart';
 
 Future<FirebaseApp>? _firebaseInitFuture;
 
@@ -33,12 +33,11 @@ Future<FirebaseApp> ensureFirebaseInitialized() async {
     rethrow;
   }
 
-  if (kDebugMode) {
-    print(
-      'Firebase initialized with app name: ${app.name}, '
-      'projectId: ${app.options.projectId}, appId: ${app.options.appId}',
-    );
-  }
+  AppLogger.debug(
+    'Firebase initialized',
+    tag: 'FIREBASE',
+    data: {'appName': app.name, 'projectId': app.options.projectId},
+  );
 
   return app;
 }
